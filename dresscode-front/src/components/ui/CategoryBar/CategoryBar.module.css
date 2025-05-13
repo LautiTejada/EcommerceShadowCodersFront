@@ -1,0 +1,21 @@
+.containerCategories {
+  background-color: #ffffff;
+  box-shadow: none;
+}
+.toolbar {
+  justify-content: center;
+}
+.containerButtons {
+  display: flex;
+  gap: 4;
+}
+.buttons {
+  color: black;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: text-decoration 1s ease;
+  margin: 0.4rem;
+}
+.buttons:hover {
+  text-decoration: underline;
+}
