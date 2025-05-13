@@ -1,0 +1,32 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+/* Elimina estilos de listas */
+ul,
+ol {
+  list-style: none;
+}
+
+/* Elimina decoración de enlaces */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Corrige problemas con imágenes */
+img {
+  max-width: 100%;
+  display: block;
+}
