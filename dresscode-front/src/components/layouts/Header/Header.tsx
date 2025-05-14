@@ -10,7 +10,7 @@ const Header = () => {
       <Toolbar className={styles.toolbar}>
         <div className={styles.logoContainer}>
           <Button color="inherit" component={Link} to="/">
-            <img src="/src/assets/logo-dresscode.png" alt="" />
+            <img src="/public/assets/logo-dresscode.png" alt="" />
           </Button>
         </div>
         <div className={styles.buttonsContainer}>
