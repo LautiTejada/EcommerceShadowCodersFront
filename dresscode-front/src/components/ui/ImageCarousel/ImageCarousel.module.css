@@ -1,0 +1,19 @@
+.containerCarousel {
+  display: flex;
+  width: 100%;
+  height: 400px;
+}
+
+.containerCarousel img {
+  width: 0px;
+  flex-grow: 1;
+  object-fit: cover;
+
+  transition: 0.5s ease;
+}
+
+.containerCarousel img:hover {
+  width: 100px;
+  opacity: 1;
+  filter: contrast(150%);
+}

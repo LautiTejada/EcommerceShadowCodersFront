@@ -1,21 +1,21 @@
 .containerCategories {
-  background-color: #ffffff;
-  box-shadow: none;
+  background-color: #ffffff !important;
+  box-shadow: none !important;
 }
 .toolbar {
-  justify-content: center;
+  justify-content: center !important;
 }
 .containerButtons {
-  display: flex;
-  gap: 4;
+  display: flex !important;
+  gap: 4px !important;
 }
 .buttons {
-  color: black;
-  font-size: 1rem;
-  font-weight: bold;
-  transition: text-decoration 1s ease;
-  margin: 0.4rem;
+  color: black !important;
+  font-size: 1rem !important;
+  font-weight: bold !important;
+  transition: text-decoration 1s ease !important;
+  margin: 0.4rem !important;
 }
 .buttons:hover {
-  text-decoration: underline;
+  text-decoration: underline !important;
 }
