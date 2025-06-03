@@ -1,0 +1,161 @@
+.bg {
+  background: #222;
+  min-height: 100vh;
+  padding: 32px 0;
+}
+.container {
+  display: flex;
+  gap: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+  background: #222;
+  padding: 24px;
+  border-radius: 8px;
+}
+.thumbnails {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.thumbnailImg {
+  width: 100px;
+  height: 80px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: border 0.2s;
+}
+.selectedThumbnail {
+  border: 2px solid #b89c74;
+}
+.mainImageContainer {
+  background: #fff;
+  border-radius: 8px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 350px;
+}
+.mainImage {
+  max-width: 400px;
+  max-height: 300px;
+  object-fit: contain;
+}
+.infoBox {
+  background: #444;
+  border-radius: 12px;
+  color: #fff;
+  flex: 1;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 340px;
+}
+.productName {
+  font-weight: 400;
+  font-size: 24px;
+  margin-bottom: 4px;
+}
+.category {
+  color: #bdbdbd;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+.brand {
+  color: #bdbdbd;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.price {
+  font-weight: 700;
+  font-size: 24px;
+  margin-bottom: 24px;
+}
+.sizeSection {
+  width: 100%;
+  margin-bottom: 12px;
+}
+.sizeLabel {
+  margin-bottom: 8px;
+}
+.sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+}
+.sizeBtn {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid #888;
+  background: #333;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.sizeBtnSelected {
+  border: 2px solid #b89c74;
+  background: #fff;
+  color: #222;
+}
+.color {
+  margin-bottom: 16px;
+  color: #bdbdbd;
+}
+.color span {
+  color: #fff;
+}
+.quantitySection {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.qtyBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: none;
+  background: #333;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  margin: 0 8px;
+  transition: background 0.2s;
+}
+.qtyValue {
+  font-size: 18px;
+  min-width: 24px;
+  text-align: center;
+}
+.addToCartBtn {
+  background: #fff;
+  color: #222;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 32px;
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 8px;
+  width: 100%;
+  transition: background 0.2s;
+}
+.descriptionBox {
+  background: #222;
+  margin: 32px auto 0 auto;
+  max-width: 1100px;
+  border-radius: 6px;
+  padding: 24px 32px;
+}
+.descLabel {
+  font-weight: 700;
+  color: #fff;
+}
+.descText {
+  color: #ccc;
+}

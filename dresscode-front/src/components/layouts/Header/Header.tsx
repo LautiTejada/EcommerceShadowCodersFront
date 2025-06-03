@@ -14,12 +14,6 @@ const Header = () => {
           </Button>
         </div>
         <div className={styles.buttonsContainer}>
-          <Button color="inherit" component={Link} to="/catalog">
-            Catálogo
-          </Button>
-          <div className={styles.searchContainer}>
-            <input type="text" className={styles.searchInput} />
-          </div>
           <Button color="inherit" component={Link} to="/cart">
             <ShoppingCartIcon />
           </Button>

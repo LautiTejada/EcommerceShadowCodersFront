@@ -74,6 +74,7 @@ const OffersSection = () => {
           {offers.map((offer) => (
             <SwiperSlide key={offer.id}>
               <ProductCard
+                id={offer.id}
                 name={offer.name}
                 image={offer.image}
                 discount={offer.discount}

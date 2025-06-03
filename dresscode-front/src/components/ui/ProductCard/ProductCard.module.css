@@ -30,5 +30,6 @@
 }
 .productName {
   font-weight: 600;
-  margin-bottom: 8;
+  margin-bottom: 1rem;
+  margin-top: 1rem;
 }

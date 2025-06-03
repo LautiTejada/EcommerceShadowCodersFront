@@ -1,7 +1,7 @@
 import { AppBar, Toolbar, Button, Box } from "@mui/material";
 import styles from "./CategoryBar.module.css";
 
-const categories = ["Ofertas", "Calzado", "Ropa", "Colecciones"];
+const categories = ["Catalogo", "Ofertas", "Calzado", "Ropa", "Colecciones"];
 
 const CategoryBar = () => {
   return (
