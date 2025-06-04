@@ -14,7 +14,7 @@
   font-size: 1rem !important;
   font-weight: bold !important;
   transition: text-decoration 1s ease !important;
-  margin: 0.4rem !important;
+  margin: 0.4rem 2rem  !important;
 }
 .buttons:hover {
   text-decoration: underline !important;

@@ -1,9 +1,8 @@
 import { AppBar, Toolbar, Button, Box } from "@mui/material";
 import styles from "./CategoryBar.module.css";
+import { Link } from "react-router-dom";
 
-const categories = ["Catalogo", "Ofertas", "Calzado", "Ropa", "Colecciones"];
-
-const CategoryBar = () => {
+export const CategoryBar = () => {
   return (
     <AppBar
       className={styles.containerCategories}
@@ -12,15 +11,22 @@ const CategoryBar = () => {
     >
       <Toolbar className={styles.toolbar}>
         <Box className={styles.containerButtons}>
-          {categories.map((category, index) => (
-            <Button key={index} className={styles.buttons}>
-              {category}
+          <Link to="/catalog" style={{ textDecoration: "none" }}> 
+            <Button className={styles.buttons}>
+              CATALOGO
             </Button>
-          ))}
+          </Link>
+          <Button className={styles.buttons}>
+            OFERTAS
+          </Button>
+          <Button className={styles.buttons}>
+            CALZADO
+          </Button>
+          <Button className={styles.buttons}>
+            ROPA
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>
   );
 };
-
-export default CategoryBar;
