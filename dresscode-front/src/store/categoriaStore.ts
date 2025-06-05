@@ -2,48 +2,74 @@ import { create } from 'zustand';
 import type { Categoria } from '../types/Categoria';
 import {
   getCategorias,
+  getCategoriasActivas,
+  getCategoriaById,
   crearCategoria,
   eliminarCategoria,
   actualizarCategoria,
+  cambiarEstadoCategoria,
+  activarCategoria,
+  desactivarCategoria
 } from '../http/categoria';
 
 interface CategoriaState {
   categorias: Categoria[];
+  categoriasActivas: Categoria[];
   fetchCategorias: () => Promise<void>;
-  addCategoria: (categoria: { nombre: string }) => Promise<void>;
-  deleteCategoria: (id: string) => Promise<void>;
-  updateCategoria: (id: string, categoria: { nombre: string }) => Promise<void>;
+  fetchCategoriasActivas: () => Promise<void>;
+  fetchCategoriaById: (id: number) => Promise<Categoria | null>;
+  addCategoria: (categoria: Categoria) => Promise<void>;
+  deleteCategoria: (id: number) => Promise<void>;
+  updateCategoria: (id: number, categoria: Categoria) => Promise<void>;
+  toggleCategoriaStatus: (id: number) => Promise<void>;
+  activateCategoria: (id: number) => Promise<void>;
+  deactivateCategoria: (id: number) => Promise<void>;
 }
 
 export const useCategoriaStore = create<CategoriaState>((set, get) => ({
   categorias: [],
+  categoriasActivas: [],
 
   fetchCategorias: async () => {
     try {
       const categoriasFromApi = await getCategorias();
       set({ categorias: categoriasFromApi });
     } catch (error) {
-      console.error('Error cargando categorías en el store:', error);
+      console.error('Error cargando categorías:', error);
+    }
+  },
+
+  fetchCategoriasActivas: async () => {
+    try {
+      const activas = await getCategoriasActivas();
+      set({ categoriasActivas: activas });
+    } catch (error) {
+      console.error('Error cargando categorías activas:', error);
+    }
+  },
+
+  fetchCategoriaById: async (id) => {
+    try {
+      return await getCategoriaById(id);
+    } catch (error) {
+      console.error(`Error cargando categoría con id ${id}:`, error);
+      return null;
     }
   },
 
   addCategoria: async (categoria) => {
     try {
-      const nuevaCategoria = await crearCategoria(categoria);
-      set((state) => ({
-        categorias: [...state.categorias, nuevaCategoria],
-      }));
+      await crearCategoria(categoria);
+      await get().fetchCategorias();
     } catch (error) {
-      console.error('Error agregando categoría:', error);
+      console.error('Error creando categoría:', error);
     }
   },
 
   deleteCategoria: async (id) => {
     try {
       await eliminarCategoria(id);
-      set((state) => ({
-        categorias: state.categorias.filter((cat) => cat.id !== parseInt(id)),
-      }));
+      await get().fetchCategorias();
     } catch (error) {
       console.error('Error eliminando categoría:', error);
     }
@@ -51,14 +77,37 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
 
   updateCategoria: async (id, categoria) => {
     try {
-      const categoriaActualizada = await actualizarCategoria(id, categoria);
-      set((state) => ({
-        categorias: state.categorias.map((cat) =>
-          cat.id === parseInt(id) ? categoriaActualizada : cat
-        ),
-      }));
+      await actualizarCategoria(id, categoria);
+      await get().fetchCategorias();
     } catch (error) {
       console.error('Error actualizando categoría:', error);
     }
   },
+
+  toggleCategoriaStatus: async (id) => {
+    try {
+      await cambiarEstadoCategoria(id);
+      await get().fetchCategorias();
+    } catch (error) {
+      console.error('Error cambiando estado de categoría:', error);
+    }
+  },
+
+  activateCategoria: async (id) => {
+    try {
+      await activarCategoria(id);
+      await get().fetchCategorias();
+    } catch (error) {
+      console.error('Error activando categoría:', error);
+    }
+  },
+
+  deactivateCategoria: async (id) => {
+    try {
+      await desactivarCategoria(id);
+      await get().fetchCategorias();
+    } catch (error) {
+      console.error('Error desactivando categoría:', error);
+    }
+  }
 }));

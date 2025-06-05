@@ -1,3 +1,5 @@
+import type { Descuento } from "../types/Descuento";
+
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export const getDescuentos = async () => {
@@ -13,7 +15,7 @@ export const getDescuentos = async () => {
   }
 }
 
-export const crearDescuento = async (descuento: { nombre: string, porcentaje: number }) => {
+export const crearDescuento = async (descuento : Descuento) => {
   try {
     const response = await fetch(`${baseUrl}/descuentos`, {
       method: 'POST',
@@ -32,7 +34,7 @@ export const crearDescuento = async (descuento: { nombre: string, porcentaje: nu
   }
 }
 
-export const eliminarDescuento = async (id: string) => {
+export const eliminarDescuento = async (id: number) => {
   try {
     const response = await fetch(`${baseUrl}/descuentos/${id}`, {
       method: 'DELETE',
