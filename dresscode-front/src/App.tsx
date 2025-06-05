@@ -5,6 +5,8 @@ import Header from "./components/layouts/Header/Header";
 import Footer from "./components/layouts/Footer/Footer";
 import { ProductDetails } from "./components/ui/ProductDetails/ProductDetails";
 import { Catalog } from "./pages/Catalog/Catalog";
+import Login from "./pages/Auth/Login";
+import Register from "./pages/Auth/Register";
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/catalog" element={<Catalog />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
       <Footer />
     </Router>

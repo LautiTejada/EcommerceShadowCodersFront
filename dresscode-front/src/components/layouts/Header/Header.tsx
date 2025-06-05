@@ -18,7 +18,7 @@ const Header = () => {
             <ShoppingCartIcon />
           </Button>
           <div className={styles.acountButton}>
-            <Button color="inherit" component={Link} to="/register">
+            <Button color="inherit" component={Link} to="/login">
               LOGIN / REGISTER
               <AccountCircleIcon />
             </Button>
