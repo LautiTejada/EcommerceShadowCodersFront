@@ -2,7 +2,7 @@
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
-export const getOrdenDeCompra = async (id: string) => {
+export const getOrdenDeCompra = async (id: number) => {
   try {
     const response = await fetch(`${baseUrl}/ordenDeCompra/${id}`);
     if (!response.ok) {

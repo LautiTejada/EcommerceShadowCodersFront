@@ -1,4 +1,4 @@
-import type { Provincia } from "../types/enums/Provincias";
+import type { Direccion } from "../types/Direccion";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
@@ -15,7 +15,7 @@ export const getDirecciones = async () => {
   }
 }
 
-export const crearDireccion = async (direccion: { calle: string, ciudad: string, codigoPostal: string, numero: number, localidad: string, provincia: Provincia, pais: string }) => {
+export const crearDireccion = async (direccion : Direccion) => {
   try {
     const response = await fetch(`${baseUrl}/direcciones`, {
       method: 'POST',
@@ -34,22 +34,7 @@ export const crearDireccion = async (direccion: { calle: string, ciudad: string,
   }
 }
 
-export const eliminarDireccion = async (id: string) => {
-  try {
-    const response = await fetch(`${baseUrl}/direcciones/${id}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error deleting direccion:', error);
-    throw error;
-  }
-}
-
-export const actualizarDireccion = async (id: string, direccion: { calle: string, ciudad: string, codigoPostal: string, numero: number, localidad: string, provincia: Provincia, pais: string }) => {
+export const actualizarDireccion = async (id: number, direccion: Direccion) => {
   try {
     const response = await fetch(`${baseUrl}/direcciones/${id}`, {
       method: 'PUT',

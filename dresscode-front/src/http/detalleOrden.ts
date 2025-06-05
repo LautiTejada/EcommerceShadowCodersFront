@@ -1,6 +1,8 @@
+import type { DetalleOrden } from "../types/DetalleOrden";
+
 const baseUrl = import.meta.env.VITE_API_URL;
 
-export const getDetalleOrden = async (id: string) => {
+export const getDetalleOrden = async (id: number) => {
   try {
     const response = await fetch(`${baseUrl}/detalleOrden/${id}`);
     if (!response.ok) {
@@ -13,11 +15,7 @@ export const getDetalleOrden = async (id: string) => {
   }
 };
 
-export const crearDetalleOrden = async (detalle: {
-  ordenId: string;
-  productoId: string;
-  cantidad: number;
-}) => {
+export const crearDetalleOrden = async (detalle: DetalleOrden) => {
   try {
     const response = await fetch(`${baseUrl}/detalleOrden`, {
       method: "POST",
@@ -35,23 +33,10 @@ export const crearDetalleOrden = async (detalle: {
     throw error;
   }
 };
-export const eliminarDetalleOrden = async (id: string) => {
-  try {
-    const response = await fetch(`${baseUrl}/detalleOrden/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error deleting detalle orden:", error);
-    throw error;
-  }
-};
+
 export const actualizarDetalleOrden = async (
-  id: string,
-  detalle: { ordenId: string; productoId: string; cantidad: number }
+  id: number,
+  detalle: DetalleOrden
 ) => {
   try {
     const response = await fetch(`${baseUrl}/detalleOrden/${id}`, {

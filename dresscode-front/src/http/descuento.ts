@@ -34,22 +34,8 @@ export const crearDescuento = async (descuento : Descuento) => {
   }
 }
 
-export const eliminarDescuento = async (id: number) => {
-  try {
-    const response = await fetch(`${baseUrl}/descuentos/${id}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error deleting descuento:', error);
-    throw error;
-  }
-}
 
-export const actualizarDescuento = async (id: string, descuento: { nombre: string, porcentaje: number }) => {
+export const actualizarDescuento = async (id: number, descuento: Descuento) => {
   try {
     const response = await fetch(`${baseUrl}/descuentos/${id}`, {
       method: 'PUT',

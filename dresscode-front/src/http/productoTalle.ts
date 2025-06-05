@@ -1,3 +1,5 @@
+import type { ProductoTalle } from "../types/ProductoTalle";
+
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export const getProductoTalles = async () => {
@@ -13,7 +15,7 @@ export const getProductoTalles = async () => {
   }
 }
 
-export const crearProductoTalle = async (productoTalle: { productoId: string, talleId: string, stock: number }) => {
+export const crearProductoTalle = async (productoTalle: ProductoTalle) => {
   try {
     const response = await fetch(`${baseUrl}/producto-talles`, {
       method: 'POST',
@@ -32,22 +34,8 @@ export const crearProductoTalle = async (productoTalle: { productoId: string, ta
   }
 }
 
-export const eliminarProductoTalle = async (id: string) => {
-  try {
-    const response = await fetch(`${baseUrl}/producto-talles/${id}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error deleting producto talle:', error);
-    throw error;
-  }
-}
 
-export const actualizarProductoTalle = async (id: string, productoTalle: { productoId: string, talleId: string, stock: number }) => {
+export const actualizarProductoTalle = async (id: number, productoTalle: ProductoTalle) => {
   try {
     const response = await fetch(`${baseUrl}/producto-talles/${id}`, {
       method: 'PUT',
