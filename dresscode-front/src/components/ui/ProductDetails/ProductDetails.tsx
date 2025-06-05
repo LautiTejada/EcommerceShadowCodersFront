@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import styles from "./ProductDetails.module.css";
-import CategoryBar from "../CategoryBar/CategoryBar";
+import { CategoryBar } from "../CategoryBar/CategoryBar";
 
 const product = {
   id: 1,
@@ -41,7 +41,6 @@ export const ProductDetails = () => {
   const [selectedImage, setSelectedImage] = useState(product.images[0]);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
-
   return (
     <>
     <CategoryBar/>

@@ -1,4 +1,5 @@
-import CategoryBar from "../../components/ui/CategoryBar/CategoryBar";
+
+import { CategoryBar } from "../../components/ui/CategoryBar/CategoryBar";
 import ImageCarousel from "../../components/ui/ImageCarousel/ImageCarousel";
 import OffersSection from "../../components/ui/OffersSection/OffersSection";
 import ProductCarouselSection from "../../components/ui/ProductCarouselSection/ProductCarouselSection";

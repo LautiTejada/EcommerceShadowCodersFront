@@ -7,6 +7,7 @@ export const getCategorias = async () => {
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+    console.log(response);
     return await response.json();
   } catch (error) {
     console.error('Error fetching categorias:', error);
