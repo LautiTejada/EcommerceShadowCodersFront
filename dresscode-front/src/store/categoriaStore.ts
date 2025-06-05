@@ -1,11 +1,11 @@
-import { create } from 'zustand';
-import type { Categoria } from '../types/Categoria';
+import { create } from "zustand";
+import type { Categoria } from "../types/Categoria";
 import {
   getCategorias,
   crearCategoria,
   eliminarCategoria,
   actualizarCategoria,
-} from '../http/categoria';
+} from "../http/categoria";
 
 interface CategoriaState {
   categorias: Categoria[];
@@ -23,7 +23,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
       const categoriasFromApi = await getCategorias();
       set({ categorias: categoriasFromApi });
     } catch (error) {
-      console.error('Error cargando categorías en el store:', error);
+      console.error("Error cargando categorías en el store:", error);
     }
   },
 
@@ -34,7 +34,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
         categorias: [...state.categorias, nuevaCategoria],
       }));
     } catch (error) {
-      console.error('Error agregando categoría:', error);
+      console.error("Error agregando categoría:", error);
     }
   },
 
@@ -45,7 +45,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
         categorias: state.categorias.filter((cat) => cat.id !== parseInt(id)),
       }));
     } catch (error) {
-      console.error('Error eliminando categoría:', error);
+      console.error("Error eliminando categoría:", error);
     }
   },
 
@@ -58,7 +58,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
         ),
       }));
     } catch (error) {
-      console.error('Error actualizando categoría:', error);
+      console.error("Error actualizando categoría:", error);
     }
   },
 }));
