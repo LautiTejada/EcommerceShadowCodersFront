@@ -1,8 +1,10 @@
 
+import { useEffect } from "react";
 import { CategoryBar } from "../../components/ui/CategoryBar/CategoryBar";
 import ImageCarousel from "../../components/ui/ImageCarousel/ImageCarousel";
 import OffersSection from "../../components/ui/OffersSection/OffersSection";
 import ProductCarouselSection from "../../components/ui/ProductCarouselSection/ProductCarouselSection";
+import { useCategoriaStore } from "../../store/categoriaStore";
 
 import styles from "./Home.module.css";
 
@@ -50,6 +52,16 @@ const zapatillas = [
 ];
 
 const Home = () => {
+
+  const { categorias, fetchCategorias } = useCategoriaStore();
+
+  useEffect(() => {
+    fetchCategorias();
+  }, []);
+
+  console.log(categorias);
+
+
   return (
     <>
       <CategoryBar />
