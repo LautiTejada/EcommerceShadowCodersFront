@@ -4,7 +4,6 @@ import {
   getTipos,
   crearTipo,
   actualizarTipo,
-  eliminarTipo,
   cambiarEstadoTipo,
 } from "../http/tipo";
 
@@ -19,7 +18,6 @@ interface TipoState {
     nuevoTipo: Omit<Tipo, "id" | "activo" | "categorias">
   ) => Promise<void>;
   actualizarTipo: (id: number, tipo: Partial<Tipo>) => Promise<void>;
-  eliminarTipo: (id: number) => Promise<void>;
   cambiarEstadoTipo: (id: number) => Promise<void>;
   setTipoActual: (tipo: Tipo | null) => void;
 }
@@ -48,7 +46,7 @@ export const tipoStore = create<TipoState>((set, get) => ({
     set({ cargando: true, error: null });
     try {
       await crearTipo(nuevoTipo);
-      await get().obtenerTipos(); // actualiza la lista
+      await get().obtenerTipos();
     } catch (error: unknown) {
       if (error instanceof Error) {
         set({ error: error.message || "Error al crear tipo" });
@@ -66,20 +64,6 @@ export const tipoStore = create<TipoState>((set, get) => ({
     } catch (error: unknown) {
       if (error instanceof Error) {
         set({ error: error.message || "Error al actualizar tipo" });
-      }
-    } finally {
-      set({ cargando: false });
-    }
-  },
-
-  eliminarTipo: async (id) => {
-    set({ cargando: true, error: null });
-    try {
-      await eliminarTipo(id);
-      await get().obtenerTipos();
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        set({ error: error.message || "Error al eliminar tipo" });
       }
     } finally {
       set({ cargando: false });

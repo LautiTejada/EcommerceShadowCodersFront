@@ -4,7 +4,6 @@ import {
   getProductoTalles,
   crearProductoTalle,
   actualizarProductoTalle,
-  eliminarProductoTalle,
 } from "../http/productoTalle";
 import type { ProductoTalle } from "../types/ProductoTalle";
 
@@ -14,16 +13,11 @@ interface ProductoTalleState {
   error: string | null;
 
   obtenerProductoTalles: () => Promise<void>;
-  crearProductoTalle: (pt: {
-    productoId: string;
-    talleId: string;
-    cantidad: number;
-  }) => Promise<void>;
+  crearProductoTalle: (productoTalle: ProductoTalle) => Promise<void>;
   actualizarProductoTalle: (
     id: number,
-    pt: { productoId: string; talleId: string; cantidad: number }
+    productoTalle: ProductoTalle
   ) => Promise<void>;
-  eliminarProductoTalle: (id: number) => Promise<void>;
 }
 
 export const useProductoTalleStore = create<ProductoTalleState>((set, get) => ({
@@ -45,10 +39,10 @@ export const useProductoTalleStore = create<ProductoTalleState>((set, get) => ({
     }
   },
 
-  crearProductoTalle: async ({ productoId, talleId, cantidad }) => {
+  crearProductoTalle: async (productoTalle) => {
     set({ cargando: true, error: null });
     try {
-      await crearProductoTalle({ productoId, talleId, stock: cantidad });
+      await crearProductoTalle(productoTalle);
       await get().obtenerProductoTalles();
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -59,32 +53,14 @@ export const useProductoTalleStore = create<ProductoTalleState>((set, get) => ({
     }
   },
 
-  actualizarProductoTalle: async (id, { productoId, talleId, cantidad }) => {
+  actualizarProductoTalle: async (id, productoTalle) => {
     set({ cargando: true, error: null });
     try {
-      await actualizarProductoTalle(id.toString(), {
-        productoId,
-        talleId,
-        stock: cantidad,
-      });
+      await actualizarProductoTalle(id, productoTalle);
       await get().obtenerProductoTalles();
     } catch (error: unknown) {
       if (error instanceof Error) {
         set({ error: error.message || "Error al actualizar producto talle" });
-      }
-    } finally {
-      set({ cargando: false });
-    }
-  },
-
-  eliminarProductoTalle: async (id) => {
-    set({ cargando: true, error: null });
-    try {
-      await eliminarProductoTalle(id.toString());
-      await get().obtenerProductoTalles();
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        set({ error: error.message || "Error al eliminar producto talle" });
       }
     } finally {
       set({ cargando: false });

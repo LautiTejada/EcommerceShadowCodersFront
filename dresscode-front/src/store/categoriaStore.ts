@@ -5,7 +5,6 @@ import {
   getCategoriasActivas,
   getCategoriaById,
   crearCategoria,
-  eliminarCategoria,
   actualizarCategoria,
   cambiarEstadoCategoria,
   activarCategoria,
@@ -19,7 +18,6 @@ interface CategoriaState {
   fetchCategoriasActivas: () => Promise<void>;
   fetchCategoriaById: (id: number) => Promise<Categoria | null>;
   addCategoria: (categoria: Categoria) => Promise<void>;
-  deleteCategoria: (id: number) => Promise<void>;
   updateCategoria: (id: number, categoria: Categoria) => Promise<void>;
   toggleCategoriaStatus: (id: number) => Promise<void>;
   activateCategoria: (id: number) => Promise<void>;
@@ -65,15 +63,6 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
     } catch (error) {
       console.error('Error creando categoría:', error);
 
-    }
-  },
-
-  deleteCategoria: async (id) => {
-    try {
-      await eliminarCategoria(id);
-      await get().fetchCategorias();
-    } catch (error) {
-      console.error("Error eliminando categoría:", error);
     }
   },
 

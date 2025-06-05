@@ -1,5 +1,7 @@
 //Revisar si el archivo es correcto
 
+import type { Producto } from "../types/Producto";
+
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export const getProductos = async () => {
@@ -15,7 +17,7 @@ export const getProductos = async () => {
   }
 }
 
-export const crearProducto = async (producto: { nombre: string, precio: number, descripcion: string, categoria: string }) => {
+export const crearProducto = async (producto: Producto) => {
   try {
     const response = await fetch(`${baseUrl}/productos`, {
       method: 'POST',

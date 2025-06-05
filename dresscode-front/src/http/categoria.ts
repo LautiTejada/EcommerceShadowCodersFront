@@ -60,20 +60,6 @@ export const crearCategoria = async (categoria: Categoria) => {
   }
 }
 
-export const eliminarCategoria = async (id: number) => {
-  try {
-    const response = await fetch(`${baseUrl}/categorias/${id}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error deleting categoria:', error);
-    throw error;
-  }
-}
 
 export const actualizarCategoria = async (id: number, categoria: Categoria) => {
   try {

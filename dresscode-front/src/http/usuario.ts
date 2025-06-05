@@ -1,11 +1,11 @@
 const baseUrl = import.meta.env.VITE_API_URL;
 
-const handleResponse = async (response: Response) => {
+export const handleResponse = async (response: Response) => {
   if (!response.ok) {
     const errorText = await response.text();
     throw new Error(`Error ${response.status}: ${errorText}`);
   }
-  if (response.status === 204) return null; // No Content
+  if (response.status === 204) return null;
   return response.json();
 };
 

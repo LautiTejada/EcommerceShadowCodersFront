@@ -1,3 +1,5 @@
+import type { Talle } from "../types/Talle";
+
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export const getTalle = async () => {
@@ -13,7 +15,7 @@ export const getTalle = async () => {
   }
 }
 
-export const crearTalle = async (talle: { nombre: string }) => {
+export const crearTalle = async (talle: Talle) => {
   try {
     const response = await fetch(`${baseUrl}/talles`, {
       method: 'POST',
@@ -32,22 +34,8 @@ export const crearTalle = async (talle: { nombre: string }) => {
   }
 }
 
-export const eliminarTalle = async (id: string) => {
-  try {
-    const response = await fetch(`${baseUrl}/talles/${id}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error deleting talle:', error);
-    throw error;
-  }
-}
 
-export const actualizarTalle = async (id: string, talle: { nombre: string }) => {
+export const actualizarTalle = async (id: number, talle: Talle) => {
   try {
     const response = await fetch(`${baseUrl}/talles/${id}`, {
       method: 'PUT',

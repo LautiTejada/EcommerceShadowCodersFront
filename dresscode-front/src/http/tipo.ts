@@ -1,6 +1,5 @@
-// src/http/tipo.ts
-import { Tipo } from "../types/tipo";
-import { handleResponse } from "./usuario"; // O extraelo a un archivo común si preferís
+import type { Tipo } from "../types/Tipo";
+import { handleResponse } from "./usuario";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export const getTipos = async (): Promise<Tipo[]> => {
@@ -19,12 +18,6 @@ export const crearTipo = async (
   return handleResponse(response);
 };
 
-export const eliminarTipo = async (id: number): Promise<void> => {
-  const response = await fetch(`${baseUrl}/tipos/${id}`, {
-    method: "DELETE",
-  });
-  return handleResponse(response);
-};
 
 export const actualizarTipo = async (
   id: number,
