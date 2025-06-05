@@ -7,6 +7,7 @@ import { ProductDetails } from "./components/ui/ProductDetails/ProductDetails";
 import { Catalog } from "./pages/Catalog/Catalog";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
+import Cart from "./pages/Cart/Cart";
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/cart" element={<Cart />} />
       </Routes>
       <Footer />
     </Router>
