@@ -1,5 +1,5 @@
-import { create } from 'zustand';
-import type { Categoria } from '../types/Categoria';
+import { create } from "zustand";
+import type { Categoria } from "../types/Categoria";
 import {
   getCategorias,
   getCategoriasActivas,
@@ -35,6 +35,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
       const categoriasFromApi = await getCategorias();
       set({ categorias: categoriasFromApi });
     } catch (error) {
+
       console.error('Error cargando categorías:', error);
     }
   },
@@ -63,6 +64,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
       await get().fetchCategorias();
     } catch (error) {
       console.error('Error creando categoría:', error);
+
     }
   },
 
@@ -71,7 +73,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
       await eliminarCategoria(id);
       await get().fetchCategorias();
     } catch (error) {
-      console.error('Error eliminando categoría:', error);
+      console.error("Error eliminando categoría:", error);
     }
   },
 
@@ -80,7 +82,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
       await actualizarCategoria(id, categoria);
       await get().fetchCategorias();
     } catch (error) {
-      console.error('Error actualizando categoría:', error);
+      console.error("Error actualizando categoría:", error);
     }
   },
 
