@@ -1,0 +1,87 @@
+/* Estilos para las páginas de autenticación (Login y Register) */
+
+.auth-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Altura mínima de la ventana */
+  background-color: #111111; /* Fondo oscuro para la página */
+}
+
+.auth-form {
+  background-color: #242424; /* Fondo más oscuro para el formulario */
+  padding: 30px;
+  border-radius: 5px; /* Bordes ligeramente redondeados */
+  margin: 0.8rem;
+  width: 350px; /* Ancho fijo para el formulario */
+  text-align: center; /* Centrar contenido del formulario */
+}
+
+.auth-form h1 {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.auth-form h2 {
+  color: white;
+  margin-bottom: 10px;
+}
+
+.auth-form p {
+  color: white;
+  margin-bottom: 20px;
+}
+
+.auth-form div {
+  margin-bottom: 15px; /* Aumentar espacio entre campos */
+  text-align: left; /* Alinear etiquetas a la izquierda */
+}
+
+label {
+  display: block;
+  margin-bottom: 5px;
+  color: white;
+  font-size: 0.9em; /* Tamaño de fuente ligeramente más pequeño */
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 0; /* Eliminar margin-bottom aquí ya que el div padre lo tiene */
+  border: none;
+  background-color: #333;
+  color: white;
+  box-sizing: border-box;
+}
+
+button {
+  width: 100%;
+  padding: 10px;
+  background-color: #a00;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px; /* Espacio encima del botón */
+}
+
+button:hover {
+  background-color: #c00;
+}
+
+.auth-form > p {
+  color: white;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.auth-form > p a {
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.auth-form > p a:hover {
+  text-decoration: underline;
+}
