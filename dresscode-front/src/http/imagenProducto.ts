@@ -1,4 +1,3 @@
-//Revisar si el archivo es correcto
 
 import type { ImagenProducto } from "../types/ImagenProducto";
 

@@ -112,7 +112,7 @@ export const activarCategoria = async (id: number) => {
 
 export const desactivarCategoria = async (id: number) => {
   try {
-    const response = await fetch(`${baseUrl}/categorias/${id}/deactivate`, {
+    const response = await fetch(`${baseUrl}/categorias/${id}/desactivate`, {
       method: 'PUT',
     });
     if (!response.ok) {

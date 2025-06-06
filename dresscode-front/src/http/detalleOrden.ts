@@ -81,22 +81,6 @@ export const actualizarDetalleOrden = async (detalleId: number, nuevaCantidad: n
 };
 
 
-export const eliminarDetalleOrden = async (id: number) => {
-  try {
-    const response = await fetch(`${baseUrl}/detalles-orden/${id}`, {
-      method: "DELETE",
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error deleting detalle orden:", error);
-    throw error;
-  }
-};
-
-
 export const getDetallesOrdenByOrdenId = async (ordenId: number) => {
   try {
     const response = await fetch(`${baseUrl}/detalles-orden/orden/${ordenId}`);
