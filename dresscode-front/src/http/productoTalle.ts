@@ -1,3 +1,4 @@
+import type { Producto } from "../types/Producto";
 import type { ProductoTalle } from "../types/ProductoTalle";
 
 const baseUrl = import.meta.env.VITE_API_URL;
@@ -53,3 +54,17 @@ export const actualizarProductoTalle = async (id: number, productoTalle: Product
     throw error;
   }
 }
+
+export const obtenerCantidadTotal = async (productoId: Producto) => {
+  try {
+    const response = await fetch(`${baseUrl}/producto/${productoId.id}/cantidad-total`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching total producto talles:', error);
+    throw error;
+  }
+}
+
