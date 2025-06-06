@@ -1,7 +1,7 @@
-// src/store/useUsuarioStore.ts
+
 import { create } from "zustand";
 
-import * as usuarioAPI from "../http/usuario"; // Ajustá el path si es distinto
+import * as usuarioAPI from "../http/usuario"; 
 import type { Usuario } from "../types/Usuario";
 
 interface UsuarioState {
@@ -11,20 +11,13 @@ interface UsuarioState {
   error: string | null;
 
   obtenerUsuarios: () => Promise<void>;
+  obtenerUsuariosActivos: () => Promise<void>;
   obtenerUsuarioPorId: (id: number) => Promise<void>;
-  crearUsuario: (usuario: {
-    username: string;
-    email: string;
-    password: string;
-  }) => Promise<void>;
-  actualizarUsuario: (
-    id: number,
-    datos: { username: string; email: string; password: string }
-  ) => Promise<void>;
-  eliminarUsuario: (id: number) => Promise<void>;
-  cambiarEstado: (id: number) => Promise<void>;
-  activar: (id: number) => Promise<void>;
-  desactivar: (id: number) => Promise<void>;
+  crearUsuario: (usuario: Usuario) => Promise<void>;
+  actualizarUsuario: (id: number, datos: Usuario) => Promise<void>;
+  cambiarEstadoUsuario: (id: number) => Promise<void>;
+  activarUsuario: (id: number) => Promise<void>;
+  desactivarUsuario: (id: number) => Promise<void>;
   limpiarError: () => void;
 }
 
@@ -38,6 +31,18 @@ export const useUsuarioStore = create<UsuarioState>((set) => ({
     set({ cargando: true, error: null });
     try {
       const data = await usuarioAPI.getUsuarios();
+      set({ usuarios: data, cargando: false });
+    } catch (error) {
+      if (error instanceof Error) {
+        set({ error: error.message, cargando: false });
+      }
+    }
+  },
+
+  obtenerUsuariosActivos: async () => {
+    set({ cargando: true, error: null });
+    try {
+      const data = await usuarioAPI.getUsuariosActivos();
       set({ usuarios: data, cargando: false });
     } catch (error) {
       if (error instanceof Error) {
@@ -61,12 +66,8 @@ export const useUsuarioStore = create<UsuarioState>((set) => ({
   crearUsuario: async (usuario) => {
     set({ cargando: true, error: null });
     try {
-      // Adaptar el objeto para la API si es necesario
-      const nuevo = await usuarioAPI.crearUsuario({
-        nombre: usuario.username, // la API espera 'nombre'
-        email: usuario.email,
-        password: usuario.password,
-      });
+      
+      const nuevo = await usuarioAPI.crearUsuario(usuario);
       set((state) => ({
         usuarios: [...state.usuarios, nuevo],
         cargando: false,
@@ -81,11 +82,7 @@ export const useUsuarioStore = create<UsuarioState>((set) => ({
   actualizarUsuario: async (id, datos) => {
     set({ cargando: true, error: null });
     try {
-      const actualizado = await usuarioAPI.actualizarUsuario(id, {
-        nombre: datos.username, // la API espera 'nombre'
-        email: datos.email,
-        password: datos.password,
-      });
+      const actualizado = await usuarioAPI.updateUsuario(id, datos);
       set((state) => ({
         usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
         cargando: false,
@@ -97,25 +94,11 @@ export const useUsuarioStore = create<UsuarioState>((set) => ({
     }
   },
 
-  eliminarUsuario: async (id) => {
-    set({ cargando: true, error: null });
-    try {
-      await usuarioAPI.eliminarUsuario(id);
-      set((state) => ({
-        usuarios: state.usuarios.filter((u) => u.id !== id),
-        cargando: false,
-      }));
-    } catch (error) {
-      if (error instanceof Error) {
-        set({ error: error.message, cargando: false });
-      }
-    }
-  },
 
-  cambiarEstado: async (id) => {
+  cambiarEstadoUsuario: async (id) => {
     set({ cargando: true, error: null });
     try {
-      const actualizado = await usuarioAPI.cambiarEstadoUsuario(id);
+      const actualizado = await usuarioAPI.cambiarStateUsuario(id);
       set((state) => ({
         usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
         cargando: false,
@@ -127,10 +110,10 @@ export const useUsuarioStore = create<UsuarioState>((set) => ({
     }
   },
 
-  activar: async (id) => {
+  activarUsuario: async (id) => {
     set({ cargando: true, error: null });
     try {
-      const actualizado = await usuarioAPI.activarUsuario(id);
+      const actualizado = await usuarioAPI.activateUsuario(id);
       set((state) => ({
         usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
         cargando: false,
@@ -142,10 +125,10 @@ export const useUsuarioStore = create<UsuarioState>((set) => ({
     }
   },
 
-  desactivar: async (id) => {
+  desactivarUsuario: async (id) => {
     set({ cargando: true, error: null });
     try {
-      const actualizado = await usuarioAPI.desactivarUsuario(id);
+      const actualizado = await usuarioAPI.desactivateUsuario(id);
       set((state) => ({
         usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
         cargando: false,

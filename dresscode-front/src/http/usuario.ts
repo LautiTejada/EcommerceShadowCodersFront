@@ -1,3 +1,6 @@
+import type { Direccion } from "../types/Direccion";
+import type { Usuario } from "../types/Usuario";
+
 const baseUrl = import.meta.env.VITE_API_URL;
 
 export const handleResponse = async (response: Response) => {
@@ -14,21 +17,18 @@ export const getUsuarios = async () => {
   return handleResponse(response);
 };
 
-export const getUsuarioPorId = async (id: number) => {
-  const response = await fetch(`${baseUrl}/usuarios/${id}`);
-  return handleResponse(response);
-};
-
 export const getUsuariosActivos = async () => {
   const response = await fetch(`${baseUrl}/usuarios/active`);
   return handleResponse(response);
 };
 
-export const crearUsuario = async (usuario: {
-  nombre: string;
-  email: string;
-  password: string;
-}) => {
+
+export const getUsuarioPorId = async (id: number) => {
+  const response = await fetch(`${baseUrl}/usuarios/${id}`);
+  return handleResponse(response);
+};
+
+export const crearUsuario = async (usuario: Usuario) => {
   const response = await fetch(`${baseUrl}/usuarios`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -37,9 +37,9 @@ export const crearUsuario = async (usuario: {
   return handleResponse(response);
 };
 
-export const actualizarUsuario = async (
+export const updateUsuario = async (
   id: number,
-  usuario: { nombre: string; email: string; password: string }
+  usuario: Usuario
 ) => {
   const response = await fetch(`${baseUrl}/usuarios/${id}`, {
     method: "PUT",
@@ -49,30 +49,50 @@ export const actualizarUsuario = async (
   return handleResponse(response);
 };
 
-export const eliminarUsuario = async (id: number) => {
-  const response = await fetch(`${baseUrl}/usuarios/${id}`, {
-    method: "DELETE",
-  });
-  return handleResponse(response);
-};
-
-export const cambiarEstadoUsuario = async (id: number) => {
+export const cambiarStateUsuario = async (id: number) => {
   const response = await fetch(`${baseUrl}/usuarios/${id}/status`, {
     method: "PUT",
   });
   return handleResponse(response);
 };
 
-export const activarUsuario = async (id: number) => {
+export const activateUsuario = async (id: number) => {
   const response = await fetch(`${baseUrl}/usuarios/${id}/activate`, {
     method: "PUT",
   });
   return handleResponse(response);
 };
 
-export const desactivarUsuario = async (id: number) => {
+export const desactivateUsuario = async (id: number) => {
   const response = await fetch(`${baseUrl}/usuarios/${id}/deactivate`, {
     method: "PUT",
   });
   return handleResponse(response);
 };
+
+export const createDireccionDeUsuario = async (usuarioId : number,direccion: Direccion) => {
+  const response = await fetch(`${baseUrl}/usuarios/${usuarioId}/direcciones`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(direccion),
+  });
+  return handleResponse(response);
+}
+
+export const actualizarDireccionDeUsuario = async (
+  usuarioId: number,
+  direccionId: number,
+  direccion: Direccion
+) => {
+  const response = await fetch(`${baseUrl}/usuarios/${usuarioId}/direcciones/${direccionId}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(direccion),
+  });
+  return handleResponse(response);
+};
+
+export const obtenerDireccionesDeUsuario = async (usuarioId: number) => {
+  const response = await fetch(`${baseUrl}/usuarios/${usuarioId}/direcciones`);
+  return handleResponse(response);
+}
