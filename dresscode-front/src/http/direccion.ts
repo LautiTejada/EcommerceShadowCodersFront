@@ -72,7 +72,7 @@ export const activarDireccion = async (id: number) : Promise<Direccion> => {
   }
 }
 
-export const desactivaDireccion = async (id: number) : Promise<Direccion> => {
+export const desactivarDireccion = async (id: number) : Promise<Direccion> => {
   try {
     const response = await fetch(`${baseUrl}/direcciones/${id}/deactivate`, {
       method: 'PUT',
