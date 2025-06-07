@@ -17,45 +17,20 @@ export const getProductos = async () => {
   }
 }
 
-export const crearProducto = async (producto: Producto) => {
+export const getProductosActivos = async () => {
   try {
-    const response = await fetch(`${baseUrl}/productos`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(producto),
-    });
+    const response = await fetch(`${baseUrl}/productos/active`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
   } catch (error) {
-    console.error('Error creating producto:', error);
+    console.error('Error fetching active productos:', error);
     throw error;
   }
 }
 
-export const editarProducto = async (id: number, producto: Producto) => {
-  try {
-    const response = await fetch(`${baseUrl}/productos/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(producto),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error('Error updating producto:', error);
-    throw error;
-  }
-}
-
-export const crearProductoConCategoria = async (producto: Producto, categoriaId:number ) => {
+export const addProductoConCategoria = async (producto: Producto, categoriaId:number ) => {
   try {
     const response = await fetch(`${baseUrl}/productos/${categoriaId}`, {
       method: 'POST',
@@ -74,7 +49,42 @@ export const crearProductoConCategoria = async (producto: Producto, categoriaId:
   }
 }
 
-export const activarProducto = async (id: number) => {
+export const getProductoById = async (id: number) => {
+  try {
+    const response = await fetch(`${baseUrl}/productos/${id}`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching producto:', error);
+    throw error;
+  }
+}
+
+
+export const updateProducto = async (id: number, producto: Producto) => {
+  try {
+    const response = await fetch(`${baseUrl}/productos/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(producto),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating producto:', error);
+    throw error;
+  }
+}
+
+
+
+export const activateProducto = async (id: number) => {
   try {
     const response = await fetch(`${baseUrl}/productos/${id}/activate`, {
       method: 'PUT',
@@ -89,7 +99,7 @@ export const activarProducto = async (id: number) => {
   }
 }
 
-export const desactivarCategoria = async (id: number) => {
+export const desactivateProducto = async (id: number) => {
   try {
     const response = await fetch(`${baseUrl}/productos/${id}/desactivate`, {
       method: 'PUT',
@@ -104,7 +114,7 @@ export const desactivarCategoria = async (id: number) => {
   }
 }
 
-export const productoPorCategoria = async (categoria: Categoria) => {
+export const getProductosPorCategoria = async (categoria: Categoria) => {
   try {
     const response = await fetch(`${baseUrl}/productos/categoria/${categoria.id}`);
     if (!response.ok) {

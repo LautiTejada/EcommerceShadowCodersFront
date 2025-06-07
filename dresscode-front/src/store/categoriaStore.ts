@@ -21,7 +21,7 @@ interface CategoriaState {
   updateCategoria: (id: number, categoria: Categoria) => Promise<void>;
   toggleCategoriaStatus: (id: number) => Promise<void>;
   activateCategoria: (id: number) => Promise<void>;
-  deactivateCategoria: (id: number) => Promise<void>;
+  desactivateCategoria: (id: number) => Promise<void>;
 }
 
 export const useCategoriaStore = create<CategoriaState>((set, get) => ({
@@ -93,7 +93,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
     }
   },
 
-  deactivateCategoria: async (id) => {
+  desactivateCategoria: async (id) => {
     try {
       await desactivarCategoria(id);
       await get().fetchCategorias();
