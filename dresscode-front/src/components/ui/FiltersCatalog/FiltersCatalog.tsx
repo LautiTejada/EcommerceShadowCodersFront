@@ -1,28 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { tipoStore } from "../../../store/tipoStore";
+import { useCategoriaStore } from "../../../store/categoriaStore";
+import type { Marca } from "../../../types/enums/Marca";
 
-const filterData = [
-  {
-    label: "Tipo de producto",
-    options: ["Zapatillas", "Botines", "Sandalias"],
-  },
-  {
-    label: "Categoria",
-    options: ["Deportivo", "Casual", "Formal"],
-  },
-  {
-    label: "Marca",
-    options: ["NIKE", "ADIDAS", "PUMA", "VANS"],
-  },
-  {
-    label: "Genero",
-    options: ["Hombre", "Mujer", "Unisex"],
-  },
-];
+// Si quieres que las marcas se obtengan automáticamente del enum, puedes definirlas así:
+const marcas: Marca[] = ["NIKE", "ADIDAS", "PUMA", "VANS", "JORDAN"];
 
 export const FiltersCatalog = () => {
+  // Stores
+  const { tipos, obtenerTiposActivos } = tipoStore();
+  const { categoriasActivas, fetchCategoriasActivas } = useCategoriaStore();
+
+  // Estado UI
   const [open, setOpen] = useState<{ [key: string]: boolean }>({});
   const [checked, setChecked] = useState<{ [key: string]: string[] }>({});
   const [price, setPrice] = useState<[number, number]>([50000, 500000]);
+
+  // Cargar tipos y categorías activas al montar
+  useEffect(() => {
+    obtenerTiposActivos();
+    fetchCategoriasActivas();
+  }, [obtenerTiposActivos, fetchCategoriasActivas]);
+
+  // Definir los filtros dinámicamente
+  const filterData = [
+    {
+      label: "Tipo de producto",
+      options: tipos.map((tipo) => tipo.nombre),
+    },
+    {
+      label: "Categoria",
+      options: categoriasActivas.map((cat) => cat.nombreCategoria),
+    },
+    {
+      label: "Marca",
+      options: marcas,
+    },
+  ];
 
   const toggleSection = (label: string) => {
     setOpen((prev) => ({ ...prev, [label]: !prev[label] }));
@@ -94,10 +108,24 @@ export const FiltersCatalog = () => {
             border-left: 6px solid transparent;
             border-right: 6px solid transparent;
             border-top: 7px solid #bdbdbd;
-            transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+            transition: transform 0.8s cubic-bezier(.4,0,.2,1);
           }
           .arrow.open {
             transform: rotate(180deg);
+          }
+          .filter-option {
+            display: block;
+            margin: 6px 0;
+            cursor: pointer;
+            font-size: 14px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 1s, transform 0.3s;
+          }
+          .dropdown-content.open .filter-option {
+            opacity: 1;
+            transform: translateY(0);
+            transition-delay: 0.1s;
           }
         `}
       </style>
@@ -129,14 +157,12 @@ export const FiltersCatalog = () => {
                 padding: open[section.label] ? "8px 24px" : "0 24px",
               }}
             >
-              {section.options.map((option) => (
+              {section.options.map((option, idx) => (
                 <label
                   key={option}
+                  className="filter-option"
                   style={{
-                    display: "block",
-                    margin: "6px 0",
-                    cursor: "pointer",
-                    fontSize: 14,
+                    transitionDelay: open[section.label] ? `${0.05 * idx + 0.1}s` : "0s",
                   }}
                 >
                   <input
@@ -208,7 +234,7 @@ export const FiltersCatalog = () => {
       <button
         type="submit"
         style={{
-          margin: 24,
+          margin: 2,
           marginTop: 32,
           padding: "12px 0",
           background: "#333",
