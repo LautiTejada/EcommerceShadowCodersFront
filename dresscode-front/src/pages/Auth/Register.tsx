@@ -7,18 +7,32 @@ function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const { register, loading, error } = useAuth();
+  const { register, loading } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null); // Limpiar error anterior
     if (password !== confirmPassword) {
-      alert("Las contraseñas no coinciden");
+      setError("Las contraseñas no coinciden");
       return;
     }
     try {
       await register({ name, email, password });
-    } catch (err) {
-      console.error("Error en el registro:", err);
+    } catch (err: unknown) {
+      // Manejo de errores
+      if (err instanceof Error) {
+        let msg = err?.message || "Error en el registro";
+        if (
+          msg.includes("Duplicate entry") &&
+          msg.includes("for key") &&
+          msg.includes("email")
+        ) {
+          msg = "El email ya está registrado";
+        }
+        setError(msg);
+        console.error("Error en el registro:", err);
+      }
     }
   };
 
@@ -30,6 +44,9 @@ function Register() {
         <h1>Crear cuenta</h1>
         <p>Bienvenido al team!</p>
         <form onSubmit={handleSubmit}>
+          {error && (
+            <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
+          )}
           <div>
             <label htmlFor="name">NOMBRE</label>
             <input
@@ -70,7 +87,6 @@ function Register() {
               required
             />
           </div>
-          {error && <p className="error-message">{error}</p>}
           <button type="submit" disabled={loading}>
             {loading ? "CARGANDO..." : "CREAR CUENTA"}
           </button>

@@ -5,25 +5,36 @@ import { useAuth } from "../../hooks/useAuth";
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, loading, error } = useAuth();
+  const { login, loading } = useAuth();
+  const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLocalError(null);
     try {
       await login({ email, password });
-    } catch (err) {
-      console.error("Error en el login:", err);
+      // Si el login es exitoso, el usuario será redirigido automáticamente
+    } catch (err: unknown) {
+      // Manejo de errores local
+      if (err instanceof Error) {
+        setLocalError(err?.message || "Error al iniciar sesión");
+      }
     }
   };
 
   return (
     <div className="auth-container">
       <div className="auth-form">
-        <h1>Iniciar Sesion</h1>
+        <h1>Iniciar Sesión</h1>
         <p>Bienvenido de vuelta!</p>
         <form onSubmit={handleSubmit}>
+          {localError && (
+            <div style={{ color: "red", marginBottom: "10px" }}>
+              {localError}
+            </div>
+          )}
           <div>
-            <label htmlFor="email">CORREO ELECTRONICO</label>
+            <label htmlFor="email">CORREO ELECTRÓNICO</label>
             <input
               type="email"
               id="email"
@@ -42,13 +53,12 @@ function Login() {
               required
             />
           </div>
-          {error && <p className="error-message">{error}</p>}
           <button type="submit" disabled={loading}>
-            {loading ? "CARGANDO..." : "INICIAR SESION"}
+            {loading ? "CARGANDO..." : "INICIAR SESIÓN"}
           </button>
         </form>
         <p>
-          Eres nuevo? <a href="/register">REGISTRATE</a>
+          ¿Eres nuevo? <a href="/register">REGÍSTRATE</a>
         </p>
       </div>
     </div>
