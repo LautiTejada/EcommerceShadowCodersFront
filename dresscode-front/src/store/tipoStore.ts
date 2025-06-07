@@ -1,10 +1,15 @@
 import { create } from "zustand";
 import type { Tipo } from "../types/Tipo";
 import {
+  activateTipo,
+  addTipo,
+  desactivateTipo,
+  getCategoriasByTipo,
+  getTipoById,
   getTipos,
-  crearTipo,
-  actualizarTipo,
-  cambiarEstadoTipo,
+  getTiposActivos,
+  toggleStatusTipo,
+  updateTipo,
 } from "../http/tipo";
 
 interface TipoState {
@@ -14,12 +19,14 @@ interface TipoState {
   error: string | null;
 
   obtenerTipos: () => Promise<void>;
-  crearTipo: (
-    nuevoTipo: Omit<Tipo, "id" | "activo" | "categorias">
-  ) => Promise<void>;
-  actualizarTipo: (id: number, tipo: Partial<Tipo>) => Promise<void>;
+  obtenerTiposActivos: () => Promise<void>;
+  obtenerTipoPorId: (id: number) => Promise<Tipo | null>;
+  crearTipo: (nuevoTipo: Tipo) => Promise<void>;
+  actualizarTipo: (id: number, tipo: Tipo) => Promise<void>;
   cambiarEstadoTipo: (id: number) => Promise<void>;
   setTipoActual: (tipo: Tipo | null) => void;
+  activarTipo: (id: number) => Promise<void>;
+  desactivarTipo: (id: number) => Promise<void>;
 }
 
 export const tipoStore = create<TipoState>((set, get) => ({
@@ -42,10 +49,40 @@ export const tipoStore = create<TipoState>((set, get) => ({
     }
   },
 
+  obtenerTiposActivos: async () => {
+    set({ cargando: true, error: null });
+    try {
+      const tipos = await getTiposActivos();
+      set({ tipos });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        set({ error: error.message || "Error al obtener tipos activos" });
+      }
+    } finally {
+      set({ cargando: false });
+    }
+  },
+
+  obtenerTipoPorId: async (id) => {
+    set({ cargando: true, error: null });
+    try {
+      const tipo = await getTipoById(id);
+      set({ tipoActual: tipo });
+      return tipo;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        set({ error: error.message || "Error al obtener tipo por ID" });
+      }
+      return null;
+    } finally {
+      set({ cargando: false });
+    }
+  },
+
   crearTipo: async (nuevoTipo) => {
     set({ cargando: true, error: null });
     try {
-      await crearTipo(nuevoTipo);
+      await addTipo(nuevoTipo);
       await get().obtenerTipos();
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -59,7 +96,7 @@ export const tipoStore = create<TipoState>((set, get) => ({
   actualizarTipo: async (id, tipo) => {
     set({ cargando: true, error: null });
     try {
-      await actualizarTipo(id, tipo);
+      await updateTipo(id, tipo);
       await get().obtenerTipos();
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -73,12 +110,56 @@ export const tipoStore = create<TipoState>((set, get) => ({
   cambiarEstadoTipo: async (id) => {
     set({ cargando: true, error: null });
     try {
-      await cambiarEstadoTipo(id);
+      await toggleStatusTipo(id);
       await get().obtenerTipos();
     } catch (error: unknown) {
       if (error instanceof Error) {
         set({ error: error.message || "Error al cambiar estado" });
       }
+    } finally {
+      set({ cargando: false });
+    }
+  },
+
+  activarTipo: async (id) => {
+    set({ cargando: true, error: null });
+    try {
+      await activateTipo(id);
+      await get().obtenerTipos();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        set({ error: error.message || "Error al activar tipo" });
+      }
+    } finally {
+      set({ cargando: false });
+    }
+  },
+
+  desactivarTipo: async (id) => {
+    set({ cargando: true, error: null });
+    try {
+      await desactivateTipo(id);
+      await get().obtenerTipos();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        set({ error: error.message || "Error al desactivar tipo" });
+      }
+    } finally {
+      set({ cargando: false });
+    }
+  },
+
+  traerCategoriasPorTipo: async (tipoId: number) => {
+
+    set({ cargando: true, error: null });
+    try {
+      const categorias = await getCategoriasByTipo(tipoId);
+      return categorias;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        set({ error: error.message || "Error al obtener categorías por tipo" });
+      }
+      return [];
     } finally {
       set({ cargando: false });
     }
