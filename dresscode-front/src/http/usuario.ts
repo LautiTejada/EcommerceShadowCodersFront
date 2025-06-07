@@ -79,7 +79,7 @@ export const createDireccionDeUsuario = async (usuarioId : number,direccion: Dir
   return handleResponse(response);
 }
 
-export const actualizarDireccionDeUsuario = async (
+export const updateDireccionDeUsuario = async (
   usuarioId: number,
   direccionId: number,
   direccion: Direccion
@@ -92,7 +92,7 @@ export const actualizarDireccionDeUsuario = async (
   return handleResponse(response);
 };
 
-export const obtenerDireccionesDeUsuario = async (usuarioId: number) => {
+export const getDireccionesDeUsuario = async (usuarioId: number) => {
   const response = await fetch(`${baseUrl}/usuarios/${usuarioId}/direcciones`);
   return handleResponse(response);
 }

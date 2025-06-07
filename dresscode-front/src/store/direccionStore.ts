@@ -46,12 +46,8 @@ export const useDireccionStore = create<DireccionState>((set, get) => ({
 
     toggleStateDireccion: async (id) => {
         try {
-            const updatedDireccion = await cambiarEstadoDireccion(id);
-            set((state) => ({
-                direcciones: state.direcciones.map((direccion) =>
-                    direccion.id === id ? updatedDireccion : direccion
-                ),
-            }));
+            await cambiarEstadoDireccion(id);
+            await get().fetchDirecciones();
         } catch (error) {
             console.error(`Error cambiando estado de dirección con id ${id}:`, error);
         }
@@ -59,12 +55,8 @@ export const useDireccionStore = create<DireccionState>((set, get) => ({
 
     activateDireccion: async (id) => {
         try {
-            const updatedDireccion = await activarDireccion(id);
-            set((state) => ({
-                direcciones: state.direcciones.map((direccion) =>
-                    direccion.id === id ? updatedDireccion : direccion
-                ),
-            }));
+            await activarDireccion(id);
+            await get().fetchDirecciones();
         } catch (error) {
             console.error(`Error activando dirección con id ${id}:`, error);
         }
@@ -72,12 +64,8 @@ export const useDireccionStore = create<DireccionState>((set, get) => ({
 
     desactivateDireccion: async (id) => {
         try {
-            const updatedDireccion = await desactivarDireccion(id);
-            set((state) => ({
-                direcciones: state.direcciones.map((direccion) =>
-                    direccion.id === id ? updatedDireccion : direccion
-                ),
-            }));
+            await desactivarDireccion(id);
+            await get().fetchDirecciones();
         } catch (error) {
             console.error(`Error desactivando dirección con id ${id}:`, error);
         }

@@ -3,9 +3,11 @@ import { create } from "zustand";
 
 import * as usuarioAPI from "../http/usuario"; 
 import type { Usuario } from "../types/Usuario";
+import type { Direccion } from "../types/Direccion";
 
 interface UsuarioState {
   usuarios: Usuario[];
+  direccionesUsuario: Direccion[];
   usuarioActual: Usuario | null;
   cargando: boolean;
   error: string | null;
@@ -18,11 +20,15 @@ interface UsuarioState {
   cambiarEstadoUsuario: (id: number) => Promise<void>;
   activarUsuario: (id: number) => Promise<void>;
   desactivarUsuario: (id: number) => Promise<void>;
+  crearDireccionUsuario: (usuarioId: number, direccion: Direccion) => Promise<void>;
+  obtenerDireccionesUsuario: (usuarioId: number) => Promise<void>;
+  actualizarDireccionUsuario: (usuarioId: number, direccionId: number, direccion: Direccion) => Promise<void>;
   limpiarError: () => void;
 }
 
-export const useUsuarioStore = create<UsuarioState>((set) => ({
+export const useUsuarioStore = create<UsuarioState>((set, get) => ({
   usuarios: [],
+  direccionesUsuario: [],
   usuarioActual: null,
   cargando: false,
   error: null,
@@ -137,6 +143,33 @@ export const useUsuarioStore = create<UsuarioState>((set) => ({
       if (error instanceof Error) {
         set({ error: error.message, cargando: false });
       }
+    }
+  },
+
+  obtenerDireccionesUsuario: async (usuarioId) => {
+    try {
+      const direcciones = await usuarioAPI.getDireccionesDeUsuario(usuarioId);
+      set({ direccionesUsuario: direcciones });
+    } catch (error) {
+      console.log("Error obteniendo direcciones de usuario:", error);
+    }
+  },
+
+  crearDireccionUsuario: async (usuarioId, direccion) => {
+    try {
+      await usuarioAPI.createDireccionDeUsuario(usuarioId, direccion);
+      await get().obtenerDireccionesUsuario(usuarioId);
+    } catch (error) {
+      console.log("Error creando dirección de usuario:", error);
+    }
+  },
+
+  actualizarDireccionUsuario: async (usuarioId, direccionId, direccion) => {
+    try {
+      await usuarioAPI.updateDireccionDeUsuario(usuarioId, direccionId, direccion);
+      await get().obtenerDireccionesUsuario(usuarioId);
+    } catch (error) {
+      console.log("Error actualizando dirección de usuario:", error);
     }
   },
 
