@@ -70,15 +70,17 @@ export const useAuth = () => {
       if (!response.ok) {
         throw new Error(responseData.message || "Error en el registro");
       }
-
       // Si el registro es exitoso y recibimos un token, lo guardamos
       if (responseData.token) {
         localStorage.setItem("token", responseData.token);
         // Redirigir directamente al home ya que el usuario está autenticado
         navigate("/");
-      } else {
-        // Si no hay token, redirigir al login
-        navigate("/login");
+        if (responseData.username) {
+          localStorage.setItem("username", responseData.username);
+        } else {
+          // Si no hay token, redirigir al login
+          navigate("/login");
+        }
       }
 
       return responseData;
@@ -133,6 +135,9 @@ export const useAuth = () => {
 
       if (responseData.token) {
         localStorage.setItem("token", responseData.token);
+        if (responseData.username) {
+          localStorage.setItem("username", responseData.username);
+        }
       }
 
       navigate("/");

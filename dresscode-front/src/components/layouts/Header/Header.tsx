@@ -1,10 +1,18 @@
+import { useEffect, useState } from "react";
 import { AppBar, Toolbar, Button } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import styles from "./Header.module.css";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 const Header = () => {
+  const [username, setUsername] = useState<string | null>(null);
+  const location = useLocation();
+
+  useEffect(() => {
+    setUsername(localStorage.getItem("username"));
+  }, [location]); // <-- se actualiza cada vez que cambia la ruta
+
   return (
     <AppBar position="static">
       <Toolbar className={styles.toolbar}>
@@ -17,12 +25,17 @@ const Header = () => {
           <Button color="inherit" component={Link} to="/cart">
             <ShoppingCartIcon />
           </Button>
-          <div className={styles.acountButton}>
+          {username ? (
+            <Button color="inherit" component={Link} to="/profile">
+              <span>{username}</span>
+              <AccountCircleIcon />
+            </Button>
+          ) : (
             <Button color="inherit" component={Link} to="/login">
               LOGIN / REGISTER
               <AccountCircleIcon />
             </Button>
-          </div>
+          )}
         </div>
       </Toolbar>
     </AppBar>
