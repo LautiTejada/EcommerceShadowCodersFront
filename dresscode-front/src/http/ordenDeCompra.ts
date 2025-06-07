@@ -4,6 +4,19 @@ import type { OrdenDeCompra } from "../types/OrdenDeCompra";
 
 const baseUrl = import.meta.env.VITE_API_URL;
 
+export const getOrdenesDeCompra = async () => {
+  try {
+    const response = await fetch(`${baseUrl}/ordenes-de-compra`);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching ordenes de compra:", error);
+    throw error;
+  }
+}
+
 export const getOrdenDeCompra = async (id: number) => {
   try {
     const response = await fetch(`${baseUrl}/ordenes-de-compra/${id}`);
@@ -33,9 +46,9 @@ export const getOrdenesPorUsuario = async (usuarioId: number) => {
 };
 
 
-export const actualizarDetalleOrdenDeCompra = async (
+export const actualizarEstadoOrdenDeCompra = async (
   detalleId: number,
-  ordenDeCompra: EstadoOrden
+  estado: EstadoOrden
 ) => {
   try {
     const response = await fetch(
@@ -45,7 +58,7 @@ export const actualizarDetalleOrdenDeCompra = async (
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ estado: ordenDeCompra }),
+        body: JSON.stringify({ estado: estado }),
       }
     );
     if (!response.ok) {

@@ -4,6 +4,7 @@ import {
   getProductoTalles,
   crearProductoTalle,
   actualizarProductoTalle,
+  obtenerCantidadTotal,
 } from "../http/productoTalle";
 import type { ProductoTalle } from "../types/ProductoTalle";
 
@@ -12,12 +13,13 @@ interface ProductoTalleState {
   cargando: boolean;
   error: string | null;
 
-  obtenerProductoTalles: () => Promise<void>;
-  crearProductoTalle: (productoTalle: ProductoTalle) => Promise<void>;
-  actualizarProductoTalle: (
+  fetchProductoTalles: () => Promise<void>;
+  createProductoTalle: (productoTalle: ProductoTalle) => Promise<void>;
+  updaterProductoTalle: (
     id: number,
     productoTalle: ProductoTalle
   ) => Promise<void>;
+   fetchCantidadTotal: (productoId: number) => Promise<number>;
 }
 
 export const useProductoTalleStore = create<ProductoTalleState>((set, get) => ({
@@ -25,7 +27,7 @@ export const useProductoTalleStore = create<ProductoTalleState>((set, get) => ({
   cargando: false,
   error: null,
 
-  obtenerProductoTalles: async () => {
+  fetchProductoTalles: async () => {
     set({ cargando: true, error: null });
     try {
       const data = await getProductoTalles();
@@ -39,11 +41,11 @@ export const useProductoTalleStore = create<ProductoTalleState>((set, get) => ({
     }
   },
 
-  crearProductoTalle: async (productoTalle) => {
+  createProductoTalle: async (productoTalle) => {
     set({ cargando: true, error: null });
     try {
       await crearProductoTalle(productoTalle);
-      await get().obtenerProductoTalles();
+      await get().fetchProductoTalles();
     } catch (error: unknown) {
       if (error instanceof Error) {
         set({ error: error.message || "Error al crear producto talle" });
@@ -53,14 +55,28 @@ export const useProductoTalleStore = create<ProductoTalleState>((set, get) => ({
     }
   },
 
-  actualizarProductoTalle: async (id, productoTalle) => {
+  updaterProductoTalle: async (id, productoTalle) => {
     set({ cargando: true, error: null });
     try {
       await actualizarProductoTalle(id, productoTalle);
-      await get().obtenerProductoTalles();
+      await get().fetchProductoTalles();
     } catch (error: unknown) {
       if (error instanceof Error) {
         set({ error: error.message || "Error al actualizar producto talle" });
+      }
+    } finally {
+      set({ cargando: false });
+    }
+  },
+
+  fetchCantidadTotal: async (productoId) => {
+    set({ cargando: true, error: null });
+    try {
+      const cantidadTotal = await obtenerCantidadTotal(productoId);
+      return cantidadTotal;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        set({ error: error.message || "Error al obtener cantidad total" });
       }
     } finally {
       set({ cargando: false });

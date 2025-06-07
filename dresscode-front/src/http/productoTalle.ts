@@ -1,4 +1,3 @@
-import type { Producto } from "../types/Producto";
 import type { ProductoTalle } from "../types/ProductoTalle";
 
 const baseUrl = import.meta.env.VITE_API_URL;
@@ -18,7 +17,7 @@ export const getProductoTalles = async () => {
 
 export const crearProductoTalle = async (productoTalle: ProductoTalle) => {
   try {
-    const response = await fetch(`${baseUrl}/producto-talles`, {
+    const response = await fetch(`${baseUrl}/producto-talles/crear`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -55,9 +54,9 @@ export const actualizarProductoTalle = async (id: number, productoTalle: Product
   }
 }
 
-export const obtenerCantidadTotal = async (productoId: Producto) => {
+export const obtenerCantidadTotal = async (productoId: number) => {
   try {
-    const response = await fetch(`${baseUrl}/producto/${productoId.id}/cantidad-total`);
+    const response = await fetch(`${baseUrl}/producto-talles/producto/${productoId}/cantidad-total`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
