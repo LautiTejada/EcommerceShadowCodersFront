@@ -19,6 +19,7 @@ export const getUsuarios = async () => {
 
 export const getUsuariosActivos = async () => {
   const response = await fetch(`${baseUrl}/usuarios/active`);
+  
   return handleResponse(response);
 };
 
