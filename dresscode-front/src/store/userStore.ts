@@ -1,7 +1,6 @@
-
 import { create } from "zustand";
 
-import * as usuarioAPI from "../http/usuario"; 
+import * as usuarioAPI from "../http/usuario";
 import type { Usuario } from "../types/Usuario";
 import type { Direccion } from "../types/Direccion";
 
@@ -20,9 +19,16 @@ interface UsuarioState {
   cambiarEstadoUsuario: (id: number) => Promise<void>;
   activarUsuario: (id: number) => Promise<void>;
   desactivarUsuario: (id: number) => Promise<void>;
-  crearDireccionUsuario: (usuarioId: number, direccion: Direccion) => Promise<void>;
+  crearDireccionUsuario: (
+    usuarioId: number,
+    direccion: Direccion
+  ) => Promise<void>;
   obtenerDireccionesUsuario: (usuarioId: number) => Promise<void>;
-  actualizarDireccionUsuario: (usuarioId: number, direccionId: number, direccion: Direccion) => Promise<void>;
+  actualizarDireccionUsuario: (
+    usuarioId: number,
+    direccionId: number,
+    direccion: Direccion
+  ) => Promise<void>;
   limpiarError: () => void;
 }
 
@@ -61,6 +67,7 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
     set({ cargando: true, error: null });
     try {
       const usuario = await usuarioAPI.getUsuarioPorId(id);
+      console.log("usuarioActual:", usuario); // <-- agrega esto
       set({ usuarioActual: usuario, cargando: false });
     } catch (error) {
       if (error instanceof Error) {
@@ -72,7 +79,6 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
   crearUsuario: async (usuario) => {
     set({ cargando: true, error: null });
     try {
-      
       const nuevo = await usuarioAPI.crearUsuario(usuario);
       set((state) => ({
         usuarios: [...state.usuarios, nuevo],
@@ -99,7 +105,6 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
       }
     }
   },
-
 
   cambiarEstadoUsuario: async (id) => {
     set({ cargando: true, error: null });
@@ -166,7 +171,11 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 
   actualizarDireccionUsuario: async (usuarioId, direccionId, direccion) => {
     try {
-      await usuarioAPI.updateDireccionDeUsuario(usuarioId, direccionId, direccion);
+      await usuarioAPI.updateDireccionDeUsuario(
+        usuarioId,
+        direccionId,
+        direccion
+      );
       await get().obtenerDireccionesUsuario(usuarioId);
     } catch (error) {
       console.log("Error actualizando dirección de usuario:", error);

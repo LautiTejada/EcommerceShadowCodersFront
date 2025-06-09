@@ -8,11 +8,13 @@ import { Catalog } from "./pages/Catalog/Catalog";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import Cart from "./pages/Cart/Cart";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
     <Router>
       <Header />
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/product/:id" element={<ProductDetails />} />
@@ -20,7 +22,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
+
       <Footer />
     </Router>
   );

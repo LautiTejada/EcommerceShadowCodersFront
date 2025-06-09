@@ -103,9 +103,6 @@ export const useAuth = () => {
       setLoading(true);
       setError(null);
 
-      console.log("Enviando datos de login:", credentials);
-      console.log("URL:", `${API_URL}/auth/login`);
-
       const response = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: {
@@ -119,19 +116,11 @@ export const useAuth = () => {
         body: JSON.stringify(credentials),
       });
 
-      console.log(
-        "Respuesta del servidor:",
-        response.status,
-        response.statusText
-      );
-
-      // Intentar leer el cuerpo de la respuesta
       let responseData;
       try {
         responseData = await response.json();
         console.log("Datos de respuesta:", responseData);
       } catch (e) {
-        console.error("Error al parsear JSON:", e);
         throw new Error("Error al procesar la respuesta del servidor");
       }
 
@@ -146,12 +135,21 @@ export const useAuth = () => {
         }
       }
 
+      // Guarda el id del usuario, sea 'id' o 'userId'
+      const userId = responseData.id ?? responseData.userId;
+      if (userId) {
+        localStorage.setItem("usuario", String(userId));
+      } else {
+        console.warn(
+          "No se recibió el id del usuario en la respuesta del login"
+        );
+      }
+
       navigate("/");
       return responseData;
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Error en el login";
-      console.error("Error completo:", err);
       setError(errorMessage);
       throw err;
     } finally {
@@ -161,6 +159,7 @@ export const useAuth = () => {
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("username");
     navigate("/login");
   };
 
