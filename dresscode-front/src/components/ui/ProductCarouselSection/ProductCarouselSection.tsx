@@ -1,21 +1,12 @@
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import ProductCard from "../ProductCard/ProductCard";
+import type { Producto } from "../../../types/Producto";
 
-interface Product {
-  id: number;
-  name: string;
-  image: string;
-  price: number;
-  oldPrice?: number;
-  discount?: number;
-}
 
 interface ProductCarouselSectionProps {
   title: string;
-  products: Product[];
+  products: Producto[];
 }
 
 const ProductCarouselSection: React.FC<ProductCarouselSectionProps> = ({
@@ -35,7 +26,7 @@ const ProductCarouselSection: React.FC<ProductCarouselSectionProps> = ({
     >
       {products.map((product) => (
         <SwiperSlide key={product.id}>
-          <ProductCard {...product} />
+          <ProductCard product={product} />
         </SwiperSlide>
       ))}
     </Swiper>

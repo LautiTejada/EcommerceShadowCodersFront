@@ -1,37 +1,28 @@
 import { Link } from "react-router-dom";
 import styles from "./ProductCard.module.css";
+import type { Producto } from "../../../types/Producto";
 
 interface ProductCardProps {
-  id: number;
-  name: string;
-  image: string;
-  discount: number;
-  price: number;
-  oldPrice: number;
+  product: Producto
 }
 const ProductCard: React.FC<ProductCardProps> = ({
-  id,
-  name,
-  image,
-  discount,
-  price,
-  oldPrice,
+  product
 }) => (
-  <Link
-    to={`/product/${id}`}
-    style={{ textDecoration: "none", color: "inherit" }}
-  >
+  // <Link
+  //   to={`/product/${product.id}`}
+  //   style={{ textDecoration: "none", color: "inherit" }}
+  // >
     <div className={styles.cardContainer}>
       {/* Etiqueta de descuento */}
-      <span className={styles.discountLabel}>-{discount}%</span>
+
       {/* Imagen */}
-      <img src={image} alt={name} className={styles.productImage} />
+
       {/* Nombre */}
-      <div className={styles.productName}>{name }</div>
+      <div className={styles.productName}>{product.nombre}</div>
       {/* Precios */}
       <div>
         <span style={{ color: "#e53935", fontWeight: 700, fontSize: 18 }}>
-          ${price.toLocaleString()}
+          ${product.precio.toLocaleString()}
         </span>
         <span
           style={{
@@ -41,11 +32,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
             fontSize: 14,
           }}
         >
-          ${oldPrice.toLocaleString()}
+          ${product.precio.toLocaleString()}
         </span>
       </div>
     </div>
-  </Link>
+  // </Link>
 );
 
 export default ProductCard;
