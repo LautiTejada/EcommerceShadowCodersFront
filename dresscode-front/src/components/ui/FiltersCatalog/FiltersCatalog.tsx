@@ -8,9 +8,9 @@ const marcas: Marca[] = ["NIKE", "ADIDAS", "PUMA", "VANS", "JORDAN"];
 
 export const FiltersCatalog = () => {
   // Stores
-  const { tipos, obtenerTiposActivos } = tipoStore();
+  const { tipos, obtenerTiposActivos, obtenerTipoPorId } = tipoStore();
   const { categoriasActivas, fetchCategoriasActivas } = useCategoriaStore();
-
+  
   // Estado UI
   const [open, setOpen] = useState<{ [key: string]: boolean }>({});
   const [checked, setChecked] = useState<{ [key: string]: string[] }>({});
@@ -26,15 +26,24 @@ export const FiltersCatalog = () => {
   const filterData = [
     {
       label: "Tipo de producto",
-      options: tipos.map((tipo) => tipo.nombre),
+      options: tipos.map((tipo) => ({
+        label: tipo.nombre,
+        value: tipo.id,
+      })),
     },
     {
       label: "Categoria",
-      options: categoriasActivas.map((cat) => cat.nombreCategoria),
+      options: categoriasActivas.map((cat) => ({
+        label: cat.nombreCategoria,
+        value: cat.id,
+      })),
     },
     {
       label: "Marca",
-      options: marcas,
+      options: marcas.map((marca) => ({
+        label: marca,
+        value: marca,
+      })),
     },
   ];
 
@@ -42,19 +51,24 @@ export const FiltersCatalog = () => {
     setOpen((prev) => ({ ...prev, [label]: !prev[label] }));
   };
 
-  const handleCheck = (section: string, option: string) => {
-    setChecked((prev) => {
-      const current = prev[section] || [];
-      return {
-        ...prev,
-        [section]: current.includes(option)
-          ? current.filter((o) => o !== option)
-          : [...current, option],
-      };
-    });
-  };
+  const handleCheck = (section: string, option: string | number | undefined) => {
+  if (option === undefined) return;
+  const optionStr = String(option);
+  setChecked((prev) => {
+    const current = prev[section] || [];
+    return {
+      ...prev,
+      [section]: current.includes(optionStr)
+        ? current.filter((o) => o !== optionStr)
+        : [...current, optionStr],
+    };
+  });
+};
 
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>, idx: number) => {
+  const handlePriceChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    idx: number
+  ) => {
     const value = Number(e.target.value);
     setPrice((prev) => {
       const newPrice: [number, number] = [...prev] as [number, number];
@@ -65,9 +79,14 @@ export const FiltersCatalog = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Aquí puedes aplicar la lógica de filtrado o levantar los filtros al padre
-    // Por ejemplo: onApplyFilters({ checked, price });
-    // Por ahora solo mostramos por consola:
+    const tipoIds = checked["Tipo de producto"] || [];
+
+    if (tipoIds.length === 0) {
+      obtenerTipoPorId(Number(tipoIds[0])).then((tipo) => {
+        // Aquí puedes hacer lo que necesites con el tipo
+        console.log("Tipo seleccionado:", tipo);
+      });
+    }
     console.log("Filtros aplicados:", { checked, price });
   };
 
@@ -148,10 +167,14 @@ export const FiltersCatalog = () => {
               onClick={() => toggleSection(section.label)}
             >
               {section.label}
-              <span className={`arrow${open[section.label] ? " open" : ""}`}></span>
+              <span
+                className={`arrow${open[section.label] ? " open" : ""}`}
+              ></span>
             </div>
             <div
-              className={`dropdown-content${open[section.label] ? " open" : ""}`}
+              className={`dropdown-content${
+                open[section.label] ? " open" : ""
+              }`}
               style={{
                 background: "#181818",
                 padding: open[section.label] ? "8px 24px" : "0 24px",
@@ -159,19 +182,23 @@ export const FiltersCatalog = () => {
             >
               {section.options.map((option, idx) => (
                 <label
-                  key={option}
+                  key={option.value}
                   className="filter-option"
                   style={{
-                    transitionDelay: open[section.label] ? `${0.05 * idx + 0.1}s` : "0s",
+                    transitionDelay: open[section.label]
+                      ? `${0.05 * idx + 0.1}s`
+                      : "0s",
                   }}
                 >
                   <input
                     type="checkbox"
-                    checked={checked[section.label]?.includes(option) || false}
-                    onChange={() => handleCheck(section.label, option)}
+                    checked={
+                      checked[section.label]?.includes(String(option.value)) || false
+                    }
+                    onChange={() => handleCheck(section.label, option.value)}
                     style={{ marginRight: 8 }}
                   />
-                  {option}
+                  {option.label}
                 </label>
               ))}
             </div>
@@ -195,10 +222,14 @@ export const FiltersCatalog = () => {
             onClick={() => toggleSection("Rango de precio")}
           >
             Rango de precio
-            <span className={`arrow${open["Rango de precio"] ? " open" : ""}`}></span>
+            <span
+              className={`arrow${open["Rango de precio"] ? " open" : ""}`}
+            ></span>
           </div>
           <div
-            className={`dropdown-content${open["Rango de precio"] ? " open" : ""}`}
+            className={`dropdown-content${
+              open["Rango de precio"] ? " open" : ""
+            }`}
             style={{
               background: "#181818",
               padding: open["Rango de precio"] ? "16px 24px" : "0 24px",
