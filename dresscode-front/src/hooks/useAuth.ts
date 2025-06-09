@@ -46,8 +46,11 @@ export const useAuth = () => {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Access-Control-Allow-Origin": "http://localhost:5173",
+          "Access-Control-Allow-Credentials": "true",
         },
         credentials: "include",
+        mode: "cors",
         body: JSON.stringify(backendData),
       });
 
@@ -108,8 +111,11 @@ export const useAuth = () => {
         headers: {
           "Content-Type": "application/json",
           Accept: "application/json",
+          "Access-Control-Allow-Origin": "http://localhost:5173",
+          "Access-Control-Allow-Credentials": "true",
         },
         credentials: "include",
+        mode: "cors",
         body: JSON.stringify(credentials),
       });
 
