@@ -58,9 +58,12 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 
     fetchProductoById: async (id) => {
         try {
-            return await getProductoById(id);
+            const producto = await getProductoById(id);
+            set({ productoActual: producto });
+            return producto;
         } catch (error) {
             console.error(`Error fetching producto by ID ${id}:`, error);
+            set({ productoActual: null });
             return null;
         }
     },
