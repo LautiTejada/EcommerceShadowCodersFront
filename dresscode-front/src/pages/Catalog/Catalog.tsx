@@ -1,28 +1,22 @@
+import { useEffect } from "react";
 import { FiltersCatalog } from "../../components/ui/FiltersCatalog/FiltersCatalog";
+
+import { useProductoStore } from "../../store/productoStore";
 import ProductCard from "../../components/ui/ProductCard/ProductCard";
 
-// Ejemplo de productos (puedes reemplazarlo por tu fetch o props)
-const products = [
-  {
-    id: 1,
-    name: "NIKE DUNK LOW",
-    image: "https://static.nike.com/a/images/t_PDP_864_v1/f_auto,q_auto:eco/9b7e2e2b-4e3d-4e2a-8b2a-1e2a2e2a2e2a/dunk-low-zapatillas.png",
-    discount: 30,
-    price: 90000,
-    oldPrice: 130000,
-  },
-  {
-    id: 2,
-    name: "VANS U HYLNANE",
-    image: "https://static.vans.com/a/images/t_PDP_864_v1/f_auto,q_auto:eco/8b7e2e2b-4e3d-4e2a-8b2a-1e2a2e2a2e2a/u-hylnane-zapatillas.png",
-    discount: 0,
-    price: 80000,
-    oldPrice: 80000,
-  },
-  // ...agrega más productos aquí
-];
+
+
 
 export const Catalog = () => {
+
+  const {productosActivos, fetchProductosActivos} = useProductoStore();
+
+
+  useEffect(() => {
+    fetchProductosActivos();
+
+  }, [fetchProductosActivos]);
+
   return (
     <div
       style={{
@@ -47,8 +41,8 @@ export const Catalog = () => {
           alignContent: "flex-start",
         }}
       >
-        {products.map((product) => (
-          <ProductCard key={product.id} {...product} />
+        {productosActivos.map((product) => (
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
     </div>
