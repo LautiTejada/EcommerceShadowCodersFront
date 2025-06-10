@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { tipoStore } from "../../../store/tipoStore";
 import { useCategoriaStore } from "../../../store/categoriaStore";
 import type { Marca } from "../../../types/enums/Marca";
+import { useProductoStore } from "../../../store/productoStore";
 
 // Si quieres que las marcas se obtengan automáticamente del enum, puedes definirlas así:
 const marcas: Marca[] = ["NIKE", "ADIDAS", "PUMA", "VANS", "JORDAN"];
@@ -10,11 +11,12 @@ export const FiltersCatalog = () => {
   // Stores
   const { tipos, obtenerTiposActivos, obtenerTipoPorId } = tipoStore();
   const { categoriasActivas, fetchCategoriasActivas } = useCategoriaStore();
-  
+  const { fetchProductosFiltrados } = useProductoStore();
+
   // Estado UI
   const [open, setOpen] = useState<{ [key: string]: boolean }>({});
   const [checked, setChecked] = useState<{ [key: string]: string[] }>({});
-  const [price, setPrice] = useState<[number, number]>([50000, 500000]);
+  const [price, setPrice] = useState<[number, number]>([0, 500000]);
 
   // Cargar tipos y categorías activas al montar
   useEffect(() => {
@@ -51,19 +53,22 @@ export const FiltersCatalog = () => {
     setOpen((prev) => ({ ...prev, [label]: !prev[label] }));
   };
 
-  const handleCheck = (section: string, option: string | number | undefined) => {
-  if (option === undefined) return;
-  const optionStr = String(option);
-  setChecked((prev) => {
-    const current = prev[section] || [];
-    return {
-      ...prev,
-      [section]: current.includes(optionStr)
-        ? current.filter((o) => o !== optionStr)
-        : [...current, optionStr],
-    };
-  });
-};
+  const handleCheck = (
+    section: string,
+    option: string | number | undefined
+  ) => {
+    if (option === undefined) return;
+    const optionStr = String(option);
+    setChecked((prev) => {
+      const current = prev[section] || [];
+      return {
+        ...prev,
+        [section]: current.includes(optionStr)
+          ? current.filter((o) => o !== optionStr)
+          : [...current, optionStr],
+      };
+    });
+  };
 
   const handlePriceChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -79,15 +84,21 @@ export const FiltersCatalog = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const tipoIds = checked["Tipo de producto"] || [];
 
-    if (tipoIds.length === 0) {
-      obtenerTipoPorId(Number(tipoIds[0])).then((tipo) => {
-        // Aquí puedes hacer lo que necesites con el tipo
-        console.log("Tipo seleccionado:", tipo);
-      });
-    }
-    console.log("Filtros aplicados:", { checked, price });
+    // Convierte los IDs a números si es necesario
+    const tipos = (checked["Tipo de producto"] || []).map(Number);
+    const categorias = (checked["Categoria"] || []).map(Number);
+    const marcas = checked["Marca"] || [];
+
+    const filtros = {
+      tipos,
+      categorias,
+      marcas,
+      precioMin: price[0],
+      precioMax: price[1],
+    };
+
+    fetchProductosFiltrados(filtros);
   };
 
   return (
@@ -193,7 +204,8 @@ export const FiltersCatalog = () => {
                   <input
                     type="checkbox"
                     checked={
-                      checked[section.label]?.includes(String(option.value)) || false
+                      checked[section.label]?.includes(String(option.value)) ||
+                      false
                     }
                     onChange={() => handleCheck(section.label, option.value)}
                     style={{ marginRight: 8 }}
@@ -243,7 +255,7 @@ export const FiltersCatalog = () => {
             </div>
             <input
               type="range"
-              min={50000}
+              min={0}
               max={500000}
               step={1000}
               value={price[0]}
@@ -252,7 +264,7 @@ export const FiltersCatalog = () => {
             />
             <input
               type="range"
-              min={50000}
+              min={0}
               max={500000}
               step={1000}
               value={price[1]}
