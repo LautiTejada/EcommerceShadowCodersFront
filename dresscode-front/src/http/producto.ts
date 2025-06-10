@@ -199,3 +199,19 @@ export const eliminarImagenProducto = async (id: number) => {
     throw error;
   }
 }
+
+export const getProductosFiltrados = async(filtros: any) => {
+    const params = new URLSearchParams();
+
+    if (filtros.tipos?.length) filtros.tipos.forEach((id: string) => params.append("tipoIds", id));
+    if (filtros.categorias?.length) filtros.categorias.forEach((id: string) => params.append("categoriaIds", id));
+    if (filtros.marcas?.length) filtros.marcas.forEach((marca: string) => params.append("marcas", marca));
+    if (filtros.precioMin) params.append("precioMin", filtros.precioMin);
+    if (filtros.precioMax) params.append("precioMax", filtros.precioMax);
+
+    const response = await fetch(`${baseUrl}/productos/filtrar?${params.toString()}`);
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+};
