@@ -7,22 +7,76 @@ import AddLocationIcon from "@mui/icons-material/AddLocation";
 import { useAuth } from "../hooks/useAuth";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useUsuarioStore } from "../store/userStore";
+import type { Usuario } from "../types/Usuario";
 
 const Profile = () => {
   const [activeSection, setActiveSection] = useState("accountInfo");
   const { logout } = useAuth();
-
-  // Obtener el id del usuario logueado (ajusta según cómo lo guardes)
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedUser, setEditedUser] = useState<Partial<Usuario>>({});
 
   const userId = Number(localStorage.getItem("usuario"));
-  const { usuarioActual, obtenerUsuarioPorId, cargando } = useUsuarioStore();
+  const { usuarioActual, obtenerUsuarioPorId, actualizarUsuario } =
+    useUsuarioStore();
 
   useEffect(() => {
-    console.log("userId:", userId); // <-- agrega esto
     if (userId) {
       obtenerUsuarioPorId(userId);
     }
   }, [userId, obtenerUsuarioPorId]);
+
+  useEffect(() => {
+    if (usuarioActual) {
+      setEditedUser({
+        username: usuarioActual.username,
+        email: usuarioActual.email,
+      });
+    }
+  }, [usuarioActual]);
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    if (usuarioActual) {
+      setEditedUser({
+        username: usuarioActual.username,
+        email: usuarioActual.email,
+      });
+    }
+  };
+
+  const handleSave = async () => {
+    if (userId && editedUser && usuarioActual) {
+      try {
+        const usuarioActualizado = {
+          username: editedUser.username || usuarioActual.username,
+          email: editedUser.email || usuarioActual.email,
+          activo: usuarioActual.activo,
+          password: usuarioActual.password,
+          rol: usuarioActual.rol
+        };
+
+        console.log("Enviando datos:", usuarioActualizado);
+        await actualizarUsuario(userId, usuarioActualizado);
+        setIsEditing(false);
+        await obtenerUsuarioPorId(userId);
+      } catch (error) {
+        console.error("Error al actualizar usuario:", error);
+        // Aquí podrías agregar un mensaje de error para el usuario
+      }
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setEditedUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const renderContent = () => {
     switch (activeSection) {
@@ -30,30 +84,46 @@ const Profile = () => {
         return (
           <div className={styles.dataSection}>
             <div className={styles.inputGroup}>
-              <label htmlFor="name">NOMBRE</label>
+              <label htmlFor="username">NOMBRE</label>
               <input
                 type="text"
-                id="name"
-                value={usuarioActual?.username || ""}
-                readOnly
+                id="username"
+                name="username"
+                value={
+                  isEditing
+                    ? editedUser.username || ""
+                    : usuarioActual?.username || ""
+                }
+                onChange={handleInputChange}
+                readOnly={!isEditing}
                 className={styles.inputField}
               />
-              <span className={styles.accountEditIcon}>
-                <EditIcon />
-              </span>
+              {!isEditing && (
+                <span className={styles.accountEditIcon} onClick={handleEdit}>
+                  <EditIcon />
+                </span>
+              )}
             </div>
             <div className={styles.inputGroup}>
               <label htmlFor="email">EMAIL</label>
               <input
                 type="email"
                 id="email"
-                value={usuarioActual?.email || ""}
-                readOnly
+                name="email"
+                value={
+                  isEditing
+                    ? editedUser.email || ""
+                    : usuarioActual?.email || ""
+                }
+                onChange={handleInputChange}
+                readOnly={!isEditing}
                 className={styles.inputField}
               />
-              <span className={styles.accountEditIcon}>
-                <EditIcon />
-              </span>
+              {!isEditing && (
+                <span className={styles.accountEditIcon} onClick={handleEdit}>
+                  <EditIcon />
+                </span>
+              )}
             </div>
             <div className={styles.inputGroup}>
               <label htmlFor="password">CONTRASEÑA</label>
@@ -69,14 +139,25 @@ const Profile = () => {
               </span>
             </div>
             <div className={styles.acountButtons}>
-              <button className={styles.saveButton}>
-                <LockIcon className={styles.lockIcon} />
-                <span>GUARDAR DATOS</span>
-              </button>
-              <button className={styles.logoutButton} onClick={logout}>
-                <LogoutIcon />
-                <span>CERRAR SESIÓN</span>
-              </button>
+              {isEditing ? (
+                <>
+                  <button className={styles.saveButton} onClick={handleSave}>
+                    <LockIcon className={styles.lockIcon} />
+                    <span>GUARDAR CAMBIOS</span>
+                  </button>
+                  <button
+                    className={styles.cancelButton}
+                    onClick={handleCancel}
+                  >
+                    <span>CANCELAR</span>
+                  </button>
+                </>
+              ) : (
+                <button className={styles.logoutButton} onClick={logout}>
+                  <LogoutIcon />
+                  <span>CERRAR SESIÓN</span>
+                </button>
+              )}
             </div>
           </div>
         );

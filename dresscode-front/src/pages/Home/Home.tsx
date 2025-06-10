@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { CategoryBar } from "../../components/ui/CategoryBar/CategoryBar";
 import ImageCarousel from "../../components/ui/ImageCarousel/ImageCarousel";
@@ -9,9 +8,7 @@ import { useCategoriaStore } from "../../store/categoriaStore";
 import styles from "./Home.module.css";
 import { useProductoStore } from "../../store/productoStore";
 
-
 const Home = () => {
-
   const { categorias, fetchCategorias } = useCategoriaStore();
   const { productosActivos, fetchProductosActivos } = useProductoStore();
 
@@ -19,9 +16,6 @@ const Home = () => {
     fetchCategorias();
     fetchProductosActivos();
   }, [productosActivos, fetchCategorias, fetchProductosActivos]);
-
-  console.log(categorias);
-
 
   return (
     <>
