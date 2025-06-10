@@ -10,11 +10,11 @@ export interface Producto {
     nombre: string;
     precio: number;
     descripcion: string;
-    color: Color; 
+    color: string; 
     marca: Marca; 
     categoria: Categoria; 
     descuentos?: DescuentoProducto[]; 
-    talles?: ProductoTalle[];
+    talles: ProductoTalle[];
     imagenes?: ImagenProducto[];
 
 }

@@ -19,9 +19,9 @@ export const ProductDetails = () => {
 
   const [quantity, setQuantity] = useState(1);
 
-  // Si el producto aún no está cargado, muestra un loader o mensaje
   if (!productoActual) {
-    return <div>Cargando producto...</div>;
+    return <div>Producto no encontrado</div>;
+
   }
 
   return (
@@ -54,7 +54,9 @@ export const ProductDetails = () => {
           {/* Info producto */}
           <div className={styles.infoBox}>
             <h2 className={styles.productName}>{productoActual.nombre}</h2>
-            {/* <div className={styles.category}>{productoActual.categoria.nombreCategoria}</div> */}
+
+            <div className={styles.category}>{productoActual.categoria.nombreCategoria}</div>
+            
             <div className={styles.brand}>{productoActual.marca}</div>
             <div className={styles.price}>
               ${productoActual.precio.toLocaleString()}
@@ -62,21 +64,22 @@ export const ProductDetails = () => {
             <div className={styles.sizeSection}>
               <div className={styles.sizeLabel}>Talle</div>
               <div className={styles.sizes}>
-                {/* {product.talles.map((size) => (
+                 
+                {productoActual.talles.map((size) => (
+
                   <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`${styles.sizeBtn} ${
-                      selectedSize === size ? styles.sizeBtnSelected : ""
-                    }`}
+                     key={size.talle.id}
+                     className={`${styles.sizeBtn} `}
                   >
-                    {size}
+                    {size.talle.tipoTalle}
                   </button>
                 ))} */}
               </div>
             </div>
             <div className={styles.color}>
-              {/* Color: <span>{product.color}</span> */}
+              
+              Color: <span>{productoActual.color}</span>
+
             </div>
             {/* Cantidad */}
             <div className={styles.quantitySection}>
