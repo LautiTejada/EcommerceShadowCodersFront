@@ -20,7 +20,7 @@ export const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1);
 
   if (!productoActual) {
-    return <div>Producto no encontrado</div>;
+    return <div className={styles.productNoFound}>ERROR: Producto no encontrado</div>;
 
   }
 
