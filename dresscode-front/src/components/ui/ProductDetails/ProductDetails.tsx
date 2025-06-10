@@ -73,7 +73,7 @@ export const ProductDetails = () => {
                   >
                     {size.talle.tipoTalle}
                   </button>
-                ))} */}
+                ))}
               </div>
             </div>
             <div className={styles.color}>
