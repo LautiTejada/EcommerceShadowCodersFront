@@ -4,7 +4,16 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 
 const Footer = () => {
   return (
-    <Box sx={{ background: "#1a1a1a", color: "#fff", py: 4, px: 2 }}>
+    <Box
+      sx={{
+        background: "#1a1a1a",
+        color: "#fff",
+        py: 4,
+        px: 2,
+        borderTop: "1px",
+        borderColor: "black",
+      }}
+    >
       <Grid container alignItems="center" justifyContent="space-between">
         {/* Izquierda */}
         <Grid item xs={12} md={4} sx={{ mb: { xs: 2, md: 0 } }}>

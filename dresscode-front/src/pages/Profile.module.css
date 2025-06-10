@@ -1,0 +1,229 @@
+.profileContainer {
+  display: flex;
+  flex-grow: 1;
+  background-color: #000000;
+  color: #fff;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: #191818;
+  padding: 20px 0;
+}
+
+.sidebarItem {
+  padding: 15px 20px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid #3f3f3f;
+}
+
+.sidebarItem:hover {
+  background-color: #555;
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: 40px;
+  background-color: #191818;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainTitle {
+  font-size: 2em;
+  margin-bottom: 30px;
+  color: #fff;
+  text-transform: uppercase;
+  text-decoration: underline;
+}
+
+.dataSection {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.inputGroup label {
+  font-size: 0.8em;
+  color: #aaa;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.inputField:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #6d0402; /* Un pequeño resplandor al enfocar */
+}
+
+.accountEditIcon {
+  position: absolute;
+  right: 15px;
+  top: 70%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 1.2em;
+}
+
+.addressEntry {
+  display: flex;
+  align-items: flex-end; /* Esto alinea el delete con la parte baja del input */
+  gap: 10px;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #3f3f3f;
+}
+
+.addressInputFieldContainer {
+  flex-grow: 1; /* Permite que el contenedor del input ocupe el espacio restante */
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.addressEntry label {
+  font-size: 0.8em;
+  color: #aaa;
+  margin-bottom: 5px;
+  text-transform: uppercase;
+}
+
+.addressEntry .inputField {
+  width: 100%; /* El input ocupa todo el ancho de su contenedor */
+  background-color: #fff;
+  border: none;
+  padding: 12px 15px;
+  border-radius: 4px;
+  color: #333;
+  font-size: 1em;
+  padding-right: 40px; /* Espacio para el ícono de edición */
+}
+
+.addressesEditIcon {
+  position: absolute;
+  right: 15px;
+  top: 70%; /* Alinea verticalmente en el centro del input */
+  transform: translateY(-50%);
+  color: #666;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.addressesDeleteIcon {
+  color: #6d0402; /* Color para el ícono de eliminar */
+  cursor: pointer;
+  font-size: 1.5em; /* Un poco más grande para destacarlo */
+}
+
+.acountButtons {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.8rem;
+}
+
+.saveButton {
+  background-color: #444;
+  color: #fff;
+
+  cursor: pointer;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background-color 0.3s ease;
+}
+
+.saveButton:hover {
+  background-color: #6d0402;
+}
+
+.logoutButton {
+  background-color: #444; /* Un color rojo para el botón de cerrar sesión */
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  transition: background-color 0.3s ease;
+}
+
+.logoutButton:hover {
+  background-color: #6d0402;
+}
+
+.lockIcon {
+  font-size: 1.2em;
+}
+
+.active {
+  background-color: #6d0402; /* Color para la sección activa del sidebar */
+}
+
+.orderHistorySection {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex-grow: 1;
+}
+
+.orderHistoryEntry {
+  display: flex;
+  align-items: center;
+  background-color: #333;
+  padding: 15px;
+  border-radius: 8px;
+  gap: 20px;
+}
+
+.orderProductImage {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.orderProductDetails {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.orderProductName {
+  font-weight: bold;
+  font-size: 1.1em;
+  margin-bottom: 5px;
+}
+
+.orderProductAddress {
+  font-size: 0.9em;
+  color: #aaa;
+}
+
+.orderSummary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.orderDate {
+  font-size: 0.9em;
+  color: #aaa;
+}
+
+.orderPrice {
+  font-weight: bold;
+  font-size: 1.2em;
+  color: #f0a040; /* Color distintivo para el precio */
+}

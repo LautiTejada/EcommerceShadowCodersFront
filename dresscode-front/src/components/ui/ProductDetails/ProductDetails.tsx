@@ -21,6 +21,7 @@ export const ProductDetails = () => {
 
   if (!productoActual) {
     return <div>Producto no encontrado</div>;
+
   }
 
   return (
@@ -53,7 +54,9 @@ export const ProductDetails = () => {
           {/* Info producto */}
           <div className={styles.infoBox}>
             <h2 className={styles.productName}>{productoActual.nombre}</h2>
+
             <div className={styles.category}>{productoActual.categoria.nombreCategoria}</div>
+            
             <div className={styles.brand}>{productoActual.marca}</div>
             <div className={styles.price}>
               ${productoActual.precio.toLocaleString()}
@@ -61,20 +64,22 @@ export const ProductDetails = () => {
             <div className={styles.sizeSection}>
               <div className={styles.sizeLabel}>Talle</div>
               <div className={styles.sizes}>
-              
-          
+                 
                 {productoActual.talles.map((size) => (
+
                   <button
                      key={size.talle.id}
                      className={`${styles.sizeBtn} `}
                   >
                     {size.talle.tipoTalle}
                   </button>
-                ))}
+                ))} */}
               </div>
             </div>
             <div className={styles.color}>
+              
               Color: <span>{productoActual.color}</span>
+
             </div>
             {/* Cantidad */}
             <div className={styles.quantitySection}>
