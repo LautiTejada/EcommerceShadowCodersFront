@@ -8,12 +8,15 @@ import { useAuth } from "../hooks/useAuth";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useUsuarioStore } from "../store/userStore";
 import type { Usuario } from "../types/Usuario";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 const Profile = () => {
   const [activeSection, setActiveSection] = useState("accountInfo");
   const { logout } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
-  const [editedUser, setEditedUser] = useState<Partial<Usuario>>({});
+  const [editedUser, setEditedUser] = useState<Partial<Usuario>>({
+    password: "",
+  });
 
   const userId = Number(localStorage.getItem("usuario"));
   const { usuarioActual, obtenerUsuarioPorId, actualizarUsuario } =
@@ -55,17 +58,20 @@ const Profile = () => {
           username: editedUser.username || usuarioActual.username,
           email: editedUser.email || usuarioActual.email,
           activo: usuarioActual.activo,
-          password: usuarioActual.password,
-          rol: usuarioActual.rol
+          password: editedUser.password
+            ? editedUser.password
+            : usuarioActual.password,
+          rol: usuarioActual.rol,
         };
 
         console.log("Enviando datos:", usuarioActualizado);
         await actualizarUsuario(userId, usuarioActualizado);
+        localStorage.setItem("username", usuarioActualizado.username);
         setIsEditing(false);
         await obtenerUsuarioPorId(userId);
+        setEditedUser((prev) => ({ ...prev, password: "" }));
       } catch (error) {
         console.error("Error al actualizar usuario:", error);
-        // Aquí podrías agregar un mensaje de error para el usuario
       }
     }
   };
@@ -83,6 +89,17 @@ const Profile = () => {
       case "accountInfo":
         return (
           <div className={styles.dataSection}>
+            {/* Botón de editar único */}
+            {!isEditing && (
+              <button
+                className={styles.editButton}
+                onClick={handleEdit}
+                style={{ marginBottom: "1rem" }}
+              >
+                <EditIcon />
+                <span>EDITAR DATOS</span>
+              </button>
+            )}
             <div className={styles.inputGroup}>
               <label htmlFor="username">NOMBRE</label>
               <input
@@ -98,11 +115,6 @@ const Profile = () => {
                 readOnly={!isEditing}
                 className={styles.inputField}
               />
-              {!isEditing && (
-                <span className={styles.accountEditIcon} onClick={handleEdit}>
-                  <EditIcon />
-                </span>
-              )}
             </div>
             <div className={styles.inputGroup}>
               <label htmlFor="email">EMAIL</label>
@@ -119,24 +131,28 @@ const Profile = () => {
                 readOnly={!isEditing}
                 className={styles.inputField}
               />
-              {!isEditing && (
-                <span className={styles.accountEditIcon} onClick={handleEdit}>
-                  <EditIcon />
-                </span>
-              )}
             </div>
             <div className={styles.inputGroup}>
               <label htmlFor="password">CONTRASEÑA</label>
-              <input
-                type="password"
-                id="password"
-                value="***************"
-                readOnly
-                className={styles.inputField}
-              />
-              <span className={styles.accountEditIcon}>
-                <EditIcon />
-              </span>
+              {isEditing ? (
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Nueva contraseña"
+                  value={editedUser.password || ""}
+                  onChange={handleInputChange}
+                  className={styles.inputField}
+                />
+              ) : (
+                <input
+                  type="password"
+                  id="password"
+                  value="************"
+                  readOnly
+                  className={styles.inputField}
+                />
+              )}
             </div>
             <div className={styles.acountButtons}>
               {isEditing ? (
@@ -149,7 +165,10 @@ const Profile = () => {
                     className={styles.cancelButton}
                     onClick={handleCancel}
                   >
-                    <span>CANCELAR</span>
+                    <span className={styles.cancelIcon}>
+                      <CancelIcon />
+                      CANCELAR
+                    </span>
                   </button>
                 </>
               ) : (
@@ -217,7 +236,6 @@ const Profile = () => {
             </div>
             <button className={styles.saveButton}>
               <AddLocationIcon className={styles.lockIcon} />
-
               <span>AGREGAR DIRECCION</span>
             </button>
           </div>

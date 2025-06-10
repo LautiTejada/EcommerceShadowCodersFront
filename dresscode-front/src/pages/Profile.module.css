@@ -62,16 +62,19 @@
   outline: none;
   box-shadow: 0 0 0 2px #6d0402; /* Un pequeño resplandor al enfocar */
 }
-
-.accountEditIcon {
-  position: absolute;
-  right: 15px;
-  top: 70%;
-  transform: translateY(-50%);
-  color: #666;
-  font-size: 1.2em;
+.editButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #6d0402;
+  color: #fff;
+  border: none;
+  gap: 10px;
+  transition: background-color 0.3s ease;
 }
-
+.editButton:hover {
+  background-color: #444; /* Cambia el color al pasar el mouse */
+}
 .addressEntry {
   display: flex;
   align-items: flex-end; /* Esto alinea el delete con la parte baja del input */
@@ -131,7 +134,7 @@
 .saveButton {
   background-color: #444;
   color: #fff;
-
+  gap: 10px;
   cursor: pointer;
   font-size: 0.8rem;
   display: flex;
@@ -142,7 +145,7 @@
 }
 
 .saveButton:hover {
-  background-color: #6d0402;
+  background-color: #f0a040;
 }
 
 .logoutButton {
@@ -154,7 +157,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
+  gap: 10px;
   transition: background-color 0.3s ease;
 }
 
@@ -233,7 +236,6 @@
   color: #fff;
   border: none;
   padding: 12px 24px;
-  border-radius: 4px;
   cursor: pointer;
   font-size: 0.8rem;
   display: flex;
@@ -243,5 +245,11 @@
 }
 
 .cancelButton:hover {
-  background-color: #444;
+  background-color: #6d0402;
+}
+.cancelIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
 }
