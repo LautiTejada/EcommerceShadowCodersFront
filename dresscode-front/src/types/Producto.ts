@@ -1,4 +1,3 @@
-import type { Color } from "@mui/material";
 import type { Marca } from "./enums/Marca";
 import type { Categoria } from "./Categoria";
 import type { DescuentoProducto } from "./DescuentoProducto";
