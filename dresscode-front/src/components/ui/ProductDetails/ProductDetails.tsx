@@ -55,7 +55,7 @@ export const ProductDetails = () => {
           <div className={styles.infoBox}>
             <h2 className={styles.productName}>{productoActual.nombre}</h2>
 
-            <div className={styles.category}>{productoActual.categoria.nombreCategoria}</div>
+            <div className={styles.category}>{productoActual.categoria?.nombreCategoria}</div>
             
             <div className={styles.brand}>{productoActual.marca}</div>
             <div className={styles.price}>
@@ -65,7 +65,7 @@ export const ProductDetails = () => {
               <div className={styles.sizeLabel}>Talle</div>
               <div className={styles.sizes}>
                  
-                {productoActual.talles.map((size) => (
+                {productoActual.talles?.map((size) => (
 
                   <button
                      key={size.talle.id}

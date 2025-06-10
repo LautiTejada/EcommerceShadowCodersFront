@@ -1,0 +1,48 @@
+.sidebar {
+  width: 270px;
+  background: #232323;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  padding-top: 0;
+  min-height: 100vh;
+}
+
+.menuSection {
+  margin-bottom: 0;
+}
+
+.menuTitle {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 18px 24px 10px 24px;
+  letter-spacing: 1px;
+  color: #bdbdbd;
+  background: #232323;
+}
+
+.menuItem {
+  padding: 12px 24px;
+  font-size: 15px;
+  cursor: pointer;
+  color: #fff;
+  background: #353232;
+  border: none;
+  outline: none;
+  transition: background 0.2s;
+}
+
+.menuItem:not(:first-child) {
+  border-top: 1px solid #232323;
+}
+
+.menuItem:hover,
+.selected {
+  background: #8b1818;
+  color: #fff;
+}
+
+.selected {
+  background: #8b1818;
+  color: #fff;
+}

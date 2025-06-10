@@ -1,30 +1,83 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./HomeAdmin.module.css";
+import MenuAdmin from "../../../components/admin/MenuAdmin/MenuAdmin";
+import { useCategoriaStore } from "../../../store/categoriaStore";
+import { useProductoStore } from "../../../store/productoStore";
+import type { Marca } from "../../../types/enums/Marca";
+import type { Producto } from "../../../types/Producto";
+import type { Color } from "../../../types/enums/Color";
 // import { FaPen, FaTrashAlt } from "react-icons/fa";
+const marcas: Marca[] = ["NIKE", "ADIDAS", "PUMA", "VANS", "JORDAN"];
 
-const categories = ["ZAPATILLA", "REMERA"];
+const colores : Color[] = ["NEGRO", "BLANCO", "ROJO", "ROJO", "AZUL", "VERDE", "AMARILLO", "GRIS", "MARRON"]
 
 export default function HomeAdmin() {
-  const [product, setProduct] = useState({
-    name: "",
-    price: "",
-    description: "",
-    brand: "",
-    category: categories[0],
-    images: [null, null, null, null, null],
+
+  const [product, setProduct] = useState<Producto>({
+    nombre: "",
+    precio: 0,
+    descripcion: "",
+    color: "...",
+    marca: undefined,
+    imagenes: [],
   });
+
+  const {agregarProductoConCategoria} = useProductoStore()
+
+  const {categoriasActivas, categoriaActual , fetchCategoriasActivas , setCategoriaActual} = useCategoriaStore()
+
+  console.log(categoriasActivas);
 
   const handleInput = (field: string, value: string) => {
     setProduct({ ...product, [field]: value });
   };
 
-  const handleCategory = (cat: string) => {
-    setProduct({ ...product, category: cat });
-    setShowCategory(false);
+
+  const handleAddProduct = (e: React.FormEvent) => {
+  e.preventDefault(); // Evitar recarga de página
+
+  if (!categoriaActual || categoriaActual.id === undefined) {
+  alert("Seleccioná una categoría válida");
+  return;
+}
+
+  // Validaciones simples si querés:
+  if (!product.nombre || !product.precio ) {
+    alert("Completa al menos nombre y precio");
+    return;
+  }
+
+  // Construir el producto a enviar
+  const nuevoProducto = {
+    ...product,
+    precio: Number(product.precio), // si en la store espera number
   };
 
+  agregarProductoConCategoria(nuevoProducto, categoriaActual.id);
+
+  // Reseteo de formulario
+  setProduct({
+    nombre: "",
+    precio: 0,
+    descripcion: "",
+    color: "",
+    marca: undefined,
+    imagenes: [],
+  });
+
+  setCategoriaActual(null);
+};
+
+
+
+
+
   const [showCategory, setShowCategory] = useState(false);
+
+  const [showMarcas, setShowMarcas] = useState(false);
+
+  const [showColores, setShowColores] = useState(false);
 
 //   const handleImageChange = (idx: number, file: File | null) => {
 //     const newImages = [...product.images];
@@ -32,55 +85,48 @@ export default function HomeAdmin() {
 //     setProduct({ ...product, images: newImages });
 //   };
 
+  useEffect(() =>{
+
+    fetchCategoriasActivas();
+  }, [ fetchCategoriasActivas])
+
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
-        <div className={styles.menuSection}>
-          <div className={styles.menuTitle}>INFORMACION DE LA CUENTA</div>
-        </div>
-        <div className={styles.menuSection}>
-          <div className={styles.menuTitle}>PRODUCTOS</div>
-          <div className={styles.menuItem + " " + styles.selected}>AGREGAR UN PRODUCTO</div>
-          <div className={styles.menuItem}>MODIFICAR UN PRODUCTO</div>
-          <div className={styles.menuItem}>ELIMINAR UN PRODUCTO</div>
-        </div>
-        <div className={styles.menuSection}>
-          <div className={styles.menuTitle}>ESTADISTICAS DE VENTAS</div>
-        </div>
-      </aside>
+      <MenuAdmin/>
       <main className={styles.mainContent}>
-        <form className={styles.form}>
+        <form className={styles.form} onSubmit={handleAddProduct}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
               <label className={styles.label}>NOMBRE DEL PRODUCTO</label>
               <div className={styles.inputIcon}>
                 <input
                   className={styles.input}
-                  value={product.name}
-                  onChange={e => handleInput("name", e.target.value)}
+                  value={product.nombre}
+                  onChange={e => handleInput("nombre", e.target.value)}
                   placeholder="..."
                 />
                 {/* <FaPen className={styles.icon} /> */}
               </div>
             </div>
-            <div className={styles.formGroup}>
+            
+             <div className={styles.formGroup}>
               <label className={styles.label}>CATEGORIA</label>
               <div
                 className={styles.select}
                 onClick={() => setShowCategory(!showCategory)}
                 tabIndex={0}
               >
-                {product.category}
+                {categoriaActual?.nombreCategoria || "..."}
                 <span className={styles.arrow} />
                 {showCategory && (
                   <div className={styles.dropdown}>
-                    {categories.map(cat => (
+                    {categoriasActivas.map(cat => (
                       <div
-                        key={cat}
+                        key={cat.id}
                         className={styles.dropdownItem}
-                        onClick={() => handleCategory(cat)}
+                        onClick={() => setCategoriaActual(cat)}
                       >
-                        {cat}
+                        {cat.nombreCategoria}
                       </div>
                     ))}
                   </div>
@@ -94,24 +140,66 @@ export default function HomeAdmin() {
               <div className={styles.inputIcon}>
                 <input
                   className={styles.input}
-                  value={product.price}
-                  onChange={e => handleInput("price", e.target.value)}
+                  value={product.precio}
+                  onChange={e => handleInput("precio", e.target.value)}
                   placeholder="$"
                 />
                 {/* <FaPen className={styles.icon} /> */}
               </div>
             </div>
             <div className={styles.formGroup}>
-              <label className={styles.label}>MARCA DEL PRODUCTO</label>
-              <div className={styles.inputIcon}>
-                <input
-                  className={styles.input}
-                  value={product.brand}
-                  onChange={e => handleInput("brand", e.target.value)}
-                  placeholder="..."
-                />
-                {/* <FaPen className={styles.icon} /> */}
-              </div>
+                <label className={styles.label}>MARCA</label>
+                <div
+                    className={styles.select}
+                    onClick={() => setShowMarcas(!showMarcas)}
+                    tabIndex={0}
+                    >   
+                    {product.marca || "..."}
+                    <span className={styles.arrow} />
+                    {showMarcas && (
+                    <div className={styles.dropdown}>
+                        {marcas.map((marca) => (
+                        <div
+                            key={marca}
+                            className={styles.dropdownItem}
+                            onClick={() => {
+                            setProduct({ ...product, marca: marca });
+                            setShowMarcas(false);
+                            }}
+                        >
+                            {marca}
+                        </div>
+                        ))}
+                    </div>
+                    )}
+                </div>
+            </div>
+            <div className={styles.formGroup}>
+                <label className={styles.label}>COLOR</label>
+                <div
+                    className={styles.select}
+                    onClick={() => setShowColores(!showColores)}
+                    tabIndex={0}
+                    >   
+                    {product.color}
+                    <span className={styles.arrow} />
+                    {showColores && (
+                    <div className={styles.dropdown}>
+                        {colores.map((color) => (
+                        <div
+                            key={color}
+                            className={styles.dropdownItem}
+                            onClick={() => {
+                            setProduct({ ...product, color: color });
+                            setShowMarcas(false);
+                            }}
+                        >
+                            {color}
+                        </div>
+                        ))}
+                    </div>
+                    )}
+                </div>
             </div>
           </div>
           <div className={styles.formRow}>
@@ -120,8 +208,8 @@ export default function HomeAdmin() {
               <div className={styles.inputIcon}>
                 <input
                   className={styles.input}
-                  value={product.description}
-                  onChange={e => handleInput("description", e.target.value)}
+                  value={product.descripcion}
+                  onChange={e => handleInput("descripcion", e.target.value)}
                   placeholder="..."
                 />
                 {/* <FaPen className={styles.icon} /> */}
@@ -131,13 +219,13 @@ export default function HomeAdmin() {
           <div className={styles.formRow}>
             <div className={styles.formGroupWide}>
               <label className={styles.label}>IMAGENES DEL PRODUCTO</label>
-              <div className={styles.imagesRow}>
-                {product.images.map((img, idx) => (
+                <div className={styles.imagesRow}>
+                {product.imagenes?.map((img, idx) => (
                   <div key={idx} className={styles.imageBox}>
                     {img ? (
                       <div className={styles.imagePreview}>
                         <img
-                          src={URL.createObjectURL(img as File)}
+                        //   src={URL.createObjectURL(img as File)}
                           alt="preview"
                           className={styles.img}
                         />
@@ -176,7 +264,7 @@ export default function HomeAdmin() {
               AGREGAR PRODUCTO
             </button>
           </div>
-        </form>
+        </form >
       </main>
     </div>
   );

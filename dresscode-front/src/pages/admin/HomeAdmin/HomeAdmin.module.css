@@ -6,7 +6,7 @@
 
 .sidebar {
   width: 270px;
-  background: #232323;
+  background: #000;
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -41,7 +41,7 @@
 
 .mainContent {
   flex: 1;
-  background: #222;
+  background: #000;
   display: flex;
   justify-content: center;
   align-items: flex-start;

@@ -13,6 +13,7 @@ import {
 
 interface CategoriaState {
   categorias: Categoria[];
+  categoriaActual: Categoria | null;
   categoriasActivas: Categoria[];
   fetchCategorias: () => Promise<void>;
   fetchCategoriasActivas: () => Promise<void>;
@@ -22,10 +23,12 @@ interface CategoriaState {
   toggleCategoriaStatus: (id: number) => Promise<void>;
   activateCategoria: (id: number) => Promise<void>;
   desactivateCategoria: (id: number) => Promise<void>;
+  setCategoriaActual: (categoria: Categoria | null) => void;
 }
 
 export const useCategoriaStore = create<CategoriaState>((set, get) => ({
   categorias: [],
+  categoriaActual: null,
   categoriasActivas: [],
 
   fetchCategorias: async () => {
@@ -100,5 +103,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
     } catch (error) {
       console.error('Error desactivando categoría:', error);
     }
-  }
+  },
+
+  setCategoriaActual : (categoria) => set({categoriaActual : categoria}),
 }));
