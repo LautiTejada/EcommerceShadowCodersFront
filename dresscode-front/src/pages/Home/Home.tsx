@@ -15,16 +15,25 @@ const Home = () => {
   useEffect(() => {
     fetchCategorias();
     fetchProductosActivos();
-  }, [productosActivos, fetchCategorias, fetchProductosActivos]);
+  }, []);
+
+  const zapatillas = productosActivos.filter(
+    (producto) =>
+      producto.categoria?.nombreCategoria?.toUpperCase() === "ZAPATILLAS"
+  );
+  const remeras = productosActivos.filter(
+    (producto) =>
+      producto.categoria?.nombreCategoria?.toUpperCase() === "REMERAS"
+  );
 
   return (
     <>
       <CategoryBar />
       <ImageCarousel />
       <div className={styles.separador}></div>
-      {/* <OffersSection /> */}
-      {/* <ProductCarouselSection title="ZAPATILLAS" products={productosActivos} />
-      <ProductCarouselSection title="REMERAS" products={productosActivos} /> */}
+      {<OffersSection />}
+      <ProductCarouselSection title="ZAPATILLAS" products={zapatillas} />
+      <ProductCarouselSection title="REMERAS" products={remeras} />
       <div className={styles.eslogan}>
         <h2>ESTILO EN CADA LINEA</h2>
       </div>
