@@ -10,12 +10,18 @@
   gap: 4px !important;
 }
 .buttons {
+  width: 150px;
   color: black !important;
   font-size: 1rem !important;
   font-weight: bold !important;
-  transition: text-decoration 1s ease !important;
-  margin: 0.4rem 2rem  !important;
+  transition: all 0.3s ease !important;
+  margin: 0.4rem 2rem !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
 }
+
 .buttons:hover {
-  text-decoration: underline !important;
+  background-color: rgba(77, 77, 77, 0.5) !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+  text-decoration: none !important;
 }
