@@ -161,3 +161,14 @@
 .descText {
   color: #ccc;
 }
+
+.productNoFound{
+  padding-left: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 30vw;
+  font-size: 40px;
+  color: white;
+  background-color: #444;
+}
