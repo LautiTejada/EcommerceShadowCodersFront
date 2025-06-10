@@ -1,24 +1,52 @@
 export type Provincia =
-  | "BUENOS AIRES"
+  | "BUENOS_AIRES"
   | "CATAMARCA"
   | "CHACO"
   | "CHUBUT"
-  | "CÓRDOBA"
+  | "CORDOBA"
   | "CORRIENTES"
-  | "ENTRE RÍOS"
+  | "ENTRE_RIOS"
   | "FORMOSA"
   | "JUJUY"
-  | "LA PAMPA"
-  | "LA RIOJA"
+  | "LA_PAMPA"
+  | "LA_RIOJA"
   | "MENDOZA"
   | "MISIONES"
-  | "NEUQUÉN"
-  | "RÍO NEGRO"
+  | "NEUQUEN"
+  | "RIO_NEGRO"
   | "SALTA"
-  | "SAN JUAN"
-  | "SAN LUIS"
-  | "SANTA CRUZ"
-  | "SANTA FE"
-  | "SANTIAGO DEL ESTERO"
-  | "TIERRA DEL FUEGO"
-  | "TUCUMÁN";
+  | "SAN_JUAN"
+  | "SAN_LUIS"
+  | "SANTA_CRUZ"
+  | "SANTA_FE"
+  | "SANTIAGO_DEL_ESTERO"
+  | "TIERRA_DEL_FUEGO"
+  | "TUCUMAN"
+  | "CABA";
+
+export const provincias: Provincia[] = [
+  "BUENOS_AIRES",
+  "CATAMARCA",
+  "CHACO",
+  "CHUBUT",
+  "CORDOBA",
+  "CORRIENTES",
+  "ENTRE_RIOS",
+  "FORMOSA",
+  "JUJUY",
+  "LA_PAMPA",
+  "LA_RIOJA",
+  "MENDOZA",
+  "MISIONES",
+  "NEUQUEN",
+  "RIO_NEGRO",
+  "SALTA",
+  "SAN_JUAN",
+  "SAN_LUIS",
+  "SANTA_CRUZ",
+  "SANTA_FE",
+  "SANTIAGO_DEL_ESTERO",
+  "TIERRA_DEL_FUEGO",
+  "TUCUMAN",
+  "CABA",
+];
