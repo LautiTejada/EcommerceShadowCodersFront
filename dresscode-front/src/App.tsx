@@ -8,7 +8,7 @@ import { Catalog } from "./pages/Catalog/Catalog";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import Cart from "./pages/Cart/Cart";
-import Profile from "./pages/Profile";
+import Profile from "./pages/Profile/Profile";
 import HomeAdmin from "./pages/admin/HomeAdmin/HomeAdmin";
 
 function App() {
@@ -24,7 +24,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/admin" element={<HomeAdmin/>}></Route>
+        <Route path="/admin" element={<HomeAdmin />}></Route>
       </Routes>
 
       <Footer />

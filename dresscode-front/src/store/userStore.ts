@@ -154,7 +154,17 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
   obtenerDireccionesUsuario: async (usuarioId) => {
     try {
       const direcciones = await usuarioAPI.getDireccionesDeUsuario(usuarioId);
-      set({ direccionesUsuario: direcciones });
+       console.log("Respuesta cruda del backend:", direcciones);
+      const direccionesValidas = Array.isArray(direcciones)
+        ? direcciones.filter(
+            (d) =>
+              typeof d === "object" &&
+              d !== null &&
+              "calle" in d &&
+              "numero" in d
+          )
+        : [];
+      set({ direccionesUsuario: direccionesValidas });
     } catch (error) {
       console.log("Error obteniendo direcciones de usuario:", error);
     }
