@@ -23,6 +23,7 @@ export const ProductDetails = () => {
     return <div className={styles.productNoFound}>ERROR: Producto no encontrado</div>;
 
   }
+  
 
   return (
     <>

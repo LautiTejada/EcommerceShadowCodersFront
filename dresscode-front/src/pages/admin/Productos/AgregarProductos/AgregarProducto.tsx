@@ -1,6 +1,5 @@
-
 import { useEffect, useState } from "react";
-import styles from "./AgregarProducto.module.css"
+import styles from "./AgregarProducto.module.css";
 import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin";
 import { useCategoriaStore } from "../../../../store/categoriaStore";
 import { useProductoStore } from "../../../../store/productoStore";
@@ -10,10 +9,19 @@ import type { Color } from "../../../../types/enums/Color";
 // import { FaPen, FaTrashAlt } from "react-icons/fa";
 const marcas: Marca[] = ["NIKE", "ADIDAS", "PUMA", "VANS", "JORDAN"];
 
-const colores : Color[] = ["NEGRO", "BLANCO", "ROJO", "ROJO", "AZUL", "VERDE", "AMARILLO", "GRIS", "MARRON"]
+const colores: Color[] = [
+  "NEGRO",
+  "BLANCO",
+  "ROJO",
+  "ROJO",
+  "AZUL",
+  "VERDE",
+  "AMARILLO",
+  "GRIS",
+  "MARRON",
+];
 
-export const AgregarProducto = ()=> {
-
+export const AgregarProducto = () => {
   const [product, setProduct] = useState<Producto>({
     nombre: "",
     precio: 0,
@@ -23,9 +31,14 @@ export const AgregarProducto = ()=> {
     imagenes: [],
   });
 
-  const {agregarProductoConCategoria} = useProductoStore()
+  const { agregarProductoConCategoria } = useProductoStore();
 
-  const {categoriasActivas, categoriaActual , fetchCategoriasActivas , setCategoriaActual} = useCategoriaStore()
+  const {
+    categoriasActivas,
+    categoriaActual,
+    fetchCategoriasActivas,
+    setCategoriaActual,
+  } = useCategoriaStore();
 
   console.log(categoriasActivas);
 
@@ -33,45 +46,40 @@ export const AgregarProducto = ()=> {
     setProduct({ ...product, [field]: value });
   };
 
-
   const handleAddProduct = (e: React.FormEvent) => {
-  e.preventDefault(); // Evitar recarga de página
+    e.preventDefault(); // Evitar recarga de página
 
-  if (!categoriaActual || categoriaActual.id === undefined) {
-  alert("Seleccioná una categoría válida");
-  return;
-}
+    if (!categoriaActual || categoriaActual.id === undefined) {
+      alert("Seleccioná una categoría válida");
+      return;
+    }
 
-  // Validaciones simples si querés:
-  if (!product.nombre || !product.precio ) {
-    alert("Completa al menos nombre y precio");
-    return;
-  }
+    // Validaciones simples si querés:
+    if (!product.nombre || !product.precio) {
+      alert("Completa al menos nombre y precio");
+      return;
+    }
 
-  // Construir el producto a enviar
-  const nuevoProducto = {
-    ...product,
-    precio: Number(product.precio), // si en la store espera number
+    // Construir el producto a enviar
+    const nuevoProducto = {
+      ...product,
+      precio: Number(product.precio), // si en la store espera number
+    };
+
+    agregarProductoConCategoria(nuevoProducto, categoriaActual.id);
+
+    // Reseteo de formulario
+    setProduct({
+      nombre: "",
+      precio: 0,
+      descripcion: "",
+      color: "",
+      marca: undefined,
+      imagenes: [],
+    });
+
+    setCategoriaActual(null);
   };
-
-  agregarProductoConCategoria(nuevoProducto, categoriaActual.id);
-
-  // Reseteo de formulario
-  setProduct({
-    nombre: "",
-    precio: 0,
-    descripcion: "",
-    color: "",
-    marca: undefined,
-    imagenes: [],
-  });
-
-  setCategoriaActual(null);
-};
-
-
-
-
 
   const [showCategory, setShowCategory] = useState(false);
 
@@ -79,20 +87,21 @@ export const AgregarProducto = ()=> {
 
   const [showColores, setShowColores] = useState(false);
 
-//   const handleImageChange = (idx: number, file: File | null) => {
-//     const newImages = [...product.images];
-//     newImages[idx] = file;
-//     setProduct({ ...product, images: newImages });
-//   };
+  const [files, setFiles] = useState<File[]>([]);
 
-  useEffect(() =>{
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setFiles(Array.from(e.target.files));
+    }
+  };
 
+  useEffect(() => {
     fetchCategoriasActivas();
-  }, [ fetchCategoriasActivas])
+  }, [fetchCategoriasActivas]);
 
   return (
     <div className={styles.container}>
-      <MenuAdmin/>
+      <MenuAdmin />
       <main className={styles.mainContent}>
         <form className={styles.form} onSubmit={handleAddProduct}>
           <div className={styles.formRow}>
@@ -102,14 +111,14 @@ export const AgregarProducto = ()=> {
                 <input
                   className={styles.input}
                   value={product.nombre}
-                  onChange={e => handleInput("nombre", e.target.value)}
+                  onChange={(e) => handleInput("nombre", e.target.value)}
                   placeholder="..."
                 />
                 {/* <FaPen className={styles.icon} /> */}
               </div>
             </div>
-            
-             <div className={styles.formGroup}>
+
+            <div className={styles.formGroup}>
               <label className={styles.label}>CATEGORIA</label>
               <div
                 className={styles.select}
@@ -120,7 +129,7 @@ export const AgregarProducto = ()=> {
                 <span className={styles.arrow} />
                 {showCategory && (
                   <div className={styles.dropdown}>
-                    {categoriasActivas.map(cat => (
+                    {categoriasActivas.map((cat) => (
                       <div
                         key={cat.id}
                         className={styles.dropdownItem}
@@ -141,65 +150,65 @@ export const AgregarProducto = ()=> {
                 <input
                   className={styles.input}
                   value={product.precio}
-                  onChange={e => handleInput("precio", e.target.value)}
+                  onChange={(e) => handleInput("precio", e.target.value)}
                   placeholder="$"
                 />
                 {/* <FaPen className={styles.icon} /> */}
               </div>
             </div>
             <div className={styles.formGroup}>
-                <label className={styles.label}>MARCA</label>
-                <div
-                    className={styles.select}
-                    onClick={() => setShowMarcas(!showMarcas)}
-                    tabIndex={0}
-                    >   
-                    {product.marca || "..."}
-                    <span className={styles.arrow} />
-                    {showMarcas && (
-                    <div className={styles.dropdown}>
-                        {marcas.map((marca) => (
-                        <div
-                            key={marca}
-                            className={styles.dropdownItem}
-                            onClick={() => {
-                            setProduct({ ...product, marca: marca });
-                            setShowMarcas(false);
-                            }}
-                        >
-                            {marca}
-                        </div>
-                        ))}
-                    </div>
-                    )}
-                </div>
+              <label className={styles.label}>MARCA</label>
+              <div
+                className={styles.select}
+                onClick={() => setShowMarcas(!showMarcas)}
+                tabIndex={0}
+              >
+                {product.marca || "..."}
+                <span className={styles.arrow} />
+                {showMarcas && (
+                  <div className={styles.dropdown}>
+                    {marcas.map((marca) => (
+                      <div
+                        key={marca}
+                        className={styles.dropdownItem}
+                        onClick={() => {
+                          setProduct({ ...product, marca: marca });
+                          setShowMarcas(false);
+                        }}
+                      >
+                        {marca}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
             <div className={styles.formGroup}>
-                <label className={styles.label}>COLOR</label>
-                <div
-                    className={styles.select}
-                    onClick={() => setShowColores(!showColores)}
-                    tabIndex={0}
-                    >   
-                    {product.color}
-                    <span className={styles.arrow} />
-                    {showColores && (
-                    <div className={styles.dropdown}>
-                        {colores.map((color) => (
-                        <div
-                            key={color}
-                            className={styles.dropdownItem}
-                            onClick={() => {
-                            setProduct({ ...product, color: color });
-                            setShowMarcas(false);
-                            }}
-                        >
-                            {color}
-                        </div>
-                        ))}
-                    </div>
-                    )}
-                </div>
+              <label className={styles.label}>COLOR</label>
+              <div
+                className={styles.select}
+                onClick={() => setShowColores(!showColores)}
+                tabIndex={0}
+              >
+                {product.color}
+                <span className={styles.arrow} />
+                {showColores && (
+                  <div className={styles.dropdown}>
+                    {colores.map((color) => (
+                      <div
+                        key={color}
+                        className={styles.dropdownItem}
+                        onClick={() => {
+                          setProduct({ ...product, color: color });
+                          setShowMarcas(false);
+                        }}
+                      >
+                        {color}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
           <div className={styles.formRow}>
@@ -209,7 +218,7 @@ export const AgregarProducto = ()=> {
                 <input
                   className={styles.input}
                   value={product.descripcion}
-                  onChange={e => handleInput("descripcion", e.target.value)}
+                  onChange={(e) => handleInput("descripcion", e.target.value)}
                   placeholder="..."
                 />
                 {/* <FaPen className={styles.icon} /> */}
@@ -219,20 +228,22 @@ export const AgregarProducto = ()=> {
           <div className={styles.formRow}>
             <div className={styles.formGroupWide}>
               <label className={styles.label}>IMAGENES DEL PRODUCTO</label>
-                <div className={styles.imagesRow}>
+              <div className={styles.imagesRow}>
                 {product.imagenes?.map((img, idx) => (
                   <div key={idx} className={styles.imageBox}>
                     {img ? (
                       <div className={styles.imagePreview}>
                         <img
-                        //   src={URL.createObjectURL(img as File)}
+                          src={`http://localhost:4000${encodeURI(
+                            product.imagenes[0].urlImagen
+                          )}`}
                           alt="preview"
                           className={styles.img}
                         />
                         <button
                           type="button"
                           className={styles.deleteBtn}
-                        //   onClick={() => handleImageChange(idx, null)}
+                          //   onClick={() => handleImageChange(idx, null)}
                         >
                           {/* <FaTrashAlt /> */}
                         </button>
@@ -245,12 +256,12 @@ export const AgregarProducto = ()=> {
                           type="file"
                           accept="image/*"
                           style={{ display: "none" }}
-                        //   onChange={e =>
-                        //     handleImageChange(
-                        //       idx,
-                        //       e.target.files ? e.target.files[0] : null
-                        //     )
-                        //   }
+                          //   onChange={e =>
+                          //     handleImageChange(
+                          //       idx,
+                          //       e.target.files ? e.target.files[0] : null
+                          //     )
+                          //   }
                         />
                       </label>
                     )}
@@ -264,8 +275,8 @@ export const AgregarProducto = ()=> {
               AGREGAR PRODUCTO
             </button>
           </div>
-        </form >
+        </form>
       </main>
     </div>
   );
-}
+};
