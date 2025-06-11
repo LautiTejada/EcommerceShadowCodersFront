@@ -11,6 +11,8 @@ import type { Usuario } from "../../types/Usuario";
 import CancelIcon from "@mui/icons-material/Cancel";
 import type { Direccion } from "../../types/Direccion";
 import { provincias, type Provincia } from "../../types/enums/Provincias";
+import { desactivarDireccionDeUsuario } from "../../http/usuario";
+import Swal from "sweetalert2";
 
 const Profile = () => {
   const [activeSection, setActiveSection] = useState("accountInfo");
@@ -205,14 +207,19 @@ const Profile = () => {
         console.log("Direcciones del usuario:", direccionesUsuario);
         return (
           <div className={styles.dataSection}>
-            {direccionesUsuario.length === 0 && (
-              <p>No tienes direcciones guardadas.</p>
-            )}
+            {direccionesUsuario.filter(
+              (direccion) =>
+                typeof direccion === "object" &&
+                direccion !== null &&
+                direccion.activo
+            ).length === 0 && <p>No tienes direcciones guardadas.</p>}
 
             {direccionesUsuario
               .filter(
                 (direccion) =>
-                  typeof direccion === "object" && direccion !== null
+                  typeof direccion === "object" &&
+                  direccion !== null &&
+                  direccion.activo
               )
               .map((direccion, idx) => (
                 <div key={direccion.id ?? idx} className={styles.addressEntry}>
@@ -250,7 +257,31 @@ const Profile = () => {
                   <span
                     className={styles.addressesDeleteIcon}
                     onClick={async () => {
-                      // Implementa eliminar aquí
+                      if (direccion.id && userId) {
+                        const result = await Swal.fire({
+                          title: "¿Seguro que deseas eliminar esta dirección?",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonColor: "#6d0402",
+                          cancelButtonColor: "#666",
+                          confirmButtonText: "Sí, eliminar",
+                          cancelButtonText: "Cancelar",
+                        });
+                        if (result.isConfirmed) {
+                          await desactivarDireccionDeUsuario(
+                            userId,
+                            direccion.id
+                          );
+                          await obtenerDireccionesUsuario(userId);
+                          Swal.fire({
+                            title: "Desactivada",
+                            text: "La dirección ha sido eliminada.",
+                            icon: "success",
+                            timer: 1500,
+                            showConfirmButton: false,
+                          });
+                        }
+                      }
                     }}
                   >
                     <DeleteIcon />
@@ -334,11 +365,13 @@ const Profile = () => {
                   <input
                     className={styles.inputField}
                     name="codigoPostal"
+                    maxLength={4}
+                    pattern="\d{4}"
                     value={direccionEdit.codigoPostal || ""}
                     onChange={(e) =>
                       setDireccionEdit((prev) => ({
                         ...prev!,
-                        codigoPostal: e.target.value,
+                        codigoPostal: e.target.value.replace(/\D/, ""),
                       }))
                     }
                     required

@@ -8,8 +8,15 @@ export const handleResponse = async (response: Response) => {
     const errorText = await response.text();
     throw new Error(`Error ${response.status}: ${errorText}`);
   }
-  if (response.status === 204) return null;
-  return response.json();
+  if (response.status === 204) {
+    return null; // No Content
+  }
+  // Verifica si hay contenido antes de intentar parsear JSON
+  const text = await response.text();
+  if (!text) {
+    return null;
+  }
+  return JSON.parse(text);
 };
 
 export const getUsuarios = async () => {
@@ -116,5 +123,15 @@ export const updateDireccionDeUsuario = async (
 
 export const getDireccionesDeUsuario = async (usuarioId: number) => {
   const response = await fetch(`${baseUrl}/usuarios/${usuarioId}/direcciones`);
+  return handleResponse(response);
+};
+export const desactivarDireccionDeUsuario = async (
+  usuarioId: number,
+  direccionId: number
+) => {
+  const response = await fetch(
+    `${baseUrl}/usuarios/${usuarioId}/direcciones/${direccionId}/desactivar`,
+    { method: "PUT" }
+  );
   return handleResponse(response);
 };
