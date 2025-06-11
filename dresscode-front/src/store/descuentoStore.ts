@@ -4,7 +4,9 @@ import type { Descuento } from "../types/Descuento";
 
 interface DescuentoState {
     descuentos : Descuento[];
+    descuentoActual : Descuento | null;
     descuentosActivos : Descuento[];
+    setDescuentoActual : (descuento: Descuento | null) => void;
     fetchDescuentos: () => Promise<void>;
     fetchDescuentosActivos: () => Promise<void>;
     addDescuento: (descuento: Descuento) => Promise<void>;
@@ -17,7 +19,10 @@ interface DescuentoState {
 
 export const useDescuentoStore = create<DescuentoState>((set, get)=> ({
     descuentos: [],
+    descuentoActual : null,
     descuentosActivos: [],
+
+    setDescuentoActual : (descuento) => set({descuentoActual : descuento}),
 
     fetchDescuentos: async () => {
         try {

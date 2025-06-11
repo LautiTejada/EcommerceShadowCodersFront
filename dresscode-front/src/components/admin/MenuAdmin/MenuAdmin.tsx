@@ -50,45 +50,68 @@ const MenuAdmin: React.FC<MenuAdminProps> = () => {
       </div>
       <div className={styles.menuSection}>
         <div className={styles.menuTitle}>DESCUENTOS</div>
+        <Link to="/admin/add-discount">
         <div
           className={`${styles.menuItem} styles.selected : ""}`}
         //   onClick={() => onSelect && onSelect("AGREGAR UN PRODUCTO")}
         >
           AGREGAR UN DESCUENTO
         </div>
+        </Link>
+        <Link to="/admin/edit-discount">
         <div
           className={`${styles.menuItem} $ styles.selected : ""}`}
         //   onClick={() => onSelect && onSelect("MODIFICAR UN PRODUCTO")}
         >
           MODIFICAR UN DESCUENTO
         </div>
+        </Link>
+        <Link to= "/admin/products-discount">
+          <div
+            className={`${styles.menuItem} styles.selected : ""}`}
+          //   onClick={() => onSelect && onSelect("AGREGAR UN PRODUCTO")}
+          >
+            PRODUCTOS DESCUENTO
+          </div>
+        </Link>
+        <Link to = "/admin/state-discount">
         <div
           className={`${styles.menuItem} $ ? styles.selected : ""}`}
         //   onClick={() => onSelect && onSelect("ELIMINAR UN PRODUCTO")}
         >
           ACTIVAR / DESACTIVAR
         </div>
+        </Link>
       </div>
       <div className={styles.menuSection}>
         <div className={styles.menuTitle}>TIPOS / CATEGORIAS</div>
+        <Link to="/admin/add-type-cateogory">
+        
         <div
           className={`${styles.menuItem} styles.selected : ""}`}
         //   onClick={() => onSelect && onSelect("AGREGAR UN PRODUCTO")}
         >
           AGREGAR 
         </div>
+        </Link>
+        <Link to= "/admin/edit-type-cateogory">
+        
         <div
           className={`${styles.menuItem} $ styles.selected : ""}`}
         //   onClick={() => onSelect && onSelect("MODIFICAR UN PRODUCTO")}
         >
           MODIFICAR
         </div>
+        </Link>
+        <Link to="/admin/state-type-cateogory">
+        
         <div
           className={`${styles.menuItem} $ ? styles.selected : ""}`}
         //   onClick={() => onSelect && onSelect("ELIMINAR UN PRODUCTO")}
         >
           ACTIVAR / DESACTIVAR
         </div>
+        </Link>
       </div>
       <div className={styles.menuSection}>
         {/* <div className={styles.menuTitle}>ESTADISTICAS DE VENTAS</div> */}
