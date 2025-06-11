@@ -5,6 +5,6 @@ export interface Categoria {
   id?: number; 
   activo: boolean;
   nombreCategoria: string;
-  tipo: Tipo;
+  tipo?: number | Tipo;
   productos?: Producto[];
 }
