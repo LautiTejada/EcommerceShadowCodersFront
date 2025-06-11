@@ -41,9 +41,9 @@ export const getCategoriaById = async (id: number) => {
   }
 }
 
-export const crearCategoria = async (categoria: Categoria) => {
+export const crearCategoria = async (categoria: Categoria, tipoId: number) => {
   try {
-    const response = await fetch(`${baseUrl}/categorias`, {
+    const response = await fetch(`${baseUrl}/categorias/${tipoId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

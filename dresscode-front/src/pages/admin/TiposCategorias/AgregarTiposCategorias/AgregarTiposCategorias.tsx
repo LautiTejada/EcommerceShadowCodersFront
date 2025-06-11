@@ -37,8 +37,6 @@ export const AgregarTiposCategorias = () => {
     const [categoria, setCategoria] = useState<Categoria>({
       nombreCategoria: "",
       activo: false,
-      tipo: tipoActual?.id,
-      productos : []
     })
 
   
@@ -55,21 +53,27 @@ export const AgregarTiposCategorias = () => {
   };
 
   const handleAddCategoria = (e: React.FormEvent) => {
-   e.preventDefault(); 
+    e.preventDefault(); 
 
-   const nuevaCategoria = {
-     ...categoria, 
-   };
+    if(!tipoActual || tipoActual.id === undefined){
+        alert("Selecciona un tipo");
+      return
+    }
+    
+  
+    const nuevaCategoria = {
+      ...categoria, 
+    };
 
-   addCategoria(nuevaCategoria);
+    addCategoria(nuevaCategoria, tipoActual.id);
 
-   // Reseteo de formulario
-   setCategoria({
-      nombreCategoria: "",
-      activo: false,
-      tipo: tipoActual?.id,
-      productos : []
-  });
+    // Reseteo de formulario
+    setCategoria({
+        nombreCategoria: "",
+        activo: false,
+    });
+
+    setTipoActual(null)
   }
   
 
@@ -87,7 +91,7 @@ export const AgregarTiposCategorias = () => {
                     <input
                       className={styles.input}
                       type="text"
-                      value={tipo.nombre}
+                      value={categoria.nombreCategoria}
                       onChange={e => handleInputCategoria("nombreCategoria", e.target.value)}
                     />
                   </div>

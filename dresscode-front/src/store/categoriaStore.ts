@@ -18,7 +18,7 @@ interface CategoriaState {
   fetchCategorias: () => Promise<void>;
   fetchCategoriasActivas: () => Promise<void>;
   fetchCategoriaById: (id: number) => Promise<Categoria | null>;
-  addCategoria: (categoria: Categoria) => Promise<void>;
+  addCategoria: (categoria: Categoria, idTipo : number) => Promise<void>;
   updateCategoria: (id: number, categoria: Categoria) => Promise<void>;
   toggleCategoriaStatus: (id: number) => Promise<void>;
   activateCategoria: (id: number) => Promise<void>;
@@ -59,9 +59,9 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
     }
   },
 
-  addCategoria: async (categoria) => {
+  addCategoria: async (categoria, idTipo) => {
     try {
-      await crearCategoria(categoria);
+      await crearCategoria(categoria, idTipo);
       await get().fetchCategorias();
     } catch (error) {
       console.error('Error creando categoría:', error);
