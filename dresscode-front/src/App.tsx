@@ -21,6 +21,7 @@ import { EstadoDescuento } from "./pages/admin/Descuentos/EstadoDescuento/Estado
 import { AgregarTiposCategorias } from "./pages/admin/TiposCategorias/AgregarTiposCategorias/AgregarTiposCategorias";
 import { ModificarTiposCategorias } from "./pages/admin/TiposCategorias/ModificarTiposCategorias/ModificarTiposCategorias";
 import { EstadoTiposCategorias } from "./pages/admin/TiposCategorias/EstadoTiposCategorias/EstadoTiposCategorias";
+import { ListaDescuentos } from "./pages/admin/Descuentos/ListaDescuentos/ListaDescuentos";
 
 
 function App() {
@@ -47,9 +48,8 @@ function App() {
         <Route path="/admin/state-product" element={<EstadoProducto/>}/>
 
         <Route path="/admin/add-discount" element={<AgregarDescuento/>}/>
-        <Route path="/admin/edit-discount" element={<ModificarDescuento/>}/>
+        <Route path="/admin/list-discounts" element={<ListaDescuentos/>}/>
         <Route path="/admin/products-discount" element={<ProductosDescuento/>}/>
-        <Route path="/admin/state-discount" element={<EstadoDescuento/>}/>
 
         <Route path="/admin/add-type-cateogory" element={<AgregarTiposCategorias/>}/>
         <Route path="/admin/edit-type-cateogory" element={<ModificarTiposCategorias/>}/>
