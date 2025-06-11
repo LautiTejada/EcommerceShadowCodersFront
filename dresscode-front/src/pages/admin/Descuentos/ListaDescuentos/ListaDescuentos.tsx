@@ -1,14 +1,18 @@
 import styles from "./ListaDescuentos.module.css"
 import EditIcon from '@mui/icons-material/Edit';
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin"
 import { useDescuentoStore } from "../../../../store/descuentoStore"
 import Swal from "sweetalert2";
 import type { Descuento } from "../../../../types/Descuento";
+import { ModalEditarDescuento } from "../../../../components/admin/ModalEditarDescuento/ModalEditarDescuento";
 
 export const ListaDescuentos = () => {
 
-    const { descuentos, fetchDescuentos, toggleDescuentoStatus} = useDescuentoStore()
+    const { descuentos, fetchDescuentos, toggleDescuentoStatus, updateDescuento} = useDescuentoStore()
+
+      const [descuentoSeleccionado, setDescuentoSeleccionado] = useState<Descuento | null>(null);
+
 
     useEffect(()=>{
         fetchDescuentos()
@@ -37,6 +41,19 @@ export const ListaDescuentos = () => {
         });
     };
 
+    const handleEditClick = (desc: Descuento) => {
+        setDescuentoSeleccionado(desc);
+    };
+
+    const handleCloseModal = () => {
+        setDescuentoSeleccionado(null);
+    };
+
+    const handleSaveDescuento = (updatedDescuento: Descuento) => {
+        console.log("Guardando descuento editado:", updatedDescuento);
+        updateDescuento(  updatedDescuento.id!, updatedDescuento)
+    };
+
   return (
     <>
         
@@ -52,7 +69,7 @@ export const ListaDescuentos = () => {
                         <span className={styles.porcentaje}>{desc.porcentajeDescuento}%</span>
                         <span className={styles.fecha}>Fecha inicio: {desc.fechaInicio}</span>
                         <span className={styles.fecha}>Fecha cierre: {desc.fechaCierre}</span>
-                        <span className={styles.botonEditar}><EditIcon/></span>
+                        <span className={styles.botonEditar} onClick={() => handleEditClick(desc)}><EditIcon/></span>
                         <label className={styles.switch}>
                             <input
                                 type="checkbox"
@@ -68,6 +85,14 @@ export const ListaDescuentos = () => {
             
             
         </div>
+        {descuentoSeleccionado && (
+        <ModalEditarDescuento
+          descuento={descuentoSeleccionado}
+          onClose={handleCloseModal}
+          onSave={handleSaveDescuento}
+        />
+      )}
+        
         
     </>
   )
