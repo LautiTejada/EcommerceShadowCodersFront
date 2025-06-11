@@ -15,9 +15,7 @@ import { EditarProducto } from "./pages/admin/Productos/EditarProductos/EditarPr
 import { EstadoProducto } from "./pages/admin/Productos/EstadoProducto/EstadoProducto";
 import { StockProducto } from "./pages/admin/Productos/StockProducto/StockProducto";
 import { AgregarDescuento } from "./pages/admin/Descuentos/AgregarDescuento/AgregarDescuento";
-import { ModificarDescuento } from "./pages/admin/Descuentos/ModificarDescuento/ModificarDescuento";
 import { ProductosDescuento } from "./pages/admin/Descuentos/ProductosDescuento/ProductosDescuento";
-import { EstadoDescuento } from "./pages/admin/Descuentos/EstadoDescuento/EstadoDescuento";
 import { AgregarTiposCategorias } from "./pages/admin/TiposCategorias/AgregarTiposCategorias/AgregarTiposCategorias";
 import { ModificarTiposCategorias } from "./pages/admin/TiposCategorias/ModificarTiposCategorias/ModificarTiposCategorias";
 import { EstadoTiposCategorias } from "./pages/admin/TiposCategorias/EstadoTiposCategorias/EstadoTiposCategorias";
