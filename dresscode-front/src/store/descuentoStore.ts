@@ -1,17 +1,22 @@
 import { create } from "zustand";
-import { activarDescuento, actualizarDescuento, cambiarEstadoDescuento, crearDescuento, desactivarDescuento, getDescuentoById, getDescuentos, getDescuentosActivos } from "../http/descuento";
+import { activarDescuento, actualizarDescuento, agregarProductoADescuento, cambiarEstadoDescuento, crearDescuento, desactivarDescuento, eliminarProductoDeDescuento, getDescuentoById, getDescuentos, getDescuentosActivos, traerProductosPorDescuento } from "../http/descuento";
 import type { Descuento } from "../types/Descuento";
+import type { Producto } from "../types/Producto";
 
 interface DescuentoState {
     descuentos : Descuento[];
     descuentoActual : Descuento | null;
     descuentosActivos : Descuento[];
+    productos : Producto[];
     setDescuentoActual : (descuento: Descuento | null) => void;
     fetchDescuentos: () => Promise<void>;
     fetchDescuentosActivos: () => Promise<void>;
     addDescuento: (descuento: Descuento) => Promise<void>;
     updateDescuento : (id : number, descuento :Descuento) => Promise<void>;
     fetchDescuentoById:(id : number)=>Promise<Descuento | null>;
+    fetchProductosPorDescuento:(descuentoId : number) => Promise<void>;
+    agregarProductoADescuento: (descuentoId: number, productoId: number) => Promise<void>;
+    eliminarProductoDeDescuento: (descuentoId: number, productoId: number) => Promise<void>;
     toggleDescuentoStatus : (id: number) => Promise<void>;
     activateDescuento: (id: number) => Promise<void>;
     desactivateDescuento: (id: number) => Promise<void>;
@@ -21,6 +26,7 @@ export const useDescuentoStore = create<DescuentoState>((set, get)=> ({
     descuentos: [],
     descuentoActual : null,
     descuentosActivos: [],
+    productos: [],
 
     setDescuentoActual : (descuento) => set({descuentoActual : descuento}),
 
@@ -78,6 +84,38 @@ export const useDescuentoStore = create<DescuentoState>((set, get)=> ({
             console.error(`Error al cambiar estado descuento con id ${id}:`, error);
         }
     },
+
+    fetchProductosPorDescuento : async (descuentoId: number) => {
+        try {
+            const productosDescuento = await traerProductosPorDescuento(descuentoId)
+            set({productos : productosDescuento })
+        } catch (error) {
+            console.error(`Error cargando descuento por id ${descuentoId}: `, error);
+        }
+    },
+
+    agregarProductoADescuento: async (descuentoId, productoId) => {
+        try {
+            await agregarProductoADescuento(descuentoId, productoId);
+            await get().fetchDescuentosActivos()
+            await get().fetchDescuentos();
+        } catch (error) {
+            console.error(`Error agregando producto ${productoId} al descuento ${descuentoId}:`, error);
+        }
+    },
+
+    eliminarProductoDeDescuento: async (descuentoId, productoId) => {
+        try {
+            await eliminarProductoDeDescuento(descuentoId, productoId);
+            await get().fetchDescuentosActivos()
+            await get().fetchDescuentos();
+        } catch (error) {
+            console.error(`Error eliminando producto ${productoId} del descuento ${descuentoId}:`, error);
+        }
+    },
+
+
+
 
     activateDescuento: async (id : number) => {
         try {

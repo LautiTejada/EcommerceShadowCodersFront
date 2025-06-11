@@ -1,5 +1,6 @@
 import styles from "./ListaDescuentos.module.css"
 import EditIcon from '@mui/icons-material/Edit';
+import AppsIcon from '@mui/icons-material/Apps';
 import { useEffect, useState } from "react"
 import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin"
 import { useDescuentoStore } from "../../../../store/descuentoStore"
@@ -70,6 +71,7 @@ export const ListaDescuentos = () => {
                         <span className={styles.fecha}>Fecha inicio: {desc.fechaInicio}</span>
                         <span className={styles.fecha}>Fecha cierre: {desc.fechaCierre}</span>
                         <span className={styles.botonEditar} onClick={() => handleEditClick(desc)}><EditIcon/></span>
+                        <span><AppsIcon/></span>
                         <label className={styles.switch}>
                             <input
                                 type="checkbox"
