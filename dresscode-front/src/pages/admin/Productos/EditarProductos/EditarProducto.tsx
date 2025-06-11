@@ -20,6 +20,7 @@ export const EditarProducto = () => {
   const { categoriasActivas, fetchCategoriasActivas, setCategoriaActual, categoriaActual } = useCategoriaStore();
 
   const [busqueda, setBusqueda] = useState("");
+  const [showProductos, setShowProductos] = useState(false);
 
   useEffect(() => {
     fetchProductosActivos();
@@ -31,10 +32,12 @@ export const EditarProducto = () => {
     setProduct({ ...product, [field]: value });
   };
 
-  const handleSelectProducto = (producto: Producto) => {
+   const handleSelectProducto = (producto: Producto) => {
     setProduct(producto);
     setProductoActual(producto);
     setCategoriaActual(producto.categoria || null);
+    setBusqueda(""); // opcional: limpiar búsqueda
+    setShowProductos(false); // 👉 cerrar dropdown al seleccionar
   };
 
   const handleEditProduct = async (e: React.FormEvent) => {
@@ -73,27 +76,30 @@ export const EditarProducto = () => {
           <div className={styles.formRow}>
             <div className={styles.formGroupWide}>
               <label className={styles.label}>BUSCAR PRODUCTO</label>
-              <div className={styles.inputIcon}>
+              <div className={`${styles.inputDropdownWrapper}`}>
                 <input
                   className={styles.input}
                   value={busqueda}
-                  onChange={e => setBusqueda(e.target.value)}
+                 onChange={e => {
+                  setBusqueda(e.target.value);
+                  setShowProductos(true); // 👉 mostrar dropdown al tipear
+                }}
                   placeholder="Escribí el nombre del producto..."
                 />
+                {showProductos && busqueda && (
+                  <div className={styles.dropdown}>
+                    {productosFiltrados.map(prod => (
+                      <div
+                        key={prod.id}
+                        className={styles.dropdownItem}
+                        onClick={() => handleSelectProducto(prod)}
+                      >
+                        {prod.nombre}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
-              {busqueda && (
-                <div className={styles.dropdown}>
-                  {productosFiltrados.map(prod => (
-                    <div
-                      key={prod.id}
-                      className={styles.dropdownItem}
-                      onClick={() => handleSelectProducto(prod)}
-                    >
-                      {prod.nombre}
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
           </div>
 
