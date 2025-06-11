@@ -1,6 +1,6 @@
 
 import { useEffect, useState } from "react";
-import styles from "./HomeAdmin.module.css";
+import styles from "./AgregarProducto.module.css"
 import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin";
 import { useCategoriaStore } from "../../../../store/categoriaStore";
 import { useProductoStore } from "../../../../store/productoStore";
