@@ -3,12 +3,10 @@ import styles from "./ProductCard.module.css";
 import type { Producto } from "../../../types/Producto";
 
 interface ProductCardProps {
-  product: Producto
+  product: Producto;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({
-  product
-}) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   // Buscar descuento activo
   const descuentoActivo = product.descuentos?.find(
     (d) => d.activo && d.descuento.activo
@@ -22,7 +20,11 @@ const ProductCard: React.FC<ProductCardProps> = ({
   }
 
   return (
-    <Link to={`/product/${product.id}`} className={styles.link} style={{ textDecoration: "none", color: "inherit" }}>
+    <Link
+      to={`/product/${product.id}`}
+      className={styles.link}
+      style={{ textDecoration: "none", color: "inherit" }}
+    >
       <div className={styles.cardContainer}>
         {/* Etiqueta de descuento */}
         {descuentoActivo && (
@@ -32,7 +34,18 @@ const ProductCard: React.FC<ProductCardProps> = ({
         )}
 
         {/* Imagen */}
-
+        <div className={styles.imageContainer}>
+          {product.imagenes && product.imagenes.length > 0 ? (
+            <img
+              src={product.imagenes[0].urlImagen}
+              alt={product.nombre}
+              className={styles.productImage}
+              loading="lazy"
+            />
+          ) : (
+            <div className={styles.noImage}>Sin imagen</div>
+          )}
+        </div>
         {/* Nombre */}
         <div className={styles.productName}>{product.nombre}</div>
         {/* Precios */}
