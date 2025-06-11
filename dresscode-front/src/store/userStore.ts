@@ -29,6 +29,8 @@ interface UsuarioState {
     direccionId: number,
     direccion: Direccion
   ) => Promise<void>;
+  desactivarDireccionUsuario: (usuarioId: number, direccionId: number) => Promise<void>;
+
   limpiarError: () => void;
 }
 
@@ -191,6 +193,15 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
       console.log("Error actualizando dirección de usuario:", error);
     }
   },
+
+  desactivarDireccionUsuario: async (usuarioId, direccionId) => {
+  try {
+    await usuarioAPI.desactivarDireccionDeUsuario(usuarioId, direccionId);
+    await get().obtenerDireccionesUsuario(usuarioId);
+  } catch (error) {
+    console.log("Error desactivando dirección de usuario:", error);
+  }
+},
 
   limpiarError: () => set({ error: null }),
 }));
