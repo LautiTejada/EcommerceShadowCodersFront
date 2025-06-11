@@ -98,7 +98,7 @@ export const AgregarDescuento = () => {
 
       <div className={styles.formRow}>
         <button className={styles.addButton} type="submit">
-          AGREGAR PRODUCTO
+          AGREGAR DESCUENTO
         </button>
       </div>
     </form>
