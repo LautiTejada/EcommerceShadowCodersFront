@@ -1,20 +1,13 @@
 import { useEffect } from "react";
 import { FiltersCatalog } from "../../components/ui/FiltersCatalog/FiltersCatalog";
-
 import { useProductoStore } from "../../store/productoStore";
 import ProductCard from "../../components/ui/ProductCard/ProductCard";
 
-
-
-
 export const Catalog = () => {
-
-  const {productosActivos, fetchProductosActivos} = useProductoStore();
-
+  const { productosActivos, fetchProductosActivos } = useProductoStore();
 
   useEffect(() => {
     fetchProductosActivos();
-
   }, [fetchProductosActivos]);
 
   return (
@@ -28,7 +21,15 @@ export const Catalog = () => {
       }}
     >
       {/* Barra de filtros */}
-      <div style={{ flex: "0 0 260px", marginRight: 32 , backgroundColor: "#181818", padding: 16, borderRadius: 4 }}>
+      <div
+        style={{
+          flex: "0 0 260px",
+          marginRight: 32,
+          backgroundColor: "#181818",
+          padding: 16,
+          borderRadius: 4,
+        }}
+      >
         <FiltersCatalog />
       </div>
       {/* Grid de productos */}
@@ -36,9 +37,10 @@ export const Catalog = () => {
         style={{
           flex: 1,
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
-          gap: "24px",
+          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", 
+          gap: "24px", 
           alignContent: "flex-start",
+          overflow: "auto", // Permite scroll si hay demasiados productos
         }}
       >
         {productosActivos.map((product) => (
