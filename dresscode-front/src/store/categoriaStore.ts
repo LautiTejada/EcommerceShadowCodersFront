@@ -19,7 +19,7 @@ interface CategoriaState {
   fetchCategoriasActivas: () => Promise<void>;
   fetchCategoriaById: (id: number) => Promise<Categoria | null>;
   addCategoria: (categoria: Categoria, idTipo : number) => Promise<void>;
-  updateCategoria: (id: number, categoria: Categoria) => Promise<void>;
+  updateCategoria: (id: number, categoria: Categoria, tipoId : number) => Promise<void>;
   toggleCategoriaStatus: (id: number) => Promise<void>;
   activateCategoria: (id: number) => Promise<void>;
   desactivateCategoria: (id: number) => Promise<void>;
@@ -69,9 +69,9 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
     }
   },
 
-  updateCategoria: async (id, categoria) => {
+  updateCategoria: async (id, categoria, tipoId) => {
     try {
-      await actualizarCategoria(id, categoria);
+      await actualizarCategoria(id, categoria, tipoId);
       await get().fetchCategorias();
     } catch (error) {
       console.error("Error actualizando categoría:", error);

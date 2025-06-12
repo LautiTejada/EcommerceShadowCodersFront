@@ -61,9 +61,9 @@ export const crearCategoria = async (categoria: Categoria, tipoId: number) => {
 }
 
 
-export const actualizarCategoria = async (id: number, categoria: Categoria) => {
+export const actualizarCategoria = async (idCategoria: number, categoria: Categoria, idTipo: number) => {
   try {
-    const response = await fetch(`${baseUrl}/categorias/${id}`, {
+    const response = await fetch(`${baseUrl}/categorias/${idCategoria}/edit/${idTipo}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

@@ -13,7 +13,7 @@ import { ModalAgregarProductDescuento } from "../../../../components/admin/Modal
 
 export const ListaDescuentos = () => {
 
-    const { descuentos, fetchDescuentos, toggleDescuentoStatus, updateDescuento} = useDescuentoStore()
+    const { descuentos, fetchDescuentos, toggleDescuentoStatus} = useDescuentoStore()
 
     const [descuentoSeleccionado, setDescuentoSeleccionado] = useState<Descuento | null>(null);
     const [descuentoProductos, setDescuentoProductos] = useState<Descuento | null>(null);
@@ -64,15 +64,6 @@ export const ListaDescuentos = () => {
         setDescuentoParaAgregarProductos(null);
     };
 
-    const handleSaveDescuento = (updatedDescuento: Descuento) => {
-        console.log("Guardando descuento editado:", updatedDescuento);
-        updateDescuento(  updatedDescuento.id!, updatedDescuento)
-    };
-
-
-
-
-
   return (
     <>
         
@@ -80,7 +71,7 @@ export const ListaDescuentos = () => {
             <MenuAdmin/>
             <div className={styles.containerDescuentos}>
                 <div className={styles.titleDescuentos}>
-                    <h3>Descuentos</h3>
+                    <h3>DESCUENTOS</h3>
                 </div>
                 <ul className={styles.lista}>
                     {descuentos.map((desc) => (
@@ -110,7 +101,6 @@ export const ListaDescuentos = () => {
         <ModalEditarDescuento
           descuento={descuentoSeleccionado}
           onClose={handleCloseModal}
-          onSave={handleSaveDescuento}
             />
         )}
         {descuentoProductos && (
