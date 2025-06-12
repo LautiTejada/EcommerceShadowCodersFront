@@ -1,49 +1,94 @@
-import { useState } from "react";
 import styles from "./cart.module.css";
-
-const initialCart = [
-  {
-    id: 1,
-    name: "Nike Dunk Low",
-    brand: "Nike",
-    category: "Zapatillas",
-    image: "/public/assets/ImagesProducts/image 8.png",
-    price: 399999,
-    quantity: 1,
-  },
-];
+import { useCartStore } from "../../store/cartStore";
+import { useOrdenCompraStore } from "../../store/ordenCompraStore";
+import { useDetalleOrdenStore } from "../../store/detalleOrdenStore";
+import { useUsuarioStore } from "../../store/userStore";
+import { useNavigate } from "react-router-dom";
+import type { MetodoPago } from "../../types/enums/MetodoPago";
+import type { EstadoOrden } from "../../types/enums/EstadoOrden";
 
 const Cart = () => {
-  const [cart, setCart] = useState(initialCart);
-
-  const handleQuantity = (id: number, delta: number) => {
-    setCart((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? { ...item, quantity: Math.max(1, item.quantity + delta) }
-          : item
-      )
-    );
-  };
-
-  const handleRemove = (id: number) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  };
+  const { cart, updateQuantity, removeFromCart, clearCart } = useCartStore();
+  const { createOrdenDeCompra } = useOrdenCompraStore();
+  const { addDetalleOrden } = useDetalleOrdenStore();
+  const { usuarioActual } = useUsuarioStore();
+  const navigate = useNavigate();
 
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+    (sum, item) => sum + item.precio * item.cantidad,
     0
   );
+  
+
+  const handleCheckout = async () => {
+    if (!usuarioActual) {
+      alert("Debes iniciar sesión para finalizar la compra.");
+      return;
+    }
+    const direccionSeleccionada = usuarioActual.direcciones?.[0];
+    if (!direccionSeleccionada) {
+      alert(
+        "Debes tener al menos una dirección cargada para finalizar la compra."
+      );
+      return;
+    }
+    try {
+      const orden = {
+        usuario: usuarioActual,
+        direccion: direccionSeleccionada,
+        fecha: new Date().toISOString(),
+        precioTotal: subtotal,
+        metodoPago: "MERCADO_PAGO" as MetodoPago,
+        estadoOrden: "PEDIDO" as EstadoOrden,
+      };
+      const ordenCreada = await createOrdenDeCompra(orden);
+
+      for (const item of cart) {
+        await addDetalleOrden({
+          ordenDeCompraId: ordenCreada.id!,
+          productoTalle: {
+            productoId: item.productoId,
+            talle: { id: item.talleId!, activo: true, tipoTalle: "" },
+            activo: true,
+            cantidad: item.cantidad,
+          },
+          cantidad: item.cantidad,
+          precioUnitario: item.precio,
+        });
+      }
+
+     
+      const response = await fetch("http://localhost:8080/api/mercado-pago/mp", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          orderId: ordenCreada.id,
+          items: cart.map(item => ({
+            title: item.nombre,
+            quantity: item.cantidad,
+            unit_price: item.precio,
+          })),
+        }),
+      });
+      const data = await response.json();
+
+      if (data.init_point) {
+        clearCart();
+        window.location.href = data.init_point; 
+      } else {
+        alert("No se pudo iniciar el pago.");
+      }
+    } catch (error) {
+      alert("Error al finalizar la compra");
+    }
+  };
 
   return (
     <div className={styles.cartBg}>
-      {/* Título */}
       <header className={styles.cartHeader}>
         <h1 className={styles.cartTitle}>CARRITO</h1>
       </header>
-      {/* Contenido principal */}
       <div className={styles.cartContent}>
-        {/* Tabla de productos */}
         <div className={styles.productsTableWrapper}>
           <table className={styles.productsTable}>
             <thead>
@@ -57,45 +102,56 @@ const Cart = () => {
             </thead>
             <tbody>
               {cart.map((item) => (
-                <tr key={item.id} className={styles.productRow}>
+                <tr
+                  key={
+                    String(item.productoId) + "-" + String(item.talleId ?? "")
+                  }
+                >
                   <td className={styles.productInfoCell}>
                     <img
-                      src={item.image}
-                      alt={item.name}
+                      src={item.imagen}
+                      alt={item.nombre}
                       className={styles.productImg}
                     />
                     <div className={styles.productInfo}>
-                      <div className={styles.productName}>{item.name}</div>
-                      <div className={styles.productCategory}>
-                        {item.category}
-                      </div>
-                      <div className={styles.productBrand}>{item.brand}</div>
+                      <div className={styles.productName}>{item.nombre}</div>
+                      {item.talleId && (
+                        <div className={styles.productBrand}>
+                          Talle: {item.talleId}
+                        </div>
+                      )}
                     </div>
                   </td>
                   <td className={styles.productPrice}>
-                    ${item.price.toLocaleString("es-AR")}
+                    ${item.precio.toLocaleString("es-AR")}
                   </td>
                   <td className={styles.productQtyCell}>
                     <button
-                      onClick={() => handleQuantity(item.id, -1)}
+                      onClick={() =>
+                        updateQuantity(item.productoId, -1, item.talleId)
+                      }
                       className={styles.qtyBtn}
                     >
                       -
                     </button>
-                    <span className={styles.qtyValue}>{item.quantity}</span>
+                    <span className={styles.qtyValue}>{item.cantidad}</span>
                     <button
-                      onClick={() => handleQuantity(item.id, 1)}
+                      onClick={() =>
+                        updateQuantity(item.productoId, 1, item.talleId)
+                      }
                       className={styles.qtyBtn}
                     >
                       +
                     </button>
                   </td>
                   <td className={styles.productSubtotal}>
-                    ${(item.price * item.quantity).toLocaleString("es-AR")}
+                    ${(item.precio * item.cantidad).toLocaleString("es-AR")}
                   </td>
                   <td className={styles.productRemoveCell}>
                     <button
-                      onClick={() => handleRemove(item.id)}
+                      onClick={() =>
+                        removeFromCart(item.productoId, item.talleId)
+                      }
                       className={styles.removeBtn}
                       title="Eliminar"
                     >
@@ -120,7 +176,7 @@ const Cart = () => {
             <span>Total</span>
             <span>${subtotal.toLocaleString("es-AR")}</span>
           </div>
-          <button className={styles.checkoutBtn}>
+          <button className={styles.checkoutBtn} onClick={handleCheckout}>
             <span style={{ fontSize: 18 }}>🛒</span> FINALIZAR COMPRA
           </button>
         </div>
