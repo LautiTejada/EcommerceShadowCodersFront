@@ -107,6 +107,10 @@ export const useDescuentoStore = create<DescuentoState>((set, get)=> ({
     eliminarProductoDeDescuento: async (descuentoId, productoId) => {
         try {
             await eliminarProductoDeDescuento(descuentoId, productoId);
+            set((state) => ({
+                productos: state.productos.filter((p) => p.id !== productoId),
+            }));
+
             await get().fetchDescuentosActivos()
             await get().fetchDescuentos();
         } catch (error) {
