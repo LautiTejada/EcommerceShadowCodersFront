@@ -4,33 +4,48 @@ import { CategoryBar } from "../CategoryBar/CategoryBar";
 import { useParams } from "react-router-dom";
 import { useProductoStore } from "../../../store/productoStore";
 
+import { useCartStore } from "../../../store/cartStore";
+
+
 export const ProductDetails = () => {
   const { id } = useParams();
   const { fetchProductoById, productoActual } = useProductoStore();
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+
+  const { addToCart } = useCartStore();
+
+  const [selectedTalleId, setSelectedTalleId] = useState<number | null>(null);
+
   useEffect(() => {
     fetchProductoById(Number(id));
+    setSelectedTalleId(null);
+
   }, [id, fetchProductoById]);
 
   console.log(productoActual);
 
   const [quantity, setQuantity] = useState(1);
 
-  useEffect(() => {
-    if (productoActual?.imagenes?.length) {
-      // Busca la imagen principal, si no hay, toma la primera
-      const principal =
-        productoActual.imagenes.find((img) => img.principal) ||
-        productoActual.imagenes[0];
-      setSelectedImage(principal.urlImagen);
-    }
-  }, [productoActual]);
 
   if (!productoActual) {
     return (
       <div className={styles.productNoFound}>ERROR: Producto no encontrado</div>
     );
   }
+  const handleAddToCart = () => {
+    if (!selectedTalleId) {
+      alert("Seleccioná un talle");
+      return;
+    }
+    addToCart({
+      productoId: productoActual.id!,
+      nombre: productoActual.nombre,
+      precio: productoActual.precio,
+      imagen: productoActual.imagenes?.[0]?.urlImagen || "",
+      cantidad: quantity,
+      talleId: selectedTalleId,
+    });
+    alert("Producto agregado al carrito");
+  };
 
   return (
     <>
@@ -55,12 +70,16 @@ export const ProductDetails = () => {
           </div>
           {/* Imagen principal */}
           <div className={styles.mainImageContainer}>
-            {selectedImage && (
+
+            {productoActual.imagenes && productoActual.imagenes.length > 0 ? (
               <img
-                src={`http://localhost:8080${encodeURI(selectedImage)}`} // ✅ Usamos selectedImage
+                src={productoActual.imagenes[0].urlImagen}
                 alt={productoActual.nombre}
                 className={styles.mainImage}
               />
+            ) : (
+              <div className={styles.noImage}>Sin imagen</div>
+
             )}
           </div>
           {/* Info producto */}
@@ -79,7 +98,26 @@ export const ProductDetails = () => {
               <div className={styles.sizeLabel}>Talle</div>
               <div className={styles.sizes}>
                 {productoActual.talles?.map((size) => (
-                  <button key={size.talle.id} className={`${styles.sizeBtn} `}>
+
+                  <button
+                    key={size.talle.id ?? Math.random()}
+                    className={`${styles.sizeBtn} ${
+                      selectedTalleId === size.talle.id
+                        ? styles.sizeBtnSelected
+                        : ""
+                    }`}
+                    onClick={() => {
+                      if (typeof size.talle.id === "number") {
+                        setSelectedTalleId(
+                          selectedTalleId === size.talle.id
+                            ? null
+                            : size.talle.id
+                        );
+                      }
+                    }}
+                    type="button"
+                  >
+
                     {size.talle.tipoTalle}
                   </button>
                 ))}
@@ -104,7 +142,9 @@ export const ProductDetails = () => {
                 +
               </button>
             </div>
-            <button className={styles.addToCartBtn}>AÑADIR AL CARRO</button>
+            <button className={styles.addToCartBtn} onClick={handleAddToCart}>
+              AÑADIR AL CARRO
+            </button>
           </div>
         </div>
         {/* Descripción */}

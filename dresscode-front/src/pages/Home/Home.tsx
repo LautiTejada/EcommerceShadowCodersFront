@@ -9,7 +9,7 @@ import styles from "./Home.module.css";
 import { useProductoStore } from "../../store/productoStore";
 
 const Home = () => {
-  const { categorias, fetchCategorias } = useCategoriaStore();
+  const { fetchCategorias } = useCategoriaStore();
   const { productosActivos, fetchProductosActivos } = useProductoStore();
 
   useEffect(() => {
