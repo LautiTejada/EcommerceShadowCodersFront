@@ -6,10 +6,10 @@ import { useProductoStore } from "../../../store/productoStore";
 
 import { useCartStore } from "../../../store/cartStore";
 
-
 export const ProductDetails = () => {
   const { id } = useParams();
   const { fetchProductoById, productoActual } = useProductoStore();
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const { addToCart } = useCartStore();
 
@@ -18,13 +18,20 @@ export const ProductDetails = () => {
   useEffect(() => {
     fetchProductoById(Number(id));
     setSelectedTalleId(null);
-
   }, [id, fetchProductoById]);
 
+  useEffect(() => {
+    if (productoActual?.imagenes?.length) {
+      // Busca la imagen principal, si no hay, toma la primera
+      const principal =
+        productoActual.imagenes.find((img) => img.principal) ||
+        productoActual.imagenes[0];
+      setSelectedImage(principal.urlImagen);
+    }
+  }, [productoActual]);
   console.log(productoActual);
 
   const [quantity, setQuantity] = useState(1);
-
 
   if (!productoActual) {
     return (
@@ -70,16 +77,14 @@ export const ProductDetails = () => {
           </div>
           {/* Imagen principal */}
           <div className={styles.mainImageContainer}>
-
             {productoActual.imagenes && productoActual.imagenes.length > 0 ? (
               <img
-                src={productoActual.imagenes[0].urlImagen}
+                src={`http://localhost:8080${encodeURI(selectedImage)}`} // ✅ Usamos selectedImage
                 alt={productoActual.nombre}
                 className={styles.mainImage}
               />
             ) : (
               <div className={styles.noImage}>Sin imagen</div>
-
             )}
           </div>
           {/* Info producto */}
@@ -98,7 +103,6 @@ export const ProductDetails = () => {
               <div className={styles.sizeLabel}>Talle</div>
               <div className={styles.sizes}>
                 {productoActual.talles?.map((size) => (
-
                   <button
                     key={size.talle.id ?? Math.random()}
                     className={`${styles.sizeBtn} ${
@@ -117,7 +121,6 @@ export const ProductDetails = () => {
                     }}
                     type="button"
                   >
-
                     {size.talle.tipoTalle}
                   </button>
                 ))}
