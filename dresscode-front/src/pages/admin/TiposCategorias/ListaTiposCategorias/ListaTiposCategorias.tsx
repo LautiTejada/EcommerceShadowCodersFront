@@ -8,6 +8,7 @@ import type { Tipo } from "../../../../types/Tipo";
 import type { Categoria } from "../../../../types/Categoria";
 import Swal from "sweetalert2";
 import { ModalEditarTipo } from "../../../../components/admin/ModalEditarTipo/ModalEditarTipo";
+import { ModalEditarCategoria } from "../../../../components/admin/ModalEditarCategoria/ModalEditarCategoria";
 
 export const ListaTiposCategorias = () => {
 
@@ -16,6 +17,9 @@ export const ListaTiposCategorias = () => {
     const {tipos, obtenerTipos, cambiarEstadoTipo}= tipoStore()
 
     const [tipoSeleccionado, setTipoSeleccionado] = useState<Tipo | null>(null);
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<Categoria| null>(null)
+
+
     useEffect(()=>{
         fetchCategorias()
         obtenerTipos()
@@ -24,9 +28,14 @@ export const ListaTiposCategorias = () => {
     const handleEditTipo = (tipo: Tipo) => {
             setTipoSeleccionado(tipo);
         };
+
+    const handleEditCategoria = (cat: Categoria) => {
+        setCategoriaSeleccionada(cat);
+        };
     
     const handleCloseModal = () => {
         setTipoSeleccionado(null)
+        setCategoriaSeleccionada(null)
     };
 
     const handleToggleStateTipo = (tipo: Tipo ) => {
@@ -113,7 +122,7 @@ export const ListaTiposCategorias = () => {
                         <li key={cat.id} className={styles.itemDescuento}>
                             <span className={styles.porcentaje}>{cat.nombreCategoria}</span>
                             <div className={styles.buttonObject}>
-                                <span className={styles.botonEditar} ><EditIcon/></span>
+                                <span className={styles.botonEditar} onClick={()=> handleEditCategoria(cat)} ><EditIcon/></span>
                                 <label className={styles.switch}>
                                 <input
                                     type="checkbox"
@@ -133,11 +142,17 @@ export const ListaTiposCategorias = () => {
             
         </div>
         {tipoSeleccionado && (
-                    <ModalEditarTipo
-                    tipo={tipoSeleccionado}
-                    onClose={handleCloseModal}
-                    />
-                )}
+                <ModalEditarTipo
+                tipo={tipoSeleccionado}
+                onClose={handleCloseModal}
+                />
+            )}
+        {categoriaSeleccionada && (
+            <ModalEditarCategoria
+            categoria={categoriaSeleccionada}
+            onClose={handleCloseModal}
+            />
+        )}
     </div>
   )
 }
