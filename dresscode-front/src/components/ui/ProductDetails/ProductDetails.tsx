@@ -64,14 +64,14 @@ export const ProductDetails = () => {
             {productoActual.imagenes.map((img, idx) => (
               <img
                 key={idx}
-                src={`http://localhost:8080${encodeURI(img.urlImagen)}`} // ✅ Aquí debe ser `img.urlImagen`
+                src={`http://localhost:8080${encodeURI(img.urlImagen)}`}
                 alt={`Imagen ${idx + 1}`}
                 className={`${styles.thumbnailImg} ${
                   selectedImage === img.urlImagen
                     ? styles.selectedThumbnail
                     : ""
                 }`}
-                onClick={() => setSelectedImage(img.urlImagen)} // ✅ Guardamos solo la URL
+                onClick={() => setSelectedImage(img.urlImagen)}
               />
             ))}
           </div>
@@ -79,7 +79,7 @@ export const ProductDetails = () => {
           <div className={styles.mainImageContainer}>
             {productoActual.imagenes && productoActual.imagenes.length > 0 ? (
               <img
-                src={`http://localhost:8080${encodeURI(selectedImage)}`} // ✅ Usamos selectedImage
+                src={`http://localhost:8080${encodeURI(selectedImage)}`}
                 alt={productoActual.nombre}
                 className={styles.mainImage}
               />
@@ -90,11 +90,9 @@ export const ProductDetails = () => {
           {/* Info producto */}
           <div className={styles.infoBox}>
             <h2 className={styles.productName}>{productoActual.nombre}</h2>
-
             <div className={styles.category}>
               {productoActual.categoria?.nombreCategoria}
             </div>
-
             <div className={styles.brand}>{productoActual.marca}</div>
             <div className={styles.price}>
               ${productoActual.precio.toLocaleString()}
