@@ -1,18 +1,23 @@
 import styles from "./ListaDescuentos.module.css"
 import EditIcon from '@mui/icons-material/Edit';
+import AppsIcon from '@mui/icons-material/Apps';
+import AddIcon from '@mui/icons-material/Add';
 import { useEffect, useState } from "react"
 import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin"
 import { useDescuentoStore } from "../../../../store/descuentoStore"
 import Swal from "sweetalert2";
 import type { Descuento } from "../../../../types/Descuento";
 import { ModalEditarDescuento } from "../../../../components/admin/ModalEditarDescuento/ModalEditarDescuento";
+import { ModalProductosDescuento } from "../../../../components/admin/ModalProductosDescuento/ModalProductosDescuento";
+import { ModalAgregarProductDescuento } from "../../../../components/admin/ModalAgregarProductDescuento/ModalAgregarProductDescuento";
 
 export const ListaDescuentos = () => {
 
     const { descuentos, fetchDescuentos, toggleDescuentoStatus, updateDescuento} = useDescuentoStore()
 
-      const [descuentoSeleccionado, setDescuentoSeleccionado] = useState<Descuento | null>(null);
-
+    const [descuentoSeleccionado, setDescuentoSeleccionado] = useState<Descuento | null>(null);
+    const [descuentoProductos, setDescuentoProductos] = useState<Descuento | null>(null);
+    const [descuentoParaAgregarProductos, setDescuentoParaAgregarProductos] = useState<Descuento | null>(null);
 
     useEffect(()=>{
         fetchDescuentos()
@@ -45,14 +50,28 @@ export const ListaDescuentos = () => {
         setDescuentoSeleccionado(desc);
     };
 
+    const handleProductsClick = (desc: Descuento) => {
+        setDescuentoProductos(desc);
+    };
+
+    const handleAgregarProductoClick = (desc: Descuento) => {
+    setDescuentoParaAgregarProductos(desc);
+  };
+
     const handleCloseModal = () => {
         setDescuentoSeleccionado(null);
+        setDescuentoProductos(null);
+        setDescuentoParaAgregarProductos(null);
     };
 
     const handleSaveDescuento = (updatedDescuento: Descuento) => {
         console.log("Guardando descuento editado:", updatedDescuento);
         updateDescuento(  updatedDescuento.id!, updatedDescuento)
     };
+
+
+
+
 
   return (
     <>
@@ -70,6 +89,8 @@ export const ListaDescuentos = () => {
                         <span className={styles.fecha}>Fecha inicio: {desc.fechaInicio}</span>
                         <span className={styles.fecha}>Fecha cierre: {desc.fechaCierre}</span>
                         <span className={styles.botonEditar} onClick={() => handleEditClick(desc)}><EditIcon/></span>
+                        <span className={styles.botonAgregar}onClick={() => handleAgregarProductoClick(desc)}><AddIcon/></span>
+                        <span className={styles.buttonProducts} onClick={() => handleProductsClick(desc)}><AppsIcon/></span>
                         <label className={styles.switch}>
                             <input
                                 type="checkbox"
@@ -90,8 +111,21 @@ export const ListaDescuentos = () => {
           descuento={descuentoSeleccionado}
           onClose={handleCloseModal}
           onSave={handleSaveDescuento}
-        />
-      )}
+            />
+        )}
+        {descuentoProductos && (
+            <ModalProductosDescuento
+            descuentoId={descuentoProductos.id!}
+            onClose={handleCloseModal}
+            />
+        )}
+
+        {descuentoParaAgregarProductos && (
+            <ModalAgregarProductDescuento
+            descuentoId={descuentoParaAgregarProductos.id!}
+            onClose={handleCloseModal}
+            />
+        )}
         
         
     </>
