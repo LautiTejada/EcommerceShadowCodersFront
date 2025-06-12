@@ -19,9 +19,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     );
   }
 
-  const imagenPrincipal =
-    product.imagenes?.find((img) => img.principal) || product.imagenes?.[0];
-
   return (
     <Link
       to={`/product/${product.id}`}
