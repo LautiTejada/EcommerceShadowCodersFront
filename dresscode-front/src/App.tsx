@@ -16,9 +16,8 @@ import { EstadoProducto } from "./pages/admin/Productos/EstadoProducto/EstadoPro
 import { StockProducto } from "./pages/admin/Productos/StockProducto/StockProducto";
 import { AgregarDescuento } from "./pages/admin/Descuentos/AgregarDescuento/AgregarDescuento";
 import { AgregarTiposCategorias } from "./pages/admin/TiposCategorias/AgregarTiposCategorias/AgregarTiposCategorias";
-import { ModificarTiposCategorias } from "./pages/admin/TiposCategorias/ModificarTiposCategorias/ModificarTiposCategorias";
-import { EstadoTiposCategorias } from "./pages/admin/TiposCategorias/EstadoTiposCategorias/EstadoTiposCategorias";
 import { ListaDescuentos } from "./pages/admin/Descuentos/ListaDescuentos/ListaDescuentos";
+import { ListaTiposCategorias } from "./pages/admin/TiposCategorias/ListaTiposCategorias/ListaTiposCategorias";
 
 
 function App() {
@@ -49,10 +48,7 @@ function App() {
 
 
         <Route path="/admin/add-type-cateogory" element={<AgregarTiposCategorias/>}/>
-        <Route path="/admin/edit-type-cateogory" element={<ModificarTiposCategorias/>}/>
-        <Route path="/admin/state-type-cateogory" element={<EstadoTiposCategorias/>}/>
-
-
+        <Route path="/admin/list-type-cateogory" element={<ListaTiposCategorias/>}/>
         
       </Routes>
 

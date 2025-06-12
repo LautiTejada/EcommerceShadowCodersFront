@@ -80,7 +80,7 @@ export const ListaDescuentos = () => {
             <MenuAdmin/>
             <div className={styles.containerDescuentos}>
                 <div className={styles.titleDescuentos}>
-                    <h3>Descuentos</h3>
+                    <h3>DESCUENTOS</h3>
                 </div>
                 <ul className={styles.lista}>
                     {descuentos.map((desc) => (
