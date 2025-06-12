@@ -74,6 +74,14 @@
   opacity: 0.8;
 }
 
+.botonAgregar{
+  cursor: pointer;
+}
+
+.buttonProducts{
+  cursor: pointer;
+}
+
 /* Switch estilo */
 .switch {
   position: relative;
