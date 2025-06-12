@@ -30,7 +30,7 @@ export const getDescuentosActivos = async () : Promise<Descuento[]> => {
 
 export const crearDescuento = async (descuento : Descuento) : Promise<Descuento> => {
   try {
-    const response = await fetch(`${baseUrl}/descuentos`, {
+    const response = await fetch(`${baseUrl}/descuentos/save`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -94,6 +94,56 @@ export const cambiarEstadoDescuento = async (id: number) : Promise<Descuento> =>
     throw error;
   }
 }
+
+export const traerProductosPorDescuento = async (descuentoId: number) => {
+  try {
+    const response = await fetch(`${baseUrl}/descuentos/${descuentoId}/productos`)
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+  } catch (error) {
+    console.error('Error fetching descuentos:', error);
+    throw error;
+  }
+}
+
+export const agregarProductoADescuento = async (descuentoId : number, productoId: number) =>{
+  try {
+    const response = await fetch(`${baseUrl}/descuentos/${descuentoId}/productos/${productoId}`,{
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.status;
+  } catch (error) {
+    console.error('Error creating descuento producto:', error);
+    throw error;
+  }
+}
+
+export const eliminarProductoDeDescuento = async (descuentoId: number, productoId: number) => {
+  try {
+    const response = await fetch(`${baseUrl}/descuentos/${descuentoId}/productos/${productoId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.status; // o return true;
+  } catch (error) {
+    console.error('Error eliminando producto de descuento:', error);
+    throw error;
+  }
+}
+
 
 export const activarDescuento = async (id: number) : Promise<Descuento> => {
   try {

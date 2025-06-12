@@ -19,6 +19,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     );
   }
 
+  const imagenPrincipal =
+    product.imagenes?.find((img) => img.principal) || product.imagenes?.[0];
+
   return (
     <Link
       to={`/product/${product.id}`}
@@ -37,7 +40,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         <div className={styles.imageContainer}>
           {product.imagenes && product.imagenes.length > 0 ? (
             <img
-              src={product.imagenes[0].urlImagen}
+              src={`http://localhost:8080${encodeURI(
+                product.imagenes[0].urlImagen
+              )}`}
               alt={product.nombre}
               className={styles.productImage}
               loading="lazy"

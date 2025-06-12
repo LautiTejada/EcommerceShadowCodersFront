@@ -1,0 +1,86 @@
+.modalBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: #1e1e1e;
+  padding: 30px;
+  border-radius: 8px;
+  width: 600px;
+}
+
+.headerProductos{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.title {
+  color: white;
+  font-size: 18px;
+}
+
+.closeButton {
+  margin: 0;
+  height: 45px;
+  width: 45px;
+  background-color: #8b0000;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.noProductos{
+  color: #fff;
+  background-color: #111;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2%;
+}
+
+
+.productoCard {
+  background-color: #3c3c3c;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.productoNombre {
+  color: white;
+  margin-right: 20px;
+
+}
+
+.productoPrecio,
+.productoPrecioDescuento {
+  color: white;
+  margin-right: 20px;
+}
+
+.deleteButton {
+  margin: 0;
+  width: 45px;
+  height: 45px;
+  background-color: #8b0000;
+  color: white;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}

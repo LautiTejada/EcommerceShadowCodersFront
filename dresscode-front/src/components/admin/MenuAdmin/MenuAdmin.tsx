@@ -58,30 +58,15 @@ const MenuAdmin: React.FC<MenuAdminProps> = () => {
           AGREGAR UN DESCUENTO
         </div>
         </Link>
-        <Link to="/admin/edit-discount">
+        <Link to="/admin/list-discounts">
         <div
           className={`${styles.menuItem} $ styles.selected : ""}`}
         //   onClick={() => onSelect && onSelect("MODIFICAR UN PRODUCTO")}
         >
-          MODIFICAR UN DESCUENTO
+          LISTA DE DESCUENTOS
         </div>
         </Link>
-        <Link to= "/admin/products-discount">
-          <div
-            className={`${styles.menuItem} styles.selected : ""}`}
-          //   onClick={() => onSelect && onSelect("AGREGAR UN PRODUCTO")}
-          >
-            PRODUCTOS DESCUENTO
-          </div>
-        </Link>
-        <Link to = "/admin/state-discount">
-        <div
-          className={`${styles.menuItem} $ ? styles.selected : ""}`}
-        //   onClick={() => onSelect && onSelect("ELIMINAR UN PRODUCTO")}
-        >
-          ACTIVAR / DESACTIVAR
-        </div>
-        </Link>
+      
       </div>
       <div className={styles.menuSection}>
         <div className={styles.menuTitle}>TIPOS / CATEGORIAS</div>

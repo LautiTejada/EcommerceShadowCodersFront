@@ -244,3 +244,7 @@
 .addButton:hover {
   background: #b00;
 }
+
+.inputDropdownWrapper {
+  position: relative;
+}
