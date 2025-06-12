@@ -4,60 +4,73 @@ import { CategoryBar } from "../CategoryBar/CategoryBar";
 import { useParams } from "react-router-dom";
 import { useProductoStore } from "../../../store/productoStore";
 
-
-
 export const ProductDetails = () => {
   const { id } = useParams();
   const { fetchProductoById, productoActual } = useProductoStore();
-
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   useEffect(() => {
     fetchProductoById(Number(id));
-
   }, [id, fetchProductoById]);
 
   console.log(productoActual);
 
   const [quantity, setQuantity] = useState(1);
 
-  if (!productoActual) {
-    return <div className={styles.productNoFound}>ERROR: Producto no encontrado</div>;
+  useEffect(() => {
+    if (productoActual?.imagenes?.length) {
+      // Busca la imagen principal, si no hay, toma la primera
+      const principal =
+        productoActual.imagenes.find((img) => img.principal) ||
+        productoActual.imagenes[0];
+      setSelectedImage(principal.urlImagen);
+    }
+  }, [productoActual]);
 
+  if (!productoActual) {
+    return (
+      <div className={styles.productNoFound}>ERROR: Producto no encontrado</div>
+    );
   }
-  
 
   return (
     <>
-    <CategoryBar/>
+      <CategoryBar />
       <div className={styles.bg}>
         <div className={styles.container}>
           {/* Miniaturas */}
-          {/* <div className={styles.thumbnails}>
-            {product.images.map((img, idx) => (
+          <div className={styles.thumbnails}>
+            {productoActual.imagenes.map((img, idx) => (
               <img
                 key={idx}
-                src={img}
-                alt={product.name}
+                src={`http://localhost:8080${encodeURI(img.urlImagen)}`} // ✅ Aquí debe ser `img.urlImagen`
+                alt={`Imagen ${idx + 1}`}
                 className={`${styles.thumbnailImg} ${
-                  selectedImage === img ? styles.selectedThumbnail : ""
+                  selectedImage === img.urlImagen
+                    ? styles.selectedThumbnail
+                    : ""
                 }`}
-                onClick={() => setSelectedImage(img)}
+                onClick={() => setSelectedImage(img.urlImagen)} // ✅ Guardamos solo la URL
               />
             ))}
-          </div> */}
+          </div>
           {/* Imagen principal */}
           <div className={styles.mainImageContainer}>
-            {/* <img
-              // src={selectedImage}
-              alt={product.nombre}
-              className={styles.mainImage}
-            /> */}
+            {selectedImage && (
+              <img
+                src={`http://localhost:8080${encodeURI(selectedImage)}`} // ✅ Usamos selectedImage
+                alt={productoActual.nombre}
+                className={styles.mainImage}
+              />
+            )}
           </div>
           {/* Info producto */}
           <div className={styles.infoBox}>
             <h2 className={styles.productName}>{productoActual.nombre}</h2>
 
-            <div className={styles.category}>{productoActual.categoria?.nombreCategoria}</div>
-            
+            <div className={styles.category}>
+              {productoActual.categoria?.nombreCategoria}
+            </div>
+
             <div className={styles.brand}>{productoActual.marca}</div>
             <div className={styles.price}>
               ${productoActual.precio.toLocaleString()}
@@ -65,22 +78,15 @@ export const ProductDetails = () => {
             <div className={styles.sizeSection}>
               <div className={styles.sizeLabel}>Talle</div>
               <div className={styles.sizes}>
-                 
                 {productoActual.talles?.map((size) => (
-
-                  <button
-                     key={size.talle.id}
-                     className={`${styles.sizeBtn} `}
-                  >
+                  <button key={size.talle.id} className={`${styles.sizeBtn} `}>
                     {size.talle.tipoTalle}
                   </button>
                 ))}
               </div>
             </div>
             <div className={styles.color}>
-              
               Color: <span>{productoActual.color}</span>
-
             </div>
             {/* Cantidad */}
             <div className={styles.quantitySection}>

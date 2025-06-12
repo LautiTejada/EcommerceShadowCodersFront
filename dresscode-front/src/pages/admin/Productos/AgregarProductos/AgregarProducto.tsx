@@ -72,10 +72,11 @@ export const AgregarProducto = () => {
 
     // 2. Subir imágenes si hay archivos
     if (productoCreado?.id && files.length > 0) {
-      for (const file of files) {
+      for (const [idx, file] of files.entries()) {
         const formData = new FormData();
         formData.append("productoId", productoCreado.id);
         formData.append("image", file);
+        formData.append("principal", idx === 0 ? "true" : "false"); // Por defecto, no es principal
 
         await fetch(
           `${import.meta.env.VITE_API_URL}/imagenes-producto/upload`,
