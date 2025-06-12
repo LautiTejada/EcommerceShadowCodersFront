@@ -46,27 +46,46 @@ export const AgregarProducto = () => {
     setProduct({ ...product, [field]: value });
   };
 
-  const handleAddProduct = (e: React.FormEvent) => {
-    e.preventDefault(); // Evitar recarga de página
+  const handleAddProduct = async (e: React.FormEvent) => {
+    e.preventDefault();
 
     if (!categoriaActual || categoriaActual.id === undefined) {
       alert("Seleccioná una categoría válida");
       return;
     }
 
-    // Validaciones simples si querés:
     if (!product.nombre || !product.precio) {
       alert("Completa al menos nombre y precio");
       return;
     }
 
-    // Construir el producto a enviar
     const nuevoProducto = {
       ...product,
-      precio: Number(product.precio), // si en la store espera number
+      precio: Number(product.precio),
     };
 
-    agregarProductoConCategoria(nuevoProducto, categoriaActual.id);
+    // 1. Crear producto
+    const productoCreado = await agregarProductoConCategoria(
+      nuevoProducto,
+      categoriaActual.id
+    );
+
+    // 2. Subir imágenes si hay archivos
+    if (productoCreado?.id && files.length > 0) {
+      for (const file of files) {
+        const formData = new FormData();
+        formData.append("productoId", productoCreado.id);
+        formData.append("image", file);
+
+        await fetch(
+          `${import.meta.env.VITE_API_URL}/imagenes-producto/upload`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+      }
+    }
 
     // Reseteo de formulario
     setProduct({
@@ -77,7 +96,7 @@ export const AgregarProducto = () => {
       marca: undefined,
       imagenes: [],
     });
-
+    setFiles([]);
     setCategoriaActual(null);
   };
 
@@ -228,43 +247,20 @@ export const AgregarProducto = () => {
           <div className={styles.formRow}>
             <div className={styles.formGroupWide}>
               <label className={styles.label}>IMAGENES DEL PRODUCTO</label>
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileChange}
+              />
               <div className={styles.imagesRow}>
-                {product.imagenes?.map((img, idx) => (
+                {files.map((file, idx) => (
                   <div key={idx} className={styles.imageBox}>
-                    {img ? (
-                      <div className={styles.imagePreview}>
-                        <img
-                          src={`http://localhost:4000${encodeURI(
-                            product.imagenes[0].urlImagen
-                          )}`}
-                          alt="preview"
-                          className={styles.img}
-                        />
-                        <button
-                          type="button"
-                          className={styles.deleteBtn}
-                          //   onClick={() => handleImageChange(idx, null)}
-                        >
-                          {/* <FaTrashAlt /> */}
-                        </button>
-                      </div>
-                    ) : (
-                      <label className={styles.uploadLabel}>
-                        <span className={styles.uploadIcon}>+</span>
-                        <span>Cargar</span>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          style={{ display: "none" }}
-                          //   onChange={e =>
-                          //     handleImageChange(
-                          //       idx,
-                          //       e.target.files ? e.target.files[0] : null
-                          //     )
-                          //   }
-                        />
-                      </label>
-                    )}
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt="preview"
+                      className={styles.img}
+                    />
                   </div>
                 ))}
               </div>
