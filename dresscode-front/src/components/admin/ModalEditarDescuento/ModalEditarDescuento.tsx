@@ -2,8 +2,20 @@
 import styles from "./ModalEditarDescuento.module.css";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import { useDescuentoStore } from "../../../store/descuentoStore";
+import type { Descuento } from "../../../types/Descuento";
 
-export const ModalEditarDescuento = ({ descuento, onClose, onSave }: any) => {
+
+interface ModalEditarDescuentoProps{
+  descuento: Descuento,
+  onClose: () => void
+}
+
+
+export const ModalEditarDescuento = ({ descuento, onClose }: ModalEditarDescuentoProps) => {
+
+  const {updateDescuento} = useDescuentoStore()
+
   const [porcentaje, setPorcentaje] = useState(descuento.porcentajeDescuento);
   const [fechaInicio, setFechaInicio] = useState(descuento.fechaInicio);
   const [fechaCierre, setFechaCierre] = useState(descuento.fechaCierre);
@@ -21,7 +33,7 @@ export const ModalEditarDescuento = ({ descuento, onClose, onSave }: any) => {
       return;
     }
 
-    onSave({
+    updateDescuento(descuento.id! , {
       ...descuento,
       porcentajeDescuento: porcentaje,
       fechaInicio: fechaInicio,

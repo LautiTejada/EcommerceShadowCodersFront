@@ -110,7 +110,6 @@ export const ListaDescuentos = () => {
         <ModalEditarDescuento
           descuento={descuentoSeleccionado}
           onClose={handleCloseModal}
-          onSave={handleSaveDescuento}
             />
         )}
         {descuentoProductos && (

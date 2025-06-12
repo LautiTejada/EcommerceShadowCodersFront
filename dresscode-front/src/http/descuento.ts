@@ -50,7 +50,7 @@ export const crearDescuento = async (descuento : Descuento) : Promise<Descuento>
 
 export const actualizarDescuento = async (id: number, descuento: Descuento) : Promise<Descuento> => {
   try {
-    const response = await fetch(`${baseUrl}/descuentos/${id}`, {
+    const response = await fetch(`${baseUrl}/descuentos/${id}/edit`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
