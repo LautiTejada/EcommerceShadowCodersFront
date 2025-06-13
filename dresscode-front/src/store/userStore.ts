@@ -29,8 +29,11 @@ interface UsuarioState {
     direccionId: number,
     direccion: Direccion
   ) => Promise<void>;
-  desactivarDireccionUsuario: (usuarioId: number, direccionId: number) => Promise<void>;
-  inicializarUsuario : () => Promise<void>
+  desactivarDireccionUsuario: (
+    usuarioId: number,
+    direccionId: number
+  ) => Promise<void>;
+  inicializarUsuario: () => Promise<void>;
   setUsuarioActual: (categoria: Usuario | null) => void;
 
   limpiarError: () => void;
@@ -158,7 +161,7 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
   obtenerDireccionesUsuario: async (usuarioId) => {
     try {
       const direcciones = await usuarioAPI.getDireccionesDeUsuario(usuarioId);
-       console.log("Respuesta cruda del backend:", direcciones);
+      console.log("Respuesta cruda del backend:", direcciones);
       const direccionesValidas = Array.isArray(direcciones)
         ? direcciones.filter(
             (d) =>
@@ -197,22 +200,22 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
   },
 
   desactivarDireccionUsuario: async (usuarioId, direccionId) => {
-  try {
-    await usuarioAPI.desactivarDireccionDeUsuario(usuarioId, direccionId);
-    await get().obtenerDireccionesUsuario(usuarioId);
-  } catch (error) {
-    console.log("Error desactivando dirección de usuario:", error);
-  }
-},
+    try {
+      await usuarioAPI.desactivarDireccionDeUsuario(usuarioId, direccionId);
+      await get().obtenerDireccionesUsuario(usuarioId);
+    } catch (error) {
+      console.log("Error desactivando dirección de usuario:", error);
+    }
+  },
 
-inicializarUsuario: async () => {
-  const userId = localStorage.getItem("usuario");
-  if (userId) {
-    await get().obtenerUsuarioPorId(Number(userId));
-  }
-},
+  inicializarUsuario: async () => {
+    const userId = localStorage.getItem("usuario");
+    if (userId) {
+      await get().obtenerUsuarioPorId(Number(userId));
+    }
+  },
 
   limpiarError: () => set({ error: null }),
 
-  setUsuarioActual : (usuario) => set({usuarioActual : usuario}),
+  setUsuarioActual: (usuario) => set({ usuarioActual: usuario }),
 }));

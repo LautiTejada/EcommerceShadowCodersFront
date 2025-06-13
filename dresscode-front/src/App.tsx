@@ -19,6 +19,7 @@ import { ListaDescuentos } from "./pages/admin/Descuentos/ListaDescuentos/ListaD
 import { ListaTiposCategorias } from "./pages/admin/TiposCategorias/ListaTiposCategorias/ListaTiposCategorias";
 import { useEffect } from "react";
 import { useUsuarioStore } from "./store/userStore";
+import AdminRoute from "./components/admin/AdminRoute";
 
 function App() {
   const inicializarUsuario = useUsuarioStore((s) => s.inicializarUsuario);
@@ -46,24 +47,72 @@ function App() {
         <Route path="/catalog/ropa" element={<Catalog filter="ROPA" />} />
         <Route path="/catalog/ofertas" element={<Catalog filter="OFERTAS" />} />
 
+        <Route
+          path="/admin"
+          element={
+            <AdminRoute>
+              <HomeAdmin />
+            </AdminRoute>
+          }
+        />
 
-        <Route path="/admin" element={<HomeAdmin />} />
+        <Route
+          path="/admin/add-product"
+          element={
+            <AdminRoute>
+              <AgregarProducto />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/edit-product"
+          element={
+            <AdminRoute>
+              <EditarProducto />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/stock-product"
+          element={
+            <AdminRoute>
+              <StockProducto />
+            </AdminRoute>
+          }
+        />
 
-        <Route path="/admin/add-product" element={<AgregarProducto />} />
-        <Route path="/admin/edit-product" element={<EditarProducto />} />
-        <Route path="/admin/stock-product" element={<StockProducto />} />
-        
-
-        <Route path="/admin/add-discount" element={<AgregarDescuento />} />
-        <Route path="/admin/list-discounts" element={<ListaDescuentos />} />
+        <Route
+          path="/admin/add-discount"
+          element={
+            <AdminRoute>
+              <AgregarDescuento />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/list-discounts"
+          element={
+            <AdminRoute>
+              <ListaDescuentos />
+            </AdminRoute>
+          }
+        />
 
         <Route
           path="/admin/add-type-cateogory"
-          element={<AgregarTiposCategorias />}
+          element={
+            <AdminRoute>
+              <AgregarTiposCategorias />
+            </AdminRoute>
+          }
         />
         <Route
           path="/admin/list-type-cateogory"
-          element={<ListaTiposCategorias />}
+          element={
+            <AdminRoute>
+              <ListaTiposCategorias />
+            </AdminRoute>
+          }
         />
       </Routes>
 
