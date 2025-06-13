@@ -5,6 +5,13 @@ import ProductCard from "../../components/ui/ProductCard/ProductCard";
 import { useLocation } from "react-router-dom";
 import { useCategoriaStore } from "../../store/categoriaStore";
 
+// --- Mueve la función normalizar aquí ---
+const normalizar = (str: string) =>
+  str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toUpperCase();
+
 export const Catalog = ({ filter }: { filter?: string }) => {
   const { productosActivos, fetchProductosActivos, fetchProductosFiltrados } =
     useProductoStore();
@@ -18,11 +25,6 @@ export const Catalog = ({ filter }: { filter?: string }) => {
 
   useEffect(() => {
     let filtros: any = {};
-    const normalizar = (str: string) =>
-      str
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .toUpperCase();
 
     if (location.pathname.includes("calzados") || filter === "CALZADOS") {
       const cats = categoriasActivas.filter(
@@ -35,7 +37,9 @@ export const Catalog = ({ filter }: { filter?: string }) => {
       const cats = categoriasActivas.filter(
         (c) =>
           !normalizar(c.nombreCategoria).includes("ZAPATILLA") &&
+          !normalizar(c.nombreCategoria).includes("ZAPATILLAS") &&
           !normalizar(c.nombreCategoria).includes("CALZADO") &&
+          !normalizar(c.nombreCategoria).includes("CALZADOS") &&
           !normalizar(c.nombreCategoria).includes("OFERTA")
       );
       if (cats.length) filtros.categorias = cats.map((c) => c.id);
@@ -56,13 +60,37 @@ export const Catalog = ({ filter }: { filter?: string }) => {
     categoriasActivas,
   ]);
 
-  // --- FILTRO FINAL SOLO PARA OFERTAS ---
+  // --- FILTRO FINAL SOLO PARA OFERTAS Y ROPA ---
   const productosFiltrados =
     location.pathname.includes("ofertas") || filter === "OFERTAS"
       ? productosActivos.filter(
           (producto) =>
             producto.descuentos &&
             producto.descuentos.some((d) => d.activo && d.descuento?.activo)
+        )
+      : location.pathname.includes("ropa") || filter === "ROPA"
+      ? productosActivos.filter(
+          (producto) =>
+            // Excluir productos con descuento activo
+            !(
+              producto.descuentos &&
+              producto.descuentos.some((d) => d.activo && d.descuento?.activo)
+            ) &&
+            // Excluir productos cuya categoría sea zapatilla o calzado
+            !(
+              normalizar(producto.categoria?.nombreCategoria || "").includes(
+                "ZAPATILLA"
+              ) ||
+              normalizar(producto.categoria?.nombreCategoria || "").includes(
+                "ZAPATILLAS"
+              ) ||
+              normalizar(producto.categoria?.nombreCategoria || "").includes(
+                "CALZADO"
+              ) ||
+              normalizar(producto.categoria?.nombreCategoria || "").includes(
+                "CALZADOS"
+              )
+            )
         )
       : productosActivos;
 
