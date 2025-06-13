@@ -48,30 +48,36 @@ const Cart = () => {
     }
     try {
       const orden = {
-        usuario: usuarioActual,
+        usuario: {
+          id: usuarioActual.id,
+          username: usuarioActual.username, // Asegúrate de que esta propiedad exista
+          email: usuarioActual.email,
+          rol: usuarioActual.rol,
+        },
         direccion: direccionSeleccionada,
         fecha: new Date().toISOString(),
         precioTotal: subtotal,
         metodoPago: "MERCADO_PAGO" as MetodoPago,
         estadoOrden: "PEDIDO" as EstadoOrden,
-      };
-      const ordenCreada = await createOrdenDeCompra(orden);
-
-      for (const item of cart) {
-        await addDetalleOrden({
-          ordenDeCompraId: ordenCreada.id!,
+        detalles: cart.map((item) => ({
           productoTalle: {
             productoId: item.productoId,
-            talle: { id: item.talleId!, activo: true, tipoTalle: "" },
+            talle: {
+              id: item.talleId!,
+              activo: true,
+              tipoTalle: item.tipoTalle || "", // Asegúrate de que `tipoTalle` esté definido
+            },
             activo: true,
             cantidad: item.cantidad,
           },
           cantidad: item.cantidad,
-          precioUnitario: getPrecioFinal(item),
-        });
-      }
 
-      // Mercado Pago
+          precioUnitario: item.precio,
+        })),
+      };
+
+      const ordenCreada = await createOrdenDeCompra(orden);
+
       const response = await fetch(
         "http://localhost:8080/api/mercado-pago/mp",
         {
@@ -82,20 +88,26 @@ const Cart = () => {
             items: cart.map((item) => ({
               title: item.nombre,
               quantity: item.cantidad,
-              unit_price: getPrecioFinal(item),
+              unit_price: item.precio,
+              urlImagen: item.imagen,
+
             })),
           }),
         }
       );
       const data = await response.json();
 
+      // Verificar si la URL de pago está presente
       if (data.init_point) {
-        clearCart();
-        window.location.href = data.init_point;
+
+        clearCart(); // Limpiar el carrito
+        window.open(data.init_point, "_blank"); // Abrir la URL en una nueva pestaña
+
       } else {
-        alert("No se pudo iniciar el pago.");
+        alert("Error al redirigir a Mercado Pago");
       }
     } catch (error) {
+      console.error("Error al finalizar la compra:", error);
       alert("Error al finalizar la compra");
     }
   };
@@ -118,54 +130,29 @@ const Cart = () => {
               </tr>
             </thead>
             <tbody>
-              {cart.map((item) => {
-                const precioFinal = getPrecioFinal(item);
-                const descuentoActivo =
-                  item.descuentos &&
-                  Array.isArray(item.descuentos) &&
-                  item.descuentos.find(
-                    (d: any) =>
-                      d && d.activo && d.descuento && d.descuento.activo
-                  );
-                return (
-                  <tr
-                    key={
-                      String(item.productoId) + "-" + String(item.talleId ?? "")
-                    }
-                  >
-                    <td className={styles.productInfoCell}>
-                      <img
-                        src={item.imagen}
-                        alt={item.nombre}
-                        className={styles.productImg}
-                      />
-                      <div className={styles.productInfo}>
-                        <div className={styles.productName}>{item.nombre}</div>
-                        {item.talleId && (
-                          <div className={styles.productBrand}>
-                            Talle: {item.talleId}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className={styles.productPrice}>
-                      {descuentoActivo && descuentoActivo.descuento ? (
-                        <>
-                          <span style={{ color: "#e53935", fontWeight: 700 }}>
-                            ${precioFinal.toLocaleString("es-AR")}
-                          </span>
-                          <span
-                            style={{
-                              color: "#888",
-                              textDecoration: "line-through",
-                              marginLeft: 8,
-                            }}
-                          >
-                            ${item.precio.toLocaleString("es-AR")}
-                          </span>
-                        </>
-                      ) : (
-                        <span>${item.precio.toLocaleString("es-AR")}</span>
+
+              {cart.map((item) => (
+                <tr
+                  key={
+                    String(item.productoId) + "-" + String(item.talleId ?? "")
+                  }
+                >
+                  <td className={styles.productInfoCell}>
+                    <img
+                      src={`http://localhost:8080${encodeURI(
+                        item.imagen[0].startsWith("/")
+                          ? item.imagen
+                          : `/${item.imagen}`
+                      )}`}
+                      alt={item.nombre}
+                      className={styles.productImg}
+                    />
+                    <div className={styles.productInfo}>
+                      <div className={styles.productName}>{item.nombre}</div>
+                      {item.talleId && (
+                        <div className={styles.productBrand}>
+                          Talle: {item.talleId}
+                        </div>
                       )}
                     </td>
                     <td className={styles.productQtyCell}>
