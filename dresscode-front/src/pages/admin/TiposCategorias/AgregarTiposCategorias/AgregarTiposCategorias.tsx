@@ -13,7 +13,7 @@ export const AgregarTiposCategorias = () => {
     nombre: "",
   })
 
-  const {crearTipo , tipos, obtenerTipos, tipoActual, setTipoActual} = tipoStore();
+  const {crearTipo , tipos, obtenerTiposActivos, tipoActual, setTipoActual} = tipoStore();
 
   const handleInputTipo = (field: string, value: string) => {
     setTipo({ ...tipo, [field]: value });
@@ -43,8 +43,8 @@ export const AgregarTiposCategorias = () => {
     const { addCategoria } = useCategoriaStore()
 
    useEffect(()=> {
-    obtenerTipos()
-   },[obtenerTipos])
+    obtenerTiposActivos()
+   },[obtenerTiposActivos])
 
    const [showCategory, setShowCategory] = useState(false);
 

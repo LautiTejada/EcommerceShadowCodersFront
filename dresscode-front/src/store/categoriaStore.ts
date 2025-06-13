@@ -15,7 +15,7 @@ interface CategoriaState {
   categorias: Categoria[];
   categoriaActual: Categoria | null;
   categoriasActivas: Categoria[];
-  fetchCategorias: () => Promise<void>;
+  // fetchCategorias: () => Promise<void>;
   fetchCategoriasActivas: () => Promise<void>;
   fetchCategoriaById: (id: number) => Promise<Categoria | null>;
   addCategoria: (categoria: Categoria, idTipo : number) => Promise<void>;
@@ -31,15 +31,15 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
   categoriaActual: null,
   categoriasActivas: [],
 
-  fetchCategorias: async () => {
-    try {
-      const categoriasFromApi = await getCategorias();
-      set({ categorias: categoriasFromApi });
-    } catch (error) {
+  // fetchCategorias: async () => {
+  //   try {
+  //     const categoriasFromApi = await getCategorias();
+  //     set({ categorias: categoriasFromApi });
+  //   } catch (error) {
 
-      console.error('Error cargando categorías:', error);
-    }
-  },
+  //     console.error('Error cargando categorías:', error);
+  //   }
+  // },
 
   fetchCategoriasActivas: async () => {
     try {
@@ -62,7 +62,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
   addCategoria: async (categoria, idTipo) => {
     try {
       await crearCategoria(categoria, idTipo);
-      await get().fetchCategorias();
+      await get().fetchCategoriasActivas();
     } catch (error) {
       console.error('Error creando categoría:', error);
 
@@ -72,7 +72,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
   updateCategoria: async (id, categoria, tipoId) => {
     try {
       await actualizarCategoria(id, categoria, tipoId);
-      await get().fetchCategorias();
+      await get().fetchCategoriasActivas();
     } catch (error) {
       console.error("Error actualizando categoría:", error);
     }
@@ -81,7 +81,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
   toggleCategoriaStatus: async (id) => {
     try {
       await cambiarEstadoCategoria(id);
-      await get().fetchCategorias();
+      await get().fetchCategoriasActivas();
     } catch (error) {
       console.error('Error cambiando estado de categoría:', error);
     }
@@ -90,20 +90,24 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
   activateCategoria: async (id) => {
     try {
       await activarCategoria(id);
-      await get().fetchCategorias();
+      await get().fetchCategoriasActivas();
     } catch (error) {
       console.error('Error activando categoría:', error);
     }
   },
 
   desactivateCategoria: async (id) => {
-    try {
-      await desactivarCategoria(id);
-      await get().fetchCategorias();
-    } catch (error) {
-      console.error('Error desactivando categoría:', error);
-    }
-  },
+  try {
+    await desactivarCategoria(id);
+
+    set((state) => ({
+      categoriasActivas: state.categoriasActivas.filter((c) => c.id !== id)
+    }));
+  } catch (error) {
+    console.error('Error desactivando categoría:', error);
+  }
+},
+
 
   setCategoriaActual : (categoria) => set({categoriaActual : categoria}),
 }));

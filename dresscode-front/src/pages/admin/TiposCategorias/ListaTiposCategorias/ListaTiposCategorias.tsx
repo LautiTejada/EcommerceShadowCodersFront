@@ -1,5 +1,6 @@
 import styles from "./ListaTiposCategorias.module.css"
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect, useState } from "react"
 import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin"
 import { useCategoriaStore } from "../../../../store/categoriaStore"
@@ -12,18 +13,18 @@ import { ModalEditarCategoria } from "../../../../components/admin/ModalEditarCa
 
 export const ListaTiposCategorias = () => {
 
-    const {categorias, fetchCategorias, toggleCategoriaStatus} = useCategoriaStore()
+    const {categoriasActivas, fetchCategoriasActivas, desactivateCategoria} = useCategoriaStore()
 
-    const {tipos, obtenerTipos, cambiarEstadoTipo}= tipoStore()
+    const {tipos, obtenerTiposActivos, desactivarTipo}= tipoStore()
 
     const [tipoSeleccionado, setTipoSeleccionado] = useState<Tipo | null>(null);
     const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<Categoria| null>(null)
 
 
     useEffect(()=>{
-        fetchCategorias()
-        obtenerTipos()
-    }, [fetchCategorias, obtenerTipos])
+        fetchCategoriasActivas()
+        obtenerTiposActivos()
+    }, [])
 
     const handleEditTipo = (tipo: Tipo) => {
             setTipoSeleccionado(tipo);
@@ -40,17 +41,18 @@ export const ListaTiposCategorias = () => {
 
     const handleToggleStateTipo = (tipo: Tipo ) => {
             Swal.fire({
-            title: `¿Estás seguro de ${tipo.activo ? 'desactivar' : 'activar'} este descuento?`,
+            title: `¿Estás seguro de eliminar este tipo?`,
             text: `Tipo: ${tipo.nombre}, se desactivaran todas sus categorias y sus productos`,
             icon: "warning",
             showCancelButton: true,
             confirmButtonColor: "#7f5af0",
             cancelButtonColor: "#d33",
-            confirmButtonText: `Sí, ${tipo.activo ? 'desactivar' : 'activar'}`,
+            confirmButtonText: `Sí, eliminar`,
             cancelButtonText: "Cancelar",
             }).then((result) => {
             if (result.isConfirmed) {
-                cambiarEstadoTipo(tipo.id!);
+                desactivarTipo(tipo.id!);
+                obtenerTiposActivos()
                 Swal.fire({
                 title: `${tipo.activo ? 'Desactivado' : 'Activado'}`,
                 text: `El descuento se ha ${tipo.activo ? 'desactivado' : 'activado'} correctamente.`,
@@ -63,7 +65,7 @@ export const ListaTiposCategorias = () => {
 
         const handleToggleStateCategoria = (categ: Categoria ) => {
             Swal.fire({
-            title: `¿Estás seguro de ${categ.activo ? 'desactivar' : 'activar'} este descuento?`,
+            title: `¿Estás seguro de eliminar esta categoria?`,
             text: `Tipo: ${categ.nombreCategoria}, se desactivaran todos sus productos`,
             icon: "warning",
             showCancelButton: true,
@@ -73,7 +75,8 @@ export const ListaTiposCategorias = () => {
             cancelButtonText: "Cancelar",
             }).then((result) => {
             if (result.isConfirmed) {
-                toggleCategoriaStatus(categ.id!);
+                desactivateCategoria(categ.id!);
+                fetchCategoriasActivas()
                 Swal.fire({
                 title: `${categ.activo ? 'Desactivado' : 'Activado'}`,
                 text: `El descuento se ha ${categ.activo ? 'desactivado' : 'activado'} correctamente.`,
@@ -99,14 +102,7 @@ export const ListaTiposCategorias = () => {
                             <span className={styles.porcentaje}>{tipo.nombre}</span>
                             <div className={styles.buttonObject}>
                                 <span className={styles.botonEditar} onClick={() => handleEditTipo(tipo)} ><EditIcon/></span>
-                                <label className={styles.switch}>
-                                <input
-                                    type="checkbox"
-                                    checked={tipo.activo}
-                                    onChange={() => handleToggleStateTipo(tipo)}
-                                />
-                                <span className={styles.slider}></span>
-                            </label>
+                                <span className={styles.botonEditar} onClick={() => handleToggleStateTipo(tipo)}><DeleteIcon/></span>
                             </div>
                             
                         </li>
@@ -118,19 +114,12 @@ export const ListaTiposCategorias = () => {
                         <h3>CATEOGRIAS</h3>
                     </div>
                     <ul className={styles.lista}>
-                        {categorias.map((cat) => (
+                        {categoriasActivas.map((cat) => (
                         <li key={cat.id} className={styles.itemDescuento}>
                             <span className={styles.porcentaje}>{cat.nombreCategoria}</span>
                             <div className={styles.buttonObject}>
                                 <span className={styles.botonEditar} onClick={()=> handleEditCategoria(cat)} ><EditIcon/></span>
-                                <label className={styles.switch}>
-                                <input
-                                    type="checkbox"
-                                    checked={cat.activo}
-                                    onChange={() => handleToggleStateCategoria(cat)}
-                                />
-                                <span className={styles.slider}></span>
-                            </label>
+                                <span className={styles.botonEditar} onClick={() => handleToggleStateCategoria(cat)}><DeleteIcon/></span>
                             </div>
                             
                         </li>
