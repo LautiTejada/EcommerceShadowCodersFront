@@ -84,12 +84,14 @@ const Cart = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            orderId: ordenCreada.id,
-            items: cart.map((item) => ({
-              title: item.nombre,
-              quantity: item.cantidad,
-              unit_price: item.precio,
-              urlImagen: item.imagen,
+            usuarioId: usuarioActual.id,
+            direccionId: usuarioActual.direcciones?.[0]?.id, // Asegúrate de que la dirección tenga un ID
+            metodoPago: "MERCADO_PAGO",
+            estadoOrden: "PEDIDO",
+            detalles: cart.map((item) => ({
+              productoTalleId: item.talleId, // Asegúrate de que `talleId` sea el ID correcto
+              cantidad: item.cantidad,
+              precioUnitario: getPrecioFinal(item), // Usa el precio final calculado
             })),
           }),
         }
@@ -97,9 +99,12 @@ const Cart = () => {
       const data = await response.json();
 
       // Verificar si la URL de pago está presente
-      if (data.init_point) {
+      if (data.preferenceId) {
+        const mercadoPagoUrl = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${data.preferenceId}`;
+        console.log("URL de Mercado Pago construida:", mercadoPagoUrl);
+
         clearCart(); // Limpiar el carrito
-        window.open(data.init_point, "_blank"); // Abrir la URL en una nueva pestaña
+        window.location.href = mercadoPagoUrl; // Redirigir en la misma pestaña
       } else {
         alert("Error al redirigir a Mercado Pago");
       }
