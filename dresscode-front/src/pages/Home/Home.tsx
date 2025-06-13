@@ -9,21 +9,33 @@ import styles from "./Home.module.css";
 import { useProductoStore } from "../../store/productoStore";
 
 const Home = () => {
-  const { fetchCategorias } = useCategoriaStore();
+  const { fetchCategoriasActivas } = useCategoriaStore();
   const { productosActivos, fetchProductosActivos } = useProductoStore();
 
   useEffect(() => {
-    fetchCategorias();
+    fetchCategoriasActivas();
     fetchProductosActivos();
   }, []);
 
   const zapatillas = productosActivos.filter(
     (producto) =>
-      producto.categoria?.nombreCategoria?.toUpperCase() === "ZAPATILLAS"
+      producto.categoria?.nombreCategoria?.toUpperCase() === "ZAPATILLAS" &&
+      !(
+        producto.descuentos &&
+        producto.descuentos.some(
+          (d) => d.activo && d.descuento && d.descuento.activo
+        )
+      )
   );
   const remeras = productosActivos.filter(
     (producto) =>
-      producto.categoria?.nombreCategoria?.toUpperCase() === "REMERAS"
+      producto.categoria?.nombreCategoria?.toUpperCase() === "REMERAS" &&
+      !(
+        producto.descuentos &&
+        producto.descuentos.some(
+          (d) => d.activo && d.descuento && d.descuento.activo
+        )
+      )
   );
 
   return (
