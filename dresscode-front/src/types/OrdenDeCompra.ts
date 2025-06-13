@@ -8,7 +8,7 @@ export interface OrdenDeCompra {
     id?: number;
     usuario: Usuario;
     direccion: Direccion; 
-    fecha: string;
+    fecha?: string;
     precioTotal: number;
     metodoPago: MetodoPago; 
     estadoOrden: EstadoOrden; 

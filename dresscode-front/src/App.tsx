@@ -18,9 +18,16 @@ import { AgregarDescuento } from "./pages/admin/Descuentos/AgregarDescuento/Agre
 import { AgregarTiposCategorias } from "./pages/admin/TiposCategorias/AgregarTiposCategorias/AgregarTiposCategorias";
 import { ListaDescuentos } from "./pages/admin/Descuentos/ListaDescuentos/ListaDescuentos";
 import { ListaTiposCategorias } from "./pages/admin/TiposCategorias/ListaTiposCategorias/ListaTiposCategorias";
+import { useEffect } from "react";
+import { useUsuarioStore } from "./store/userStore";
 
 
 function App() {
+  const inicializarUsuario = useUsuarioStore((s) => s.inicializarUsuario);
+
+  useEffect(() => {
+    inicializarUsuario();
+  }, []);
   return (
     <Router>
       <Header />

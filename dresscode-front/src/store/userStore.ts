@@ -30,6 +30,8 @@ interface UsuarioState {
     direccion: Direccion
   ) => Promise<void>;
   desactivarDireccionUsuario: (usuarioId: number, direccionId: number) => Promise<void>;
+  inicializarUsuario : () => Promise<void>
+  setUsuarioActual: (categoria: Usuario | null) => void;
 
   limpiarError: () => void;
 }
@@ -203,5 +205,14 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
   }
 },
 
+inicializarUsuario: async () => {
+  const userId = localStorage.getItem("usuario");
+  if (userId) {
+    await get().obtenerUsuarioPorId(Number(userId));
+  }
+},
+
   limpiarError: () => set({ error: null }),
+
+  setUsuarioActual : (usuario) => set({usuarioActual : usuario}),
 }));

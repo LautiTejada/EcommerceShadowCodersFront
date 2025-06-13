@@ -73,7 +73,7 @@ export const actualizarEstadoOrdenDeCompra = async (
 
 export const crearOrdenDeCompra = async (ordenDeCompra: OrdenDeCompra) => {
   try {
-    const response = await fetch(`${baseUrl}/ordenes-de-compra`, {
+    const response = await fetch(`${baseUrl}/ordenes-de-compra/detalle`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
