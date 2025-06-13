@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 
 function Login() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login, loading } = useAuth();
   const [localError, setLocalError] = useState<string | null>(null);
@@ -12,7 +12,7 @@ function Login() {
     e.preventDefault();
     setLocalError(null);
     try {
-      await login({ email, password });
+      await login({ username, password });
       // Si el login es exitoso, el usuario será redirigido automáticamente
     } catch (err: unknown) {
       // Manejo de errores local
@@ -34,12 +34,12 @@ function Login() {
             </div>
           )}
           <div>
-            <label htmlFor="email">CORREO ELECTRÓNICO</label>
+            <label htmlFor="text">NOMBRE DE USUARIO</label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </div>
