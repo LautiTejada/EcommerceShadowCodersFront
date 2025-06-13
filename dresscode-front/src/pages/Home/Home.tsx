@@ -19,11 +19,23 @@ const Home = () => {
 
   const zapatillas = productosActivos.filter(
     (producto) =>
-      producto.categoria?.nombreCategoria?.toUpperCase() === "ZAPATILLAS"
+      producto.categoria?.nombreCategoria?.toUpperCase() === "ZAPATILLAS" &&
+      !(
+        producto.descuentos &&
+        producto.descuentos.some(
+          (d) => d.activo && d.descuento && d.descuento.activo
+        )
+      )
   );
   const remeras = productosActivos.filter(
     (producto) =>
-      producto.categoria?.nombreCategoria?.toUpperCase() === "REMERAS"
+      producto.categoria?.nombreCategoria?.toUpperCase() === "REMERAS" &&
+      !(
+        producto.descuentos &&
+        producto.descuentos.some(
+          (d) => d.activo && d.descuento && d.descuento.activo
+        )
+      )
   );
 
   return (

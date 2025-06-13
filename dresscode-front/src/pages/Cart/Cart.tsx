@@ -1,4 +1,4 @@
-import styles from "./cart.module.css";
+import styles from "./Cart.module.css";
 import { useCartStore } from "../../store/cartStore";
 import { useOrdenCompraStore } from "../../store/ordenCompraStore";
 import { useDetalleOrdenStore } from "../../store/detalleOrdenStore";
@@ -14,11 +14,25 @@ const Cart = () => {
   const { usuarioActual } = useUsuarioStore();
   const navigate = useNavigate();
 
+  const getPrecioFinal = (item: any) => {
+    const descuentoActivo =
+      item.descuentos &&
+      Array.isArray(item.descuentos) &&
+      item.descuentos.find(
+        (d: any) => d && d.activo && d.descuento && d.descuento.activo
+      );
+    if (descuentoActivo && descuentoActivo.descuento) {
+      return Math.round(
+        item.precio * (1 - descuentoActivo.descuento.porcentajeDescuento / 100)
+      );
+    }
+    return item.precio;
+  };
+
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.precio * item.cantidad,
+    (sum, item) => sum + getPrecioFinal(item) * item.cantidad,
     0
   );
-  
 
   const handleCheckout = async () => {
     if (!usuarioActual) {
@@ -53,28 +67,31 @@ const Cart = () => {
             cantidad: item.cantidad,
           },
           cantidad: item.cantidad,
-          precioUnitario: item.precio,
+          precioUnitario: getPrecioFinal(item),
         });
       }
 
-     
-      const response = await fetch("http://localhost:8080/api/mercado-pago/mp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: ordenCreada.id,
-          items: cart.map(item => ({
-            title: item.nombre,
-            quantity: item.cantidad,
-            unit_price: item.precio,
-          })),
-        }),
-      });
+      // Mercado Pago
+      const response = await fetch(
+        "http://localhost:8080/api/mercado-pago/mp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: ordenCreada.id,
+            items: cart.map((item) => ({
+              title: item.nombre,
+              quantity: item.cantidad,
+              unit_price: getPrecioFinal(item),
+            })),
+          }),
+        }
+      );
       const data = await response.json();
 
       if (data.init_point) {
         clearCart();
-        window.location.href = data.init_point; 
+        window.location.href = data.init_point;
       } else {
         alert("No se pudo iniciar el pago.");
       }
@@ -101,65 +118,95 @@ const Cart = () => {
               </tr>
             </thead>
             <tbody>
-              {cart.map((item) => (
-                <tr
-                  key={
-                    String(item.productoId) + "-" + String(item.talleId ?? "")
-                  }
-                >
-                  <td className={styles.productInfoCell}>
-                    <img
-                      src={item.imagen}
-                      alt={item.nombre}
-                      className={styles.productImg}
-                    />
-                    <div className={styles.productInfo}>
-                      <div className={styles.productName}>{item.nombre}</div>
-                      {item.talleId && (
-                        <div className={styles.productBrand}>
-                          Talle: {item.talleId}
-                        </div>
+              {cart.map((item) => {
+                const precioFinal = getPrecioFinal(item);
+                const descuentoActivo =
+                  item.descuentos &&
+                  Array.isArray(item.descuentos) &&
+                  item.descuentos.find(
+                    (d: any) =>
+                      d && d.activo && d.descuento && d.descuento.activo
+                  );
+                return (
+                  <tr
+                    key={
+                      String(item.productoId) + "-" + String(item.talleId ?? "")
+                    }
+                  >
+                    <td className={styles.productInfoCell}>
+                      <img
+                        src={item.imagen}
+                        alt={item.nombre}
+                        className={styles.productImg}
+                      />
+                      <div className={styles.productInfo}>
+                        <div className={styles.productName}>{item.nombre}</div>
+                        {item.talleId && (
+                          <div className={styles.productBrand}>
+                            Talle: {item.talleId}
+                          </div>
+                        )}
+                      </div>
+                    </td>
+                    <td className={styles.productPrice}>
+                      {descuentoActivo && descuentoActivo.descuento ? (
+                        <>
+                          <span style={{ color: "#e53935", fontWeight: 700 }}>
+                            ${precioFinal.toLocaleString("es-AR")}
+                          </span>
+                          <span
+                            style={{
+                              color: "#888",
+                              textDecoration: "line-through",
+                              marginLeft: 8,
+                            }}
+                          >
+                            ${item.precio.toLocaleString("es-AR")}
+                          </span>
+                        </>
+                      ) : (
+                        <span>${item.precio.toLocaleString("es-AR")}</span>
                       )}
-                    </div>
-                  </td>
-                  <td className={styles.productPrice}>
-                    ${item.precio.toLocaleString("es-AR")}
-                  </td>
-                  <td className={styles.productQtyCell}>
-                    <button
-                      onClick={() =>
-                        updateQuantity(item.productoId, -1, item.talleId)
-                      }
-                      className={styles.qtyBtn}
-                    >
-                      -
-                    </button>
-                    <span className={styles.qtyValue}>{item.cantidad}</span>
-                    <button
-                      onClick={() =>
-                        updateQuantity(item.productoId, 1, item.talleId)
-                      }
-                      className={styles.qtyBtn}
-                    >
-                      +
-                    </button>
-                  </td>
-                  <td className={styles.productSubtotal}>
-                    ${(item.precio * item.cantidad).toLocaleString("es-AR")}
-                  </td>
-                  <td className={styles.productRemoveCell}>
-                    <button
-                      onClick={() =>
-                        removeFromCart(item.productoId, item.talleId)
-                      }
-                      className={styles.removeBtn}
-                      title="Eliminar"
-                    >
-                      &#10005;
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className={styles.productQtyCell}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateQuantity(item.productoId, -1, item.talleId)
+                        }
+                        className={styles.qtyBtn}
+                      >
+                        -
+                      </button>
+                      <span className={styles.qtyValue}>{item.cantidad}</span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          updateQuantity(item.productoId, 1, item.talleId)
+                        }
+                        className={styles.qtyBtn}
+                      >
+                        +
+                      </button>
+                    </td>
+                    <td className={styles.productSubtotal}>
+                      ${(precioFinal * item.cantidad).toLocaleString("es-AR")}
+                    </td>
+                    <td className={styles.productRemoveCell}>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          removeFromCart(item.productoId, item.talleId)
+                        }
+                        className={styles.removeBtn}
+                        title="Eliminar"
+                      >
+                        &#10005;
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
