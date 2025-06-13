@@ -101,7 +101,7 @@ export const activateProducto = async (id: number) => {
 
 export const desactivateProducto = async (id: number) => {
   try {
-    const response = await fetch(`${baseUrl}/productos/${id}/desactivate`, {
+    const response = await fetch(`${baseUrl}/productos/${id}/deactivate`, {
       method: 'PUT',
     });
     if (!response.ok) {

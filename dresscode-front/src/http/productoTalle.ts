@@ -34,6 +34,26 @@ export const crearProductoTalle = async (productoTalle: ProductoTalle) => {
   }
 }
 
+export const actualizarCantidadProductoTalle = async (idProductoTalle: number, cantidad: number) => {
+  try {
+    const response = await fetch(`${baseUrl}/producto-talles/${idProductoTalle}/cantidad`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ cantidad }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating producto talle:', error);
+    throw error;
+  }
+}
+
+
 
 export const actualizarProductoTalle = async (id: number, productoTalle: ProductoTalle) => {
   try {

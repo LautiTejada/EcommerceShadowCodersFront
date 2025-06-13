@@ -12,7 +12,6 @@ import Profile from "./pages/Profile/Profile";
 import { HomeAdmin } from "./pages/admin/HomeAdmin/HomeAdmin";
 import { AgregarProducto } from "./pages/admin/Productos/AgregarProductos/AgregarProducto";
 import { EditarProducto } from "./pages/admin/Productos/EditarProductos/EditarProducto";
-import { EstadoProducto } from "./pages/admin/Productos/EstadoProducto/EstadoProducto";
 import { StockProducto } from "./pages/admin/Productos/StockProducto/StockProducto";
 import { AgregarDescuento } from "./pages/admin/Descuentos/AgregarDescuento/AgregarDescuento";
 import { AgregarTiposCategorias } from "./pages/admin/TiposCategorias/AgregarTiposCategorias/AgregarTiposCategorias";
@@ -46,6 +45,7 @@ function App() {
         />
         <Route path="/catalog/ropa" element={<Catalog filter="ROPA" />} />
         <Route path="/catalog/ofertas" element={<Catalog filter="OFERTAS" />} />
+
 
         <Route path="/admin" element={<HomeAdmin />} />
 
