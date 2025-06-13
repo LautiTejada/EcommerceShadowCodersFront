@@ -5,6 +5,7 @@ import {
   crearProductoTalle,
   actualizarProductoTalle,
   obtenerCantidadTotal,
+  actualizarCantidadProductoTalle,
 } from "../http/productoTalle";
 import type { ProductoTalle } from "../types/ProductoTalle";
 
@@ -20,6 +21,7 @@ interface ProductoTalleState {
     productoTalle: ProductoTalle
   ) => Promise<void>;
    fetchCantidadTotal: (productoId: number) => Promise<number>;
+   updateCantidadProductoTalle: (idProductoTalle: number, cantidad: number) => Promise<void>;
 }
 
 export const useProductoTalleStore = create<ProductoTalleState>((set, get) => ({
@@ -77,6 +79,20 @@ export const useProductoTalleStore = create<ProductoTalleState>((set, get) => ({
     } catch (error: unknown) {
       if (error instanceof Error) {
         set({ error: error.message || "Error al obtener cantidad total" });
+      }
+    } finally {
+      set({ cargando: false });
+    }
+  },
+
+  updateCantidadProductoTalle: async (idProductoTalle, cantidad) => {
+    set({ cargando: true, error: null });
+    try {
+      await actualizarCantidadProductoTalle(idProductoTalle, cantidad);
+      await get().fetchProductoTalles();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        set({ error: error.message || "Error al actualizar cantidad de producto talle" });
       }
     } finally {
       set({ cargando: false });
