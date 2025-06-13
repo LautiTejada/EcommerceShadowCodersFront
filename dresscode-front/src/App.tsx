@@ -52,7 +52,7 @@ function App() {
         <Route path="/admin/add-product" element={<AgregarProducto />} />
         <Route path="/admin/edit-product" element={<EditarProducto />} />
         <Route path="/admin/stock-product" element={<StockProducto />} />
-        <Route path="/admin/state-product" element={<EstadoProducto />} />
+        
 
         <Route path="/admin/add-discount" element={<AgregarDescuento />} />
         <Route path="/admin/list-discounts" element={<ListaDescuentos />} />
