@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 
 function Register() {
-  const [name, setName] = useState("");
+  const [username, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -18,7 +18,7 @@ function Register() {
       return;
     }
     try {
-      await register({ name, email, password });
+      await register({ username, email, password });
     } catch (err: unknown) {
       // Manejo de errores
       if (err instanceof Error) {
@@ -52,8 +52,8 @@ function Register() {
             <input
               type="text"
               id="name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={username}
+              onChange={(e) => setUserName(e.target.value)}
               required
             />
           </div>

@@ -8,12 +8,13 @@ interface AuthResponse {
 }
 
 interface UserCredentials {
-  email: string;
+  username: string;
   password: string;
 }
 
 interface RegisterData extends UserCredentials {
-  name: string;
+  username: string;
+  email?: string;
 }
 
 // URL base del API - Asegúrate de que coincida con tu backend
@@ -31,8 +32,8 @@ export const useAuth = () => {
 
       // Transformar los datos al formato que espera el backend
       const backendData = {
-        username: userData.name,
-        email: userData.email,
+        username: userData.username,
+        email: userData.email || "", // Asegurarse de que email sea una cadena, incluso si es opcional
         password: userData.password,
         activo: true,
         rol: "USER",
