@@ -90,7 +90,6 @@ const Cart = () => {
               quantity: item.cantidad,
               unit_price: item.precio,
               urlImagen: item.imagen,
-
             })),
           }),
         }
@@ -99,10 +98,8 @@ const Cart = () => {
 
       // Verificar si la URL de pago está presente
       if (data.init_point) {
-
         clearCart(); // Limpiar el carrito
         window.open(data.init_point, "_blank"); // Abrir la URL en una nueva pestaña
-
       } else {
         alert("Error al redirigir a Mercado Pago");
       }
@@ -130,7 +127,6 @@ const Cart = () => {
               </tr>
             </thead>
             <tbody>
-
               {cart.map((item) => (
                 <tr
                   key={
@@ -154,46 +150,49 @@ const Cart = () => {
                           Talle: {item.talleId}
                         </div>
                       )}
-                    </td>
-                    <td className={styles.productQtyCell}>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateQuantity(item.productoId, -1, item.talleId)
-                        }
-                        className={styles.qtyBtn}
-                      >
-                        -
-                      </button>
-                      <span className={styles.qtyValue}>{item.cantidad}</span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          updateQuantity(item.productoId, 1, item.talleId)
-                        }
-                        className={styles.qtyBtn}
-                      >
-                        +
-                      </button>
-                    </td>
-                    <td className={styles.productSubtotal}>
-                      ${(precioFinal * item.cantidad).toLocaleString("es-AR")}
-                    </td>
-                    <td className={styles.productRemoveCell}>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          removeFromCart(item.productoId, item.talleId)
-                        }
-                        className={styles.removeBtn}
-                        title="Eliminar"
-                      >
-                        &#10005;
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
+                    </div>
+                  </td>
+                  <td className={styles.productQtyCell}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateQuantity(item.productoId, -1, item.talleId)
+                      }
+                      className={styles.qtyBtn}
+                    >
+                      -
+                    </button>
+                    <span className={styles.qtyValue}>{item.cantidad}</span>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        updateQuantity(item.productoId, 1, item.talleId)
+                      }
+                      className={styles.qtyBtn}
+                    >
+                      +
+                    </button>
+                  </td>
+                  <td className={styles.productSubtotal}>
+                    $
+                    {(getPrecioFinal(item) * item.cantidad).toLocaleString(
+                      "es-AR"
+                    )}
+                  </td>
+                  <td className={styles.productRemoveCell}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        removeFromCart(item.productoId, item.talleId)
+                      }
+                      className={styles.removeBtn}
+                      title="Eliminar"
+                    >
+                      &#10005;
+                    </button>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
