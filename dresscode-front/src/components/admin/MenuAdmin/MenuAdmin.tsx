@@ -39,14 +39,7 @@ const MenuAdmin: React.FC<MenuAdminProps> = () => {
             STOCK DE PRODUCTO
           </div>
         </Link>
-        <Link to= "/admin/state-product">
-          <div
-            className={`${styles.menuItem} $ ? styles.selected : ""}`}
-          //   onClick={() => onSelect && onSelect("ELIMINAR UN PRODUCTO")}
-          >
-            ACTIVAR / DESACTIVAR 
-          </div>
-        </Link>
+        
       </div>
       <div className={styles.menuSection}>
         <div className={styles.menuTitle}>DESCUENTOS</div>
