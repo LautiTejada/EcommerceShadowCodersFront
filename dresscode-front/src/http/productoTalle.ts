@@ -15,14 +15,14 @@ export const getProductoTalles = async () => {
   }
 }
 
-export const crearProductoTalle = async (productoTalle: ProductoTalle) => {
+export const crearProductoTalle = async (productoId: number, talleId : number, cantidad: number) => {
   try {
-    const response = await fetch(`${baseUrl}/producto-talles/crear`, {
+    const response = await fetch(`${baseUrl}/producto-talles/crear/${productoId}/talle/${talleId}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(productoTalle),
+      body: JSON.stringify({cantidad}),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

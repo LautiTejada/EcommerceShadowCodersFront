@@ -15,7 +15,7 @@ interface ProductoTalleState {
   error: string | null;
 
   fetchProductoTalles: () => Promise<void>;
-  createProductoTalle: (productoTalle: ProductoTalle) => Promise<void>;
+  createProductoTalle: (productoId: number, talleId : number, cantidad: number) => Promise<void>;
   updaterProductoTalle: (
     id: number,
     productoTalle: ProductoTalle
@@ -43,10 +43,10 @@ export const useProductoTalleStore = create<ProductoTalleState>((set, get) => ({
     }
   },
 
-  createProductoTalle: async (productoTalle) => {
+  createProductoTalle: async (productoId, talleId, cantidad) => {
     set({ cargando: true, error: null });
     try {
-      await crearProductoTalle(productoTalle);
+      await crearProductoTalle(productoId, talleId, cantidad);
       await get().fetchProductoTalles();
     } catch (error: unknown) {
       if (error instanceof Error) {

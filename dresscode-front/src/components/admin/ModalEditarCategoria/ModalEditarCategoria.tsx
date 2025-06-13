@@ -18,12 +18,12 @@ export const ModalEditarCategoria = ({ categoria, onClose}: ModalEditarCategoria
 
   const [nuevoTipoId, setNuevoTipoId] = useState<number>(categoria.tipo!.id)
 
-  const { tipos, obtenerTipos } = tipoStore()
+  const { tipos, obtenerTiposActivos } = tipoStore()
   const { updateCategoria } = useCategoriaStore()
 
   useEffect(() => {
-    obtenerTipos()
-  }, [obtenerTipos])
+    obtenerTiposActivos()
+  }, [obtenerTiposActivos])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()

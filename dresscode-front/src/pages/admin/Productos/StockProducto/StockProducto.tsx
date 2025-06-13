@@ -3,11 +3,10 @@ import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin"
 import { useEffect, useState } from "react";
 import type { Producto } from "../../../../types/Producto";
 import { useProductoStore } from "../../../../store/productoStore";
-
 import { useProductoTalleStore } from "../../../../store/talleProductoStore";
 import type { ProductoTalle } from "../../../../types/ProductoTalle";
-
 import Swal from "sweetalert2";
+import { ModalAgregarTalleProduct } from "../../../../components/admin/ModalAgregarTalleProduct/ModalAgregarTalleProduct";
 
 export const StockProducto = () => {
 
@@ -21,6 +20,7 @@ export const StockProducto = () => {
   const [busqueda, setBusqueda] = useState("");
   const [showProductos, setShowProductos] = useState(false);
   const [cantidad, setCantidad] = useState<number | null>(null)
+  const [productoAgregarTalle, setProductoAgregarTalle] = useState<Producto| null>()
 
   useEffect(() => {
     fetchProductosActivos();
@@ -93,6 +93,16 @@ export const StockProducto = () => {
     p.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
 
+  const handleAddTalle = (product: Producto) => {
+      setProductoAgregarTalle(product);
+  };
+
+  const handleCloseModal = () => {
+        setProductoAgregarTalle(null)
+    };
+          
+  
+
   return (
     <div className={styles.container}>
       <MenuAdmin />
@@ -132,7 +142,7 @@ export const StockProducto = () => {
             <>
               <div className={styles.header}>
                 <h2 className={styles.formTitle}>STOCK: {product.nombre} - {product.color}</h2>
-                <button className={styles.botonAgregar}>AGREGAR TALLE</button>
+                <button type="button" className={styles.botonAgregar} onClick={()=> handleAddTalle(product)}>AGREGAR TALLE</button>
               </div>
 
               <div className={styles.formRow}>
@@ -196,6 +206,13 @@ export const StockProducto = () => {
           )}
         </form>
       </main>
+      {productoAgregarTalle && (
+        <ModalAgregarTalleProduct
+          producto={product!}
+          onClose={handleCloseModal}
+        />
+      )}
+
     </div>
   );
 };
