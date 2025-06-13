@@ -13,6 +13,8 @@ import type { Direccion } from "../../types/Direccion";
 import { provincias, type Provincia } from "../../types/enums/Provincias";
 import { desactivarDireccionDeUsuario } from "../../http/usuario";
 import Swal from "sweetalert2";
+import type { OrdenDeCompra } from "../../types/OrdenDeCompra";
+import { getOrdenesPorUsuario } from "../../http/ordenDeCompra";
 
 const Profile = () => {
   const [activeSection, setActiveSection] = useState("accountInfo");
@@ -21,6 +23,8 @@ const Profile = () => {
   const [editedUser, setEditedUser] = useState<Partial<Usuario>>({
     password: "",
   });
+
+  const [ordenesDeCompra, setOrdenesDeCompra] = useState<OrdenDeCompra[]>([]);
 
   const userId = Number(localStorage.getItem("usuario"));
   const {
@@ -38,6 +42,27 @@ const Profile = () => {
       obtenerUsuarioPorId(userId);
     }
   }, [userId, obtenerUsuarioPorId]);
+
+  const fetchOrdenesDeCompra = async () => {
+    try {
+      const ordenes = await getOrdenesPorUsuario(userId);
+      setOrdenesDeCompra(ordenes);
+    } catch (error) {
+      console.error("Error al obtener las órdenes de compra:", error);
+      Swal.fire({
+        title: "Error",
+        text: "No se pudieron cargar las órdenes de compra.",
+        icon: "error",
+        timer: 2000,
+        showConfirmButton: false,
+      });
+    }
+  };
+  useEffect(() => {
+    if (activeSection === "orderHistory" && userId) {
+      fetchOrdenesDeCompra();
+    }
+  }, [activeSection, userId]);
 
   const [direccionEdit, setDireccionEdit] = useState<Partial<Direccion> | null>(
     null
@@ -456,24 +481,38 @@ const Profile = () => {
       case "orderHistory":
         return (
           <div className={styles.orderHistorySection}>
-            <div className={styles.orderHistoryEntry}>
-              <img
-                src="/nike-dunk-low.png"
-                alt="Nike Dunk Low"
-                className={styles.orderProductImage}
-              />
-              <div className={styles.orderProductDetails}>
-                <span className={styles.orderProductName}>NIKE DUNK LOW</span>
-                <span className={styles.orderProductAddress}>
-                  GRAL PAZ 4580 - CP 5505 - LUJAN DE CUYO, MENDOZA
-                </span>
-              </div>
-              <div className={styles.orderSummary}>
-                <span className={styles.orderDate}>15 MARZO 2025</span>
-                <span className={styles.orderPrice}>$ 399.999,00</span>
-              </div>
-            </div>
-            {/* Puedes añadir más entradas de pedidos aquí si lo necesitas */}
+            {ordenesDeCompra.length === 0 ? (
+              <p>No tienes órdenes de compra registradas.</p>
+            ) : (
+              ordenesDeCompra.map((orden) => (
+                <div key={orden.id} className={styles.orderHistoryEntry}>
+                  <div className={styles.orderDetails}>
+                    <span className={styles.orderDate}>
+                      Fecha: {new Date(orden.fecha).toLocaleDateString()}
+                    </span>
+                    <span className={styles.orderTotal}>
+                      Total: ${orden.precioTotal.toLocaleString("es-AR")}
+                    </span>
+                    <span className={styles.orderStatus}>
+                      Estado: {orden.estadoOrden}
+                    </span>
+                  </div>
+                  <div className={styles.orderAddress}>
+                    Dirección: {orden.direccion.calle} {orden.direccion.numero},{" "}
+                    {orden.direccion.localidad}, {orden.direccion.provincia}
+                  </div>
+                  <div className={styles.orderItems}>
+                    {orden.detalles?.map((detalle, idx) => (
+                      <div key={idx} className={styles.orderItem}>
+                        <span>{detalle.productoTalle.productoId}</span>
+                        <span>Cantidad: {detalle.cantidad}</span>
+                        <span>Precio: ${detalle.precioUnitario}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         );
       default:

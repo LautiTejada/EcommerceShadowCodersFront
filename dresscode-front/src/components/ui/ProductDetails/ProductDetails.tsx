@@ -50,6 +50,7 @@ export const ProductDetails = () => {
       imagen: productoActual.imagenes?.[0]?.urlImagen || "",
       cantidad: quantity,
       talleId: selectedTalleId,
+      descuentos: productoActual.descuentos,
     });
     alert("Producto agregado al carrito");
   };

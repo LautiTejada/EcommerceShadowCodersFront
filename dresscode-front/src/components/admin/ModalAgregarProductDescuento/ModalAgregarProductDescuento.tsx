@@ -1,4 +1,4 @@
-import styles from "./ModalAgregarProductDescuento.module.css"
+import styles from "./ModalAgregarProductDescuento.module.css";
 import { useEffect, useState } from "react";
 import { useDescuentoStore } from "../../../store/descuentoStore";
 import { useProductoStore } from "../../../store/productoStore";
@@ -13,13 +13,14 @@ export const ModalAgregarProductDescuento = ({
   descuentoId,
   onClose,
 }: ModalAgregarProductDescuentoProps) => {
-  const { agregarProductoADescuento , fetchDescuentos ,descuentos} = useDescuentoStore();
+  const { agregarProductoADescuento, fetchDescuentos, descuentos } =
+    useDescuentoStore();
   const { productos, fetchProductos } = useProductoStore();
 
   const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
-    fetchDescuentos()
+    fetchDescuentos();
     fetchProductos();
   }, [fetchProductos, fetchDescuentos]);
 
@@ -27,13 +28,12 @@ export const ModalAgregarProductDescuento = ({
     p.nombre.toLowerCase().includes(busqueda.toLowerCase())
   );
 
-  const handleAgregarProducto = (productoId: number) => {
-    // Buscar el descuento actual
+  const handleAgregarProducto = async (productoId: number) => {
+    // Validación frontend: ¿ya está el producto en el descuento?
     const descuentoActual = descuentos.find((d) => d.id === descuentoId);
-
-    // Verificar si el producto ya está en el descuento
-    const yaExiste = descuentoActual?.productos!.some((p) => p.id === productoId);
-
+    const yaExiste = descuentoActual?.productos?.some(
+      (p) => p.producto?.id === productoId
+    );
     if (yaExiste) {
       Swal.fire({
         title: "El producto ya está agregado a este descuento.",
@@ -43,7 +43,6 @@ export const ModalAgregarProductDescuento = ({
       return;
     }
 
-    // Confirmar antes de agregar
     Swal.fire({
       title: "¿Estás seguro de agregar el producto al descuento?",
       icon: "warning",
@@ -52,14 +51,24 @@ export const ModalAgregarProductDescuento = ({
       cancelButtonColor: "#d33",
       confirmButtonText: "Sí, agregar",
       cancelButtonText: "Cancelar",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        agregarProductoADescuento(descuentoId, productoId);
-        Swal.fire({
-          title: "Producto fue agregado",
-          icon: "success",
-          confirmButtonColor: "#7f5af0",
-        });
+        try {
+          await agregarProductoADescuento(descuentoId, productoId);
+          await fetchDescuentos();
+          await fetchProductos();
+          Swal.fire({
+            title: "Producto fue agregado",
+            icon: "success",
+            confirmButtonColor: "#7f5af0",
+          });
+        } catch (error: any) {
+          Swal.fire({
+            title: error.message || "Error al agregar producto",
+            icon: "error",
+            confirmButtonColor: "#7f5af0",
+          });
+        }
       }
     });
   };
@@ -68,8 +77,6 @@ export const ModalAgregarProductDescuento = ({
     <div className={styles.modaloverlay}>
       <div className={styles.modalcontainer}>
         <div className={styles.headerContainer}>
-          
-
           <input
             type="text"
             placeholder="BUSCAR PRODUCTOS"
@@ -81,7 +88,6 @@ export const ModalAgregarProductDescuento = ({
             ✕
           </button>
         </div>
-        
 
         <div className={styles.productoslista}>
           {productosFiltrados.map((producto) => (
@@ -95,6 +101,7 @@ export const ModalAgregarProductDescuento = ({
               </span>
               <button
                 className={styles.btnagregar}
+                type="button"
                 onClick={() => handleAgregarProducto(producto.id!)}
               >
                 +
