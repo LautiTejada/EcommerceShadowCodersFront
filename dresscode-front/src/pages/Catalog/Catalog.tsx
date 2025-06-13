@@ -2,13 +2,69 @@ import { useEffect } from "react";
 import { FiltersCatalog } from "../../components/ui/FiltersCatalog/FiltersCatalog";
 import { useProductoStore } from "../../store/productoStore";
 import ProductCard from "../../components/ui/ProductCard/ProductCard";
+import { useLocation } from "react-router-dom";
+import { useCategoriaStore } from "../../store/categoriaStore";
 
-export const Catalog = () => {
-  const { productosActivos, fetchProductosActivos } = useProductoStore();
+export const Catalog = ({ filter }: { filter?: string }) => {
+  const { productosActivos, fetchProductosActivos, fetchProductosFiltrados } =
+    useProductoStore();
+  const { categoriasActivas, fetchCategoriasActivas } = useCategoriaStore();
+  const location = useLocation();
 
   useEffect(() => {
-    fetchProductosActivos();
-  }, [fetchProductosActivos]);
+    // Siempre tener las categorías activas cargadas
+    fetchCategoriasActivas();
+  }, [fetchCategoriasActivas]);
+
+  useEffect(() => {
+    let filtros: any = {};
+    const normalizar = (str: string) =>
+      str
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase();
+
+    if (location.pathname.includes("calzados") || filter === "CALZADOS") {
+      const cats = categoriasActivas.filter(
+        (c) =>
+          normalizar(c.nombreCategoria).includes("ZAPATILLA") ||
+          normalizar(c.nombreCategoria).includes("CALZADO")
+      );
+      if (cats.length) filtros.categorias = cats.map((c) => c.id);
+    } else if (location.pathname.includes("ropa") || filter === "ROPA") {
+      const cats = categoriasActivas.filter(
+        (c) =>
+          !normalizar(c.nombreCategoria).includes("ZAPATILLA") &&
+          !normalizar(c.nombreCategoria).includes("CALZADO") &&
+          !normalizar(c.nombreCategoria).includes("OFERTA")
+      );
+      if (cats.length) filtros.categorias = cats.map((c) => c.id);
+    } else if (location.pathname.includes("ofertas") || filter === "OFERTAS") {
+      // Pedimos todos los productos, filtramos en frontend
+    }
+
+    if (Object.keys(filtros).length) {
+      fetchProductosFiltrados(filtros);
+    } else {
+      fetchProductosActivos();
+    }
+  }, [
+    location.pathname,
+    filter,
+    fetchProductosActivos,
+    fetchProductosFiltrados,
+    categoriasActivas,
+  ]);
+
+  // --- FILTRO FINAL SOLO PARA OFERTAS ---
+  const productosFiltrados =
+    location.pathname.includes("ofertas") || filter === "OFERTAS"
+      ? productosActivos.filter(
+          (producto) =>
+            producto.descuentos &&
+            producto.descuentos.some((d) => d.activo && d.descuento?.activo)
+        )
+      : productosActivos;
 
   return (
     <div
@@ -37,13 +93,13 @@ export const Catalog = () => {
         style={{
           flex: 1,
           display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", 
-          gap: "24px", 
+          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+          gap: "24px",
           alignContent: "flex-start",
           overflow: "auto", // Permite scroll si hay demasiados productos
         }}
       >
-        {productosActivos.map((product) => (
+        {productosFiltrados.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>

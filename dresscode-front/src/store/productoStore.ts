@@ -13,7 +13,6 @@ import {
   updateProducto,
 } from "../http/producto";
 
-
 interface ProductoState {
   productos: Producto[];
   productosActivos: Producto[];
@@ -50,8 +49,8 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 
   fetchProductosActivos: async () => {
     try {
-      const activos = await getProductosActivos();
-      set({ productosActivos: activos });
+      const productos = await getProductosActivos();
+      set({ productosActivos: productos });
     } catch (error) {
       console.error("Error cargando productos activos:", error);
     }

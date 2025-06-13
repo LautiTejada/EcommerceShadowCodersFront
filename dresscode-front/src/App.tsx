@@ -20,7 +20,6 @@ import { ListaTiposCategorias } from "./pages/admin/TiposCategorias/ListaTiposCa
 import { useEffect } from "react";
 import { useUsuarioStore } from "./store/userStore";
 
-
 function App() {
   const inicializarUsuario = useUsuarioStore((s) => s.inicializarUsuario);
 
@@ -39,22 +38,33 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/profile" element={<Profile />} />
-
-      
-
-        <Route path="/admin" element={<HomeAdmin />}/>
-
-        <Route path="/admin/add-product" element= {<AgregarProducto/>}/>
-        <Route path="/admin/edit-product" element={<EditarProducto/>}/>
-        <Route path="/admin/stock-product" element={<StockProducto/>}/>
-
-        <Route path="/admin/add-discount" element={<AgregarDescuento/>}/>
-        <Route path="/admin/list-discounts" element={<ListaDescuentos/>}/>
+        <Route path="/catalog" element={<Catalog />} />
+        <Route
+          path="/catalog/calzados"
+          element={<Catalog filter="CALZADOS" />}
+        />
+        <Route path="/catalog/ropa" element={<Catalog filter="ROPA" />} />
+        <Route path="/catalog/ofertas" element={<Catalog filter="OFERTAS" />} />
 
 
-        <Route path="/admin/add-type-cateogory" element={<AgregarTiposCategorias/>}/>
-        <Route path="/admin/list-type-cateogory" element={<ListaTiposCategorias/>}/>
-        
+        <Route path="/admin" element={<HomeAdmin />} />
+
+        <Route path="/admin/add-product" element={<AgregarProducto />} />
+        <Route path="/admin/edit-product" element={<EditarProducto />} />
+        <Route path="/admin/stock-product" element={<StockProducto />} />
+        <Route path="/admin/state-product" element={<EstadoProducto />} />
+
+        <Route path="/admin/add-discount" element={<AgregarDescuento />} />
+        <Route path="/admin/list-discounts" element={<ListaDescuentos />} />
+
+        <Route
+          path="/admin/add-type-cateogory"
+          element={<AgregarTiposCategorias />}
+        />
+        <Route
+          path="/admin/list-type-cateogory"
+          element={<ListaTiposCategorias />}
+        />
       </Routes>
 
       <Footer />

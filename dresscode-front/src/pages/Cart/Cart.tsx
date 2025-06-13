@@ -1,4 +1,4 @@
-import styles from "./cart.module.css";
+import styles from "./Cart.module.css";
 import { useCartStore } from "../../store/cartStore";
 import { useOrdenCompraStore } from "../../store/ordenCompraStore";
 import { useDetalleOrdenStore } from "../../store/detalleOrdenStore";
@@ -14,11 +14,25 @@ const Cart = () => {
   const { usuarioActual } = useUsuarioStore();
   const navigate = useNavigate();
 
+  const getPrecioFinal = (item: any) => {
+    const descuentoActivo =
+      item.descuentos &&
+      Array.isArray(item.descuentos) &&
+      item.descuentos.find(
+        (d: any) => d && d.activo && d.descuento && d.descuento.activo
+      );
+    if (descuentoActivo && descuentoActivo.descuento) {
+      return Math.round(
+        item.precio * (1 - descuentoActivo.descuento.porcentajeDescuento / 100)
+      );
+    }
+    return item.precio;
+  };
+
   const subtotal = cart.reduce(
-    (sum, item) => sum + item.precio * item.cantidad,
+    (sum, item) => sum + getPrecioFinal(item) * item.cantidad,
     0
   );
-  
 
   const handleCheckout = async () => {
     if (!usuarioActual) {
@@ -34,51 +48,68 @@ const Cart = () => {
     }
     try {
       const orden = {
-        usuario: usuarioActual,
+        usuario: {
+          id: usuarioActual.id,
+          username: usuarioActual.username, // Asegúrate de que esta propiedad exista
+          email: usuarioActual.email,
+          rol: usuarioActual.rol,
+        },
         direccion: direccionSeleccionada,
         fecha: new Date().toISOString(),
         precioTotal: subtotal,
         metodoPago: "MERCADO_PAGO" as MetodoPago,
         estadoOrden: "PEDIDO" as EstadoOrden,
-      };
-      const ordenCreada = await createOrdenDeCompra(orden);
-
-      for (const item of cart) {
-        await addDetalleOrden({
-          ordenDeCompraId: ordenCreada.id!,
+        detalles: cart.map((item) => ({
           productoTalle: {
             productoId: item.productoId,
-            talle: { id: item.talleId!, activo: true, tipoTalle: "" },
+            talle: {
+              id: item.talleId!,
+              activo: true,
+              tipoTalle: item.tipoTalle || "", // Asegúrate de que `tipoTalle` esté definido
+            },
             activo: true,
             cantidad: item.cantidad,
           },
           cantidad: item.cantidad,
-          precioUnitario: item.precio,
-        });
-      }
 
-     
-      const response = await fetch("http://localhost:8080/api/mercado-pago/mp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: ordenCreada.id,
-          items: cart.map(item => ({
-            title: item.nombre,
-            quantity: item.cantidad,
-            unit_price: item.precio,
-          })),
-        }),
-      });
+          precioUnitario: item.precio,
+        })),
+      };
+
+      const ordenCreada = await createOrdenDeCompra(orden);
+
+      const response = await fetch(
+        "http://localhost:8080/api/mercado-pago/mp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            usuarioId: usuarioActual.id,
+            direccionId: usuarioActual.direcciones?.[0]?.id, // Asegúrate de que la dirección tenga un ID
+            metodoPago: "MERCADO_PAGO",
+            estadoOrden: "PEDIDO",
+            detalles: cart.map((item) => ({
+              productoTalleId: item.talleId, // Asegúrate de que `talleId` sea el ID correcto
+              cantidad: item.cantidad,
+              precioUnitario: getPrecioFinal(item), // Usa el precio final calculado
+            })),
+          }),
+        }
+      );
       const data = await response.json();
 
-      if (data.init_point) {
-        clearCart();
-        window.location.href = data.init_point; 
+      // Verificar si la URL de pago está presente
+      if (data.preferenceId) {
+        const mercadoPagoUrl = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${data.preferenceId}`;
+        console.log("URL de Mercado Pago construida:", mercadoPagoUrl);
+
+        clearCart(); // Limpiar el carrito
+        window.location.href = mercadoPagoUrl; // Redirigir en la misma pestaña
       } else {
-        alert("No se pudo iniciar el pago.");
+        alert("Error al redirigir a Mercado Pago");
       }
     } catch (error) {
+      console.error("Error al finalizar la compra:", error);
       alert("Error al finalizar la compra");
     }
   };
@@ -109,7 +140,11 @@ const Cart = () => {
                 >
                   <td className={styles.productInfoCell}>
                     <img
-                      src={item.imagen}
+                      src={`http://localhost:8080${encodeURI(
+                        item.imagen[0].startsWith("/")
+                          ? item.imagen
+                          : `/${item.imagen}`
+                      )}`}
                       alt={item.nombre}
                       className={styles.productImg}
                     />
@@ -122,11 +157,9 @@ const Cart = () => {
                       )}
                     </div>
                   </td>
-                  <td className={styles.productPrice}>
-                    ${item.precio.toLocaleString("es-AR")}
-                  </td>
                   <td className={styles.productQtyCell}>
                     <button
+                      type="button"
                       onClick={() =>
                         updateQuantity(item.productoId, -1, item.talleId)
                       }
@@ -136,6 +169,7 @@ const Cart = () => {
                     </button>
                     <span className={styles.qtyValue}>{item.cantidad}</span>
                     <button
+                      type="button"
                       onClick={() =>
                         updateQuantity(item.productoId, 1, item.talleId)
                       }
@@ -145,10 +179,14 @@ const Cart = () => {
                     </button>
                   </td>
                   <td className={styles.productSubtotal}>
-                    ${(item.precio * item.cantidad).toLocaleString("es-AR")}
+                    $
+                    {(getPrecioFinal(item) * item.cantidad).toLocaleString(
+                      "es-AR"
+                    )}
                   </td>
                   <td className={styles.productRemoveCell}>
                     <button
+                      type="button"
                       onClick={() =>
                         removeFromCart(item.productoId, item.talleId)
                       }
