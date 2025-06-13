@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import type { DescuentoProducto } from "../types/DescuentoProducto";
 
 export interface CartItem {
   productoId: number;
@@ -7,6 +8,7 @@ export interface CartItem {
   imagen: string;
   cantidad: number;
   talleId?: number;
+  descuentos?: DescuentoProducto[]
 }
 const CART_KEY = "cart";
 

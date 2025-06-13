@@ -7,13 +7,20 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  // Buscar descuento activo
+  // --- DEBUG: Mostrar el producto y sus descuentos en consola ---
+  console.log("PRODUCTO EN CARD", product);
+  if (product.descuentos && product.descuentos.length > 0) {
+    console.log("DESCUENTOS DEL PRODUCTO", product.descuentos);
+  }
+
+  // Buscar descuento activo de forma segura
   const descuentoActivo = product.descuentos?.find(
-    (d) => d.activo && d.descuento.activo
+    (d) => d && d.activo && d.descuento && d.descuento.activo
   );
 
+  // Calcular precio con descuento si corresponde
   let precioConDescuento = product.precio;
-  if (descuentoActivo) {
+  if (descuentoActivo && descuentoActivo.descuento) {
     precioConDescuento = Math.round(
       product.precio * (1 - descuentoActivo.descuento.porcentajeDescuento / 100)
     );
@@ -28,7 +35,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className={styles.cardContainer}>
         {/* Etiqueta de descuento */}
         {descuentoActivo && (
-          <div className={styles.discountTag}>
+          <div className={styles.discountLabel}>
             -{descuentoActivo.descuento.porcentajeDescuento}%
           </div>
         )}
@@ -48,11 +55,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             <div className={styles.noImage}>Sin imagen</div>
           )}
         </div>
+
         {/* Nombre */}
         <div className={styles.productName}>{product.nombre}</div>
+
         {/* Precios */}
         <div>
-          {descuentoActivo ? (
+          {descuentoActivo && descuentoActivo.descuento ? (
             <>
               <span style={{ color: "#e53935", fontWeight: 700, fontSize: 18 }}>
                 ${precioConDescuento.toLocaleString()}
