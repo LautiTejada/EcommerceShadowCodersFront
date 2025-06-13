@@ -9,11 +9,11 @@ import styles from "./Home.module.css";
 import { useProductoStore } from "../../store/productoStore";
 
 const Home = () => {
-  const { fetchCategorias } = useCategoriaStore();
+  const { fetchCategoriasActivas } = useCategoriaStore();
   const { productosActivos, fetchProductosActivos } = useProductoStore();
 
   useEffect(() => {
-    fetchCategorias();
+    fetchCategoriasActivas();
     fetchProductosActivos();
   }, []);
 
