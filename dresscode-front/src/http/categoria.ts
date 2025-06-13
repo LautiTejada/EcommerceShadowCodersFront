@@ -4,7 +4,7 @@ const baseUrl = import.meta.env.VITE_API_URL;
 
 export const getCategorias = async () => {
   try {
-    const response = await fetch(`${baseUrl}/categorias`);
+    const response = await fetch(`${baseUrl}/categorias/activas`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -112,7 +112,7 @@ export const activarCategoria = async (id: number) => {
 
 export const desactivarCategoria = async (id: number) => {
   try {
-    const response = await fetch(`${baseUrl}/categorias/${id}/desactivate`, {
+    const response = await fetch(`${baseUrl}/categorias/${id}/deactivate`, {
       method: 'PUT',
     });
     if (!response.ok) {

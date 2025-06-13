@@ -18,7 +18,7 @@ interface TipoState {
   cargando: boolean;
   error: string | null;
 
-  obtenerTipos: () => Promise<void>;
+  // obtenerTipos: () => Promise<void>;
   obtenerTiposActivos: () => Promise<void>;
   obtenerTipoPorId: (id: number) => Promise<Tipo | null>;
   crearTipo: (nuevoTipo: Tipo) => Promise<void>;
@@ -35,19 +35,19 @@ export const tipoStore = create<TipoState>((set, get) => ({
   cargando: false,
   error: null,
 
-  obtenerTipos: async () => {
-    set({ cargando: true, error: null });
-    try {
-      const tipos = await getTipos();
-      set({ tipos });
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        set({ error: error.message || "Error al obtener tipos" });
-      }
-    } finally {
-      set({ cargando: false });
-    }
-  },
+  // obtenerTipos: async () => {
+  //   set({ cargando: true, error: null });
+  //   try {
+  //     const tipos = await getTipos();
+  //     set({ tipos });
+  //   } catch (error: unknown) {
+  //     if (error instanceof Error) {
+  //       set({ error: error.message || "Error al obtener tipos" });
+  //     }
+  //   } finally {
+  //     set({ cargando: false });
+  //   }
+  // },
 
   obtenerTiposActivos: async () => {
     set({ cargando: true, error: null });
@@ -83,7 +83,7 @@ export const tipoStore = create<TipoState>((set, get) => ({
     set({ cargando: true, error: null });
     try {
       await addTipo(nuevoTipo);
-      await get().obtenerTipos();
+      await get().obtenerTiposActivos();
     } catch (error: unknown) {
       if (error instanceof Error) {
         set({ error: error.message || "Error al crear tipo" });
@@ -97,7 +97,7 @@ export const tipoStore = create<TipoState>((set, get) => ({
     set({ cargando: true, error: null });
     try {
       await updateTipo(id, tipo);
-      await get().obtenerTipos();
+      await get().obtenerTiposActivos();
     } catch (error: unknown) {
       if (error instanceof Error) {
         set({ error: error.message || "Error al actualizar tipo" });
@@ -111,7 +111,7 @@ export const tipoStore = create<TipoState>((set, get) => ({
     set({ cargando: true, error: null });
     try {
       await toggleStatusTipo(id);
-      await get().obtenerTipos();
+      await get().obtenerTiposActivos();
     } catch (error: unknown) {
       if (error instanceof Error) {
         set({ error: error.message || "Error al cambiar estado" });
@@ -125,7 +125,7 @@ export const tipoStore = create<TipoState>((set, get) => ({
     set({ cargando: true, error: null });
     try {
       await activateTipo(id);
-      await get().obtenerTipos();
+      await get().obtenerTiposActivos();
     } catch (error: unknown) {
       if (error instanceof Error) {
         set({ error: error.message || "Error al activar tipo" });
@@ -136,18 +136,22 @@ export const tipoStore = create<TipoState>((set, get) => ({
   },
 
   desactivarTipo: async (id) => {
-    set({ cargando: true, error: null });
-    try {
-      await desactivateTipo(id);
-      await get().obtenerTipos();
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        set({ error: error.message || "Error al desactivar tipo" });
-      }
-    } finally {
-      set({ cargando: false });
+  set({ cargando: true, error: null });
+  try {
+    await desactivateTipo(id);
+
+    set((state) => ({
+      tipos: state.tipos.filter((t) => t.id !== id)
+    }));
+  } catch (error) {
+    if (error instanceof Error) {
+      set({ error: error.message || "Error al desactivar tipo" });
     }
-  },
+  } finally {
+    set({ cargando: false });
+  }
+},
+
 
   traerCategoriasPorTipo: async (tipoId: number) => {
 
