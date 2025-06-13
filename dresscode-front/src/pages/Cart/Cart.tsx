@@ -18,7 +18,6 @@ const Cart = () => {
     (sum, item) => sum + item.precio * item.cantidad,
     0
   );
-  
 
   const handleCheckout = async () => {
     if (!usuarioActual) {
@@ -34,51 +33,62 @@ const Cart = () => {
     }
     try {
       const orden = {
-        usuario: usuarioActual,
+        usuario: {
+          id: usuarioActual.id,
+          username: usuarioActual.username, // Asegúrate de que esta propiedad exista
+          email: usuarioActual.email,
+          rol: usuarioActual.rol,
+        },
         direccion: direccionSeleccionada,
         fecha: new Date().toISOString(),
         precioTotal: subtotal,
         metodoPago: "MERCADO_PAGO" as MetodoPago,
         estadoOrden: "PEDIDO" as EstadoOrden,
-      };
-      const ordenCreada = await createOrdenDeCompra(orden);
-
-      for (const item of cart) {
-        await addDetalleOrden({
-          ordenDeCompraId: ordenCreada.id!,
+        detalles: cart.map((item) => ({
           productoTalle: {
             productoId: item.productoId,
-            talle: { id: item.talleId!, activo: true, tipoTalle: "" },
+            talle: {
+              id: item.talleId!,
+              activo: true,
+              tipoTalle: item.tipoTalle || "", // Asegúrate de que `tipoTalle` esté definido
+            },
             activo: true,
             cantidad: item.cantidad,
           },
           cantidad: item.cantidad,
           precioUnitario: item.precio,
-        });
-      }
+        })),
+      };
 
-     
-      const response = await fetch("http://localhost:8080/api/mercado-pago/mp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderId: ordenCreada.id,
-          items: cart.map(item => ({
-            title: item.nombre,
-            quantity: item.cantidad,
-            unit_price: item.precio,
-          })),
-        }),
-      });
+      const ordenCreada = await createOrdenDeCompra(orden);
+
+      const response = await fetch(
+        "http://localhost:8080/api/mercado-pago/mp",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            orderId: ordenCreada.id,
+            items: cart.map((item) => ({
+              title: item.nombre,
+              quantity: item.cantidad,
+              unit_price: item.precio,
+              urlImagen: item.imagen,
+            })),
+          }),
+        }
+      );
       const data = await response.json();
 
+      // Verificar si la URL de pago está presente
       if (data.init_point) {
-        clearCart();
-        window.location.href = data.init_point; 
+        clearCart(); // Limpiar el carrito
+        window.open(data.init_point, "_blank"); // Abrir la URL en una nueva pestaña
       } else {
-        alert("No se pudo iniciar el pago.");
+        alert("Error al redirigir a Mercado Pago");
       }
     } catch (error) {
+      console.error("Error al finalizar la compra:", error);
       alert("Error al finalizar la compra");
     }
   };
@@ -109,7 +119,11 @@ const Cart = () => {
                 >
                   <td className={styles.productInfoCell}>
                     <img
-                      src={item.imagen}
+                      src={`http://localhost:8080${encodeURI(
+                        item.imagen[0].startsWith("/")
+                          ? item.imagen
+                          : `/${item.imagen}`
+                      )}`}
                       alt={item.nombre}
                       className={styles.productImg}
                     />

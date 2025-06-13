@@ -82,13 +82,21 @@ export const actualizarEstadoOrdenDeCompra = async (
 
 export const crearOrdenDeCompra = async (ordenDeCompra: OrdenDeCompra) => {
   try {
+    const token = localStorage.getItem("token");
+    console.log(localStorage.getItem("token"));
+    if (!token) {
+      throw new Error("Token de autenticación no encontrado");
+    }
+
     const response = await fetch(`${baseUrl}/ordenes-de-compra`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(ordenDeCompra),
     });
+
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
