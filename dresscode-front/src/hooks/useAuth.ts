@@ -25,7 +25,10 @@ export const useAuth = () => {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
-  const register = async (userData: RegisterData): Promise<AuthResponse> => {
+  const register = async (
+    userData: RegisterData,
+    rol: string = "USER"
+  ): Promise<AuthResponse> => {
     try {
       setLoading(true);
       setError(null);
@@ -36,11 +39,10 @@ export const useAuth = () => {
         email: userData.email || "", // Asegurarse de que email sea una cadena, incluso si es opcional
         password: userData.password,
         activo: true,
-        rol: "USER",
+        rol, // Usar el rol dinámico proporcionado
       };
 
       console.log("Enviando datos de registro:", backendData);
-      console.log("URL:", `${API_URL}/auth/register`);
 
       const response = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
@@ -55,13 +57,6 @@ export const useAuth = () => {
         body: JSON.stringify(backendData),
       });
 
-      console.log(
-        "Respuesta del servidor:",
-        response.status,
-        response.statusText
-      );
-
-      // Intentar leer el cuerpo de la respuesta
       let responseData;
       try {
         responseData = await response.json();
@@ -74,15 +69,14 @@ export const useAuth = () => {
       if (!response.ok) {
         throw new Error(responseData.message || "Error en el registro");
       }
+
       // Si el registro es exitoso y recibimos un token, lo guardamos
       if (responseData.token) {
         localStorage.setItem("token", responseData.token);
-        // Redirigir directamente al home ya que el usuario está autenticado
         navigate("/");
         if (responseData.username) {
           localStorage.setItem("username", responseData.username);
         } else {
-          // Si no hay token, redirigir al login
           navigate("/login");
         }
       }
@@ -131,6 +125,7 @@ export const useAuth = () => {
 
       if (responseData.token) {
         localStorage.setItem("token", responseData.token);
+        localStorage.setItem("usuario", JSON.stringify(responseData.usuario));
         if (responseData.username) {
           localStorage.setItem("username", responseData.username);
         }
