@@ -25,9 +25,12 @@ export const Catalog = ({ filter }: { filter?: string }) => {
 	useEffect(() => {
 		setLoading(true);
 		setError(null);
-		fetchCategoriasActivas();
-		// eslint-disable-next-line
-	}, [fetchCategoriasActivas]);
+		if (!categoriasActivas || categoriasActivas.length === 0) {
+			fetchCategoriasActivas();
+		} else {
+			setLoading(false);
+		}
+	}, [fetchCategoriasActivas, categoriasActivas]);
 
 	useEffect(() => {
 		let filtros: any = {};
@@ -58,10 +61,13 @@ export const Catalog = ({ filter }: { filter?: string }) => {
 				// Pedimos todos los productos, filtramos en frontend
 			}
 
+			// Solo llamar si los filtros o productos realmente cambian
 			if (Object.keys(filtros).length) {
 				fetchProductosFiltrados(filtros).finally(() => setLoading(false));
-			} else {
+			} else if (productosActivos.length === 0) {
 				fetchProductosActivos().finally(() => setLoading(false));
+			} else {
+				setLoading(false);
 			}
 		} catch (err: any) {
 			setError("Error al cargar productos");
@@ -72,17 +78,17 @@ export const Catalog = ({ filter }: { filter?: string }) => {
 				type: "error",
 			});
 		}
-		// eslint-disable-next-line
 	}, [
 		location.pathname,
 		filter,
 		fetchProductosActivos,
 		fetchProductosFiltrados,
 		categoriasActivas,
+		productosActivos.length,
 	]);
 
 	// --- FILTRO FINAL SOLO PARA OFERTAS Y ROPA ---
-	const productosFiltrados =
+	const productosFiltrados = (
 		location.pathname.includes("ofertas") || filter === "OFERTAS"
 			? productosActivos.filter(
 					(producto) =>
@@ -113,7 +119,8 @@ export const Catalog = ({ filter }: { filter?: string }) => {
 								)
 							),
 					)
-				: productosActivos;
+				: productosActivos
+	).filter((producto) => producto.id !== undefined && producto.id !== null);
 
 	if (loading) {
 		return <Loader />;
@@ -163,9 +170,13 @@ export const Catalog = ({ filter }: { filter?: string }) => {
 						No hay productos para mostrar.
 					</div>
 				) : (
-					productosFiltrados.map((product) => (
-						<ProductCard key={product.id} product={product} />
-					))
+					productosFiltrados
+						.filter(
+							(product) => product.id !== undefined && product.id !== null,
+						)
+						.map((product) => (
+							<ProductCard key={product.id} product={product} />
+						))
 				)}
 			</div>
 		</div>

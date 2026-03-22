@@ -30,46 +30,69 @@ const Profile = () => {
 
 	const userId = Number(localStorage.getItem("usuario"));
 	const {
-		usuarioActual,
-		obtenerUsuarioPorId,
-		actualizarUsuario,
-		direccionesUsuario,
-		obtenerDireccionesUsuario,
-		crearDireccionUsuario,
-		actualizarDireccionUsuario,
-	} = useUsuarioStore();
-
-	useEffect(() => {
-		if (userId) {
-			obtenerUsuarioPorId(userId);
-		}
-	}, [userId, obtenerUsuarioPorId]);
-
-	const fetchOrdenesDeCompra = async () => {
-		setLoading(true);
-		try {
-			const ordenes = await getOrdenesPorUsuario(userId);
-			setOrdenesDeCompra(ordenes);
-		} catch (error) {
-			sileo.error({
-				title: "Error al obtener órdenes",
-				description: "No se pudieron cargar las órdenes de compra.",
-				type: "error",
-			});
-		} finally {
-			setLoading(false);
-		}
-	};
-	useEffect(() => {
-		if (activeSection === "orderHistory" && userId) {
-			fetchOrdenesDeCompra();
-		}
-	}, [activeSection, userId]);
-
-	const [direccionEdit, setDireccionEdit] = useState<Partial<Direccion> | null>(
-		null,
-	);
-	const [isEditingDireccion, setIsEditingDireccion] = useState(false);
+				{/* Validación y feedback centralizado para dirección */}
+				<form
+				  className={styles.addressForm}
+				  onSubmit={async (e) => {
+				    e.preventDefault();
+				    const fields = {
+				      calle: direccionEdit?.calle,
+				      numero: direccionEdit?.numero,
+				      codigoPostal: direccionEdit?.codigoPostal,
+				      localidad: direccionEdit?.localidad,
+				      provincia: direccionEdit?.provincia,
+				    };
+				    const rules = {
+				      calle: [v => !!v],
+				      numero: [v => !!v],
+				      codigoPostal: [v => !!v],
+				      localidad: [v => !!v],
+				      provincia: [v => !!v],
+				    };
+				    const validationErrors = {};
+				    for (const key in rules) {
+				      for (const rule of rules[key]) {
+				        if (!rule(fields[key])) {
+				          validationErrors[key] = `Campo inválido: ${key}`;
+				          break;
+				        }
+				      }
+				    }
+				    if (Object.keys(validationErrors).length > 0) {
+				      window.sileo?.error?.({
+				        title: "Error",
+				        description: "Completa todos los campos requeridos.",
+				        type: "error",
+				      });
+				      // Aquí podrías guardar los errores en el estado si quieres mostrar inline
+				      return;
+				    }
+				    if (isAddingDireccion) {
+				      await crearDireccionUsuario(userId, {
+				        calle: direccionEdit.calle,
+				        numero: direccionEdit.numero,
+				        codigoPostal: direccionEdit.codigoPostal,
+				        localidad: direccionEdit.localidad,
+				        provincia: direccionEdit.provincia as Provincia,
+				        activo: true,
+				        pais: "Argentina",
+				      });
+				    } else if (isEditingDireccion && direccionEdit.id) {
+				      await actualizarDireccionUsuario(userId, direccionEdit.id, {
+				        calle: direccionEdit.calle,
+				        numero: direccionEdit.numero,
+				        codigoPostal: direccionEdit.codigoPostal,
+				        localidad: direccionEdit.localidad,
+				        provincia: direccionEdit.provincia as Provincia,
+				        activo: true,
+				        pais: "Argentina",
+				      });
+				    }
+				    setDireccionEdit(null);
+				    setIsAddingDireccion(false);
+				    setIsEditingDireccion(false);
+				    await obtenerDireccionesUsuario(userId);
+				  }}
 	const [isAddingDireccion, setIsAddingDireccion] = useState(false);
 
 	useEffect(() => {

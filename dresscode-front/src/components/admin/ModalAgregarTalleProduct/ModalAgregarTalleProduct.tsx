@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { validateForm, isRequired } from "../../../utils/validate";
+import { sileo } from "sileo";
 import styles from "./ModalAgregarTalleProduct.module.css";
 import type { Producto } from "../../../types/Producto";
 import { useProductoTalleStore } from "../../../store/talleProductoStore";
@@ -31,12 +33,35 @@ export const ModalAgregarTalleProduct = ({
 			talle.activo && !producto.talles?.some((pt) => pt.talle.id === talle.id),
 	);
 
+	const [errors, setErrors] = useState<Record<string, string>>({});
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!talleSeleccionado || cantidad <= 0) return;
-
-		await createProductoTalle(producto.id!, talleSeleccionado.id!, cantidad);
-
+		const fields = {
+			talle: talleSeleccionado?.id,
+			cantidad,
+		};
+		const rules = {
+			talle: [isRequired],
+			cantidad: [isRequired, (v: any) => Number(v) > 0],
+		};
+		const validationErrors = validateForm(fields, rules);
+		setErrors(validationErrors);
+		if (Object.keys(validationErrors).length > 0) {
+			sileo.error({
+				title: "Error",
+				description: "Completa todos los campos obligatorios.",
+				type: "error",
+			});
+			return;
+		}
+		await createProductoTalle(producto.id!, talleSeleccionado!.id!, cantidad);
+		setErrors({});
+		sileo.success({
+			title: "Talle agregado",
+			description: "El talle fue agregado correctamente.",
+			type: "success",
+		});
 		onClose();
 	};
 
@@ -61,7 +86,10 @@ export const ModalAgregarTalleProduct = ({
 								tallesDisponibles.find((t) => t.id === selectedId) || null;
 							setTalleSeleccionado(talle);
 						}}
-						required>
+						required
+						aria-invalid={!!errors.talle}
+						aria-describedby={errors.talle ? "talle-error" : undefined}
+					>
 						<option value="">Seleccionar talle</option>
 						{tallesDisponibles.map((talle) => (
 							<option key={talle.id} value={talle.id}>
@@ -69,6 +97,9 @@ export const ModalAgregarTalleProduct = ({
 							</option>
 						))}
 					</select>
+					{errors.talle && (
+						<div className={styles.error} id="talle-error" role="alert">{errors.talle}</div>
+					)}
 
 					<label className={styles.label}>CANTIDAD</label>
 					<input
@@ -78,6 +109,12 @@ export const ModalAgregarTalleProduct = ({
 						onChange={(e) => setCantidad(Number(e.target.value))}
 						min={1}
 						required
+						aria-invalid={!!errors.cantidad}
+						aria-describedby={errors.cantidad ? "cantidad-error" : undefined}
+					/>
+					{errors.cantidad && (
+						<div className={styles.error} id="cantidad-error" role="alert">{errors.cantidad}</div>
+					)}
 					/>
 
 					<button type="submit" className={styles.button}>

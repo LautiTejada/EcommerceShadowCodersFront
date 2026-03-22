@@ -62,7 +62,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 					{descuentoActivo && descuentoActivo.descuento ? (
 						<>
 							<span style={{ color: "#e53935", fontWeight: 700, fontSize: 18 }}>
-								${precioConDescuento.toLocaleString()}
+								{typeof precioConDescuento === "number"
+									? `$${precioConDescuento.toLocaleString()}`
+									: "Sin precio"}
 							</span>
 							<span
 								style={{
@@ -71,12 +73,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 									marginLeft: 8,
 									fontSize: 14,
 								}}>
-								${product.precio.toLocaleString()}
+								{typeof product.precio === "number"
+									? `$${product.precio.toLocaleString()}`
+									: "Sin precio"}
 							</span>
 						</>
 					) : (
 						<span style={{ color: "#222", fontWeight: 700, fontSize: 18 }}>
-							${product.precio.toLocaleString()}
+							{typeof product.precio === "number"
+								? `$${product.precio.toLocaleString()}`
+								: "Sin precio"}
 						</span>
 					)}
 				</div>
