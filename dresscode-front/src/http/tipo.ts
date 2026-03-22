@@ -1,74 +1,54 @@
+
 import type { Tipo } from "../types/Tipo";
-
-export const handleResponse = async (response: Response) => {
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Error ${response.status}: ${errorText}`);
-  }
-  if (response.status === 204) return null;
-  return response.json();
-};
-
+import { apiFetch } from "./apiFetch";
 const baseUrl = import.meta.env.VITE_API_URL;
 
-export const getTipos = async (): Promise<Tipo[]> => {
-  const response = await fetch(`${baseUrl}/tipos`);
-  return handleResponse(response);
+  return apiFetch(`${baseUrl}/tipos`);
 };
 
-export const getTiposActivos = async (): Promise<Tipo[]> => {
-  const response = await fetch(`${baseUrl}/tipos/active`);
-  return handleResponse(response);
+  return apiFetch(`${baseUrl}/tipos/active`);
 };
 
-export const getTipoById = async (id: number): Promise<Tipo | null> => {
-  const response = await fetch(`${baseUrl}/tipos/${id}`);
-  if (response.status === 404) return null;
-  return handleResponse(response);
+  try {
+    return await apiFetch(`${baseUrl}/tipos/${id}`);
+  } catch (error: any) {
+    if (error.message && error.message.includes('404')) return null;
+    throw error;
+  }
 }
 
-export const addTipo = async (tipo: Tipo) => {
-  const response = await fetch(`${baseUrl}/tipos`, {
+  return apiFetch(`${baseUrl}/tipos`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(tipo),
   });
-  return handleResponse(response);
 };
 
-export const updateTipo = async ( id: number, tipo: Tipo) => {
-  const response = await fetch(`${baseUrl}/tipos/${id}`, {
+  return apiFetch(`${baseUrl}/tipos/${id}`, {
     method: "PUT",
-    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(tipo),
   });
-  return handleResponse(response);
 };
 
-export const toggleStatusTipo = async (id: number) => {
-  const response = await fetch(`${baseUrl}/tipos/${id}/status`, {
+  return apiFetch(`${baseUrl}/tipos/${id}/status`, {
     method: "PUT",
   });
-  return handleResponse(response);
 };
 
-export const activateTipo = async (id: number) => {
-  const response = await fetch(`${baseUrl}/tipos/${id}/activate`, {
+  return apiFetch(`${baseUrl}/tipos/${id}/activate`, {
     method: "PUT",
   });
-  return handleResponse(response);
 }
 
-export const desactivateTipo = async (id: number) => {
-  const response = await fetch(`${baseUrl}/tipos/${id}/deactivate`, {
+  return apiFetch(`${baseUrl}/tipos/${id}/deactivate`, {
     method: "PUT",
   });
-  return handleResponse(response);
 }
 
-export const getCategoriasByTipo = async (tipoId: number) => {
-  const response = await fetch(`${baseUrl}/tipos/${tipoId}/categorias`);
-  if (response.status === 404) return [];
-  return handleResponse(response);
+  try {
+    return await apiFetch(`${baseUrl}/tipos/${tipoId}/categorias`);
+  } catch (error: any) {
+    if (error.message && error.message.includes('404')) return [];
+    throw error;
+  }
 }
 

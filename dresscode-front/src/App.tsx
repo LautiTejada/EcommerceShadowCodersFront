@@ -49,6 +49,7 @@ const ListaTiposCategorias = React.lazy(() =>
 		(m) => ({ default: m.ListaTiposCategorias }),
 	),
 );
+
 import Header from "./components/layouts/Header/Header";
 import Footer from "./components/layouts/Footer/Footer";
 import { ProductDetails } from "./components/ui/ProductDetails/ProductDetails";
@@ -56,6 +57,10 @@ import Loader from "./components/ui/Loader/Loader";
 import { useEffect } from "react";
 import { Toaster } from "sileo";
 import { useUsuarioStore } from "./store/userStore";
+import AdminRoute from "./components/admin/AdminRoute/AdminRoute";
+import PrivateRoute from "./components/layouts/PrivateRoute/PrivateRoute";
+import { HelmetContextProvider } from "./components/layouts/HelmetContextProvider";
+const NotFound = React.lazy(() => import("./pages/NotFound/NotFound"));
 
 function App() {
 	const inicializarUsuario = useUsuarioStore((s: any) => s.inicializarUsuario);
@@ -65,7 +70,7 @@ function App() {
 	}, []);
 
 	return (
-		<>
+		<HelmetContextProvider>
 			<Toaster />
 			<Router>
 				<header role="banner">
@@ -78,25 +83,103 @@ function App() {
 							<Route path="/" element={<Home />} />
 							<Route path="/product/:id" element={<ProductDetails />} />
 							<Route path="/catalog" element={<Catalog />} />
-							<Route path="/catalog/calzados" element={<Catalog filter="CALZADOS" />} />
+							<Route
+								path="/catalog/calzados"
+								element={<Catalog filter="CALZADOS" />}
+							/>
 							<Route path="/catalog/ropa" element={<Catalog filter="ROPA" />} />
-							<Route path="/catalog/ofertas" element={<Catalog filter="OFERTAS" />} />
+							<Route
+								path="/catalog/ofertas"
+								element={<Catalog filter="OFERTAS" />}
+							/>
 							<Route path="/login" element={<Login />} />
 							<Route path="/register" element={<Register />} />
-							<Route path="/cart" element={<Cart />} />
-							<Route path="/profile" element={<Profile />} />
+							{/* Rutas privadas para usuarios logueados */}
+							<Route
+								path="/cart"
+								element={
+									<PrivateRoute>
+										<Cart />
+									</PrivateRoute>
+								}
+							/>
+							<Route
+								path="/profile"
+								element={
+									<PrivateRoute>
+										<Profile />
+									</PrivateRoute>
+								}
+							/>
 
-							{/* Rutas de administración (futuro: proteger con AdminRoute) */}
-							<Route path="/admin" element={<HomeAdmin />} />
-							<Route path="/admin/add-product" element={<AgregarProducto />} />
-							<Route path="/admin/edit-product" element={<EditarProducto />} />
-							<Route path="/admin/stock-product" element={<StockProducto />} />
-							<Route path="/admin/add-discount" element={<AgregarDescuento />} />
-							<Route path="/admin/list-discounts" element={<ListaDescuentos />} />
-							<Route path="/admin/add-type-cateogory" element={<AgregarTiposCategorias />} />
-							<Route path="/admin/list-type-cateogory" element={<ListaTiposCategorias />} />
+							{/* Rutas de administración protegidas */}
+							<Route
+								path="/admin"
+								element={
+									<AdminRoute>
+										<HomeAdmin />
+									</AdminRoute>
+								}
+							/>
+							<Route
+								path="/admin/add-product"
+								element={
+									<AdminRoute>
+										<AgregarProducto />
+									</AdminRoute>
+								}
+							/>
+							<Route
+								path="/admin/edit-product"
+								element={
+									<AdminRoute>
+										<EditarProducto />
+									</AdminRoute>
+								}
+							/>
+							<Route
+								path="/admin/stock-product"
+								element={
+									<AdminRoute>
+										<StockProducto />
+									</AdminRoute>
+								}
+							/>
+							<Route
+								path="/admin/add-discount"
+								element={
+									<AdminRoute>
+										<AgregarDescuento />
+									</AdminRoute>
+								}
+							/>
+							<Route
+								path="/admin/list-discounts"
+								element={
+									<AdminRoute>
+										<ListaDescuentos />
+									</AdminRoute>
+								}
+							/>
+							<Route
+								path="/admin/add-type-cateogory"
+								element={
+									<AdminRoute>
+										<AgregarTiposCategorias />
+									</AdminRoute>
+								}
+							/>
+							<Route
+								path="/admin/list-type-cateogory"
+								element={
+									<AdminRoute>
+										<ListaTiposCategorias />
+									</AdminRoute>
+								}
+							/>
 
-							{/* Futuro: rutas anidadas, lazy loading, rutas protegidas por rol, manejo de 404 */}
+							{/* Ruta 404 Not Found */}
+							<Route path="*" element={<NotFound />} />
 						</Routes>
 					</Suspense>
 				</main>
@@ -104,7 +187,7 @@ function App() {
 					<Footer />
 				</footer>
 			</Router>
-		</>
+		</HelmetContextProvider>
 	);
 }
 

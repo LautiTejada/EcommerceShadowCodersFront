@@ -1,137 +1,94 @@
 import type { Direccion } from "../types/Direccion";
 import type { Usuario } from "../types/Usuario";
-
+import { apiFetch } from "./apiFetch";
 const baseUrl = import.meta.env.VITE_API_URL;
 
-export const handleResponse = async (response: Response) => {
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Error ${response.status}: ${errorText}`);
-  }
-  if (response.status === 204) {
-    return null; // No Content
-  }
-  // Verifica si hay contenido antes de intentar parsear JSON
-  const text = await response.text();
-  if (!text) {
-    return null;
-  }
-  return JSON.parse(text);
-};
-
 export const getUsuarios = async () => {
-  const response = await fetch(`${baseUrl}/usuarios`);
-  return handleResponse(response);
+	return apiFetch(`${baseUrl}/usuarios`);
 };
 
 export const getUsuariosActivos = async () => {
-  const response = await fetch(`${baseUrl}/usuarios/active`);
-
-  return handleResponse(response);
+	return apiFetch(`${baseUrl}/usuarios/active`);
 };
 
 export const getUsuarioPorId = async (id: number) => {
-  const response = await fetch(`${baseUrl}/usuarios/${id}`);
-  return handleResponse(response);
+	return apiFetch(`${baseUrl}/usuarios/${id}`);
 };
 
 export const crearUsuario = async (usuario: Usuario) => {
-  const response = await fetch(`${baseUrl}/usuarios`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(usuario),
-  });
-  return handleResponse(response);
+	return apiFetch(`${baseUrl}/usuarios`, {
+		method: "POST",
+		body: JSON.stringify(usuario),
+	});
 };
 
 export const updateUsuario = async (id: number, usuario: Usuario) => {
-  try {
-    const response = await fetch(`${baseUrl}/usuarios/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        username: usuario.username,
-        email: usuario.email,
-        password: usuario.password,
-        activo: usuario.activo,
-        rol: usuario.rol,
-      }),
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      throw new Error(`Error ${response.status}: ${errorText}`);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error actualizando usuario:", error);
-    throw error;
-  }
+	return apiFetch(`${baseUrl}/usuarios/${id}`, {
+		method: "PUT",
+		body: JSON.stringify({
+			username: usuario.username,
+			email: usuario.email,
+			password: usuario.password,
+			activo: usuario.activo,
+			rol: usuario.rol,
+		}),
+	});
 };
 
 export const cambiarStateUsuario = async (id: number) => {
-  const response = await fetch(`${baseUrl}/usuarios/${id}/status`, {
-    method: "PUT",
-  });
-  return handleResponse(response);
+	return apiFetch(`${baseUrl}/usuarios/${id}/status`, {
+		method: "PUT",
+	});
 };
 
 export const activateUsuario = async (id: number) => {
-  const response = await fetch(`${baseUrl}/usuarios/${id}/activate`, {
-    method: "PUT",
-  });
-  return handleResponse(response);
+	return apiFetch(`${baseUrl}/usuarios/${id}/activate`, {
+		method: "PUT",
+	});
 };
 
 export const desactivateUsuario = async (id: number) => {
-  const response = await fetch(`${baseUrl}/usuarios/${id}/deactivate`, {
-    method: "PUT",
-  });
-  return handleResponse(response);
+	return apiFetch(`${baseUrl}/usuarios/${id}/deactivate`, {
+		method: "PUT",
+	});
 };
 
 export const createDireccionDeUsuario = async (
-  usuarioId: number,
-  direccion: Direccion
+	usuarioId: number,
+	direccion: Direccion,
 ) => {
-  const response = await fetch(`${baseUrl}/usuarios/${usuarioId}/direcciones`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(direccion),
-  });
-  return handleResponse(response);
+	return apiFetch(`${baseUrl}/usuarios/${usuarioId}/direcciones`, {
+		method: "POST",
+		body: JSON.stringify(direccion),
+	});
 };
 
 export const updateDireccionDeUsuario = async (
-  usuarioId: number,
-  direccionId: number,
-  direccion: Direccion
+	usuarioId: number,
+	direccionId: number,
+	direccion: Direccion,
 ) => {
-  const response = await fetch(
-    `${baseUrl}/usuarios/${usuarioId}/direcciones/${direccionId}`,
-    {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(direccion),
-    }
-  );
-  return handleResponse(response);
+	return apiFetch(
+		`${baseUrl}/usuarios/${usuarioId}/direcciones/${direccionId}`,
+		{
+			method: "PUT",
+			body: JSON.stringify(direccion),
+		},
+	);
 };
 
 export const getDireccionesDeUsuario = async (usuarioId: number) => {
-  const response = await fetch(`${baseUrl}/usuarios/${usuarioId}/direcciones`);
-  return handleResponse(response);
+	return apiFetch(`${baseUrl}/usuarios/${usuarioId}/direcciones`);
 };
+
 export const desactivarDireccionDeUsuario = async (
-  usuarioId: number,
-  direccionId: number
+	usuarioId: number,
+	direccionId: number,
 ) => {
-  const response = await fetch(
-    `${baseUrl}/usuarios/${usuarioId}/direcciones/${direccionId}/desactivar`,
-    { method: "PUT" }
-  );
-  return handleResponse(response);
+	return apiFetch(
+		`${baseUrl}/usuarios/${usuarioId}/direcciones/${direccionId}/desactivar`,
+		{
+			method: "PUT",
+		},
+	);
 };

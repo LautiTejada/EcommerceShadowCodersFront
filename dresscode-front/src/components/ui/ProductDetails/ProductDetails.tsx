@@ -76,6 +76,7 @@ export const ProductDetails = () => {
 								key={idx}
 								src={`http://localhost:8080${encodeURI(img.urlImagen)}`}
 								alt={`Imagen ${idx + 1}`}
+								loading="lazy"
 								className={`${styles.thumbnailImg} ${
 									selectedImage === img.urlImagen
 										? styles.selectedThumbnail
@@ -91,6 +92,7 @@ export const ProductDetails = () => {
 							<img
 								src={`http://localhost:8080${encodeURI(selectedImage)}`}
 								alt={productoActual.nombre}
+								loading="lazy"
 								className={styles.mainImage}
 							/>
 						) : (
@@ -141,24 +143,21 @@ export const ProductDetails = () => {
 							<button
 								onClick={() => setQuantity((q) => Math.max(1, q - 1))}
 								className={styles.qtyBtn}
-								aria-label="Disminuir cantidad"
-							>
+								aria-label="Disminuir cantidad">
 								-
 							</button>
 							<span className={styles.qtyValue}>{quantity}</span>
 							<button
 								onClick={() => setQuantity((q) => q + 1)}
 								className={styles.qtyBtn}
-								aria-label="Aumentar cantidad"
-							>
+								aria-label="Aumentar cantidad">
 								+
 							</button>
 						</div>
 						<button
 							className={styles.addToCartBtn}
 							onClick={handleAddToCart}
-							aria-label="Añadir producto al carrito"
-						>
+							aria-label="Añadir producto al carrito">
 							AÑADIR AL CARRO
 						</button>
 					</div>

@@ -157,6 +157,7 @@ const Cart = () => {
                       )}`}
                       alt={item.nombre}
                       className={styles.productImg}
+                      loading="lazy"
                     />
                     <div className={styles.productInfo}>
                       <div className={styles.productName}>{item.nombre}</div>
