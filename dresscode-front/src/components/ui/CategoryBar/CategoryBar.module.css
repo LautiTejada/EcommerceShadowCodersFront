@@ -1,27 +1,66 @@
 .containerCategories {
-  background-color: #ffffff !important;
-  box-shadow: none !important;
-}
-.toolbar {
-  justify-content: center !important;
-}
-.containerButtons {
-  display: flex !important;
-  gap: 4px !important;
-}
-.buttons {
-  width: 150px;
-  color: black !important;
-  font-size: 1rem !important;
-  font-weight: bold !important;
-  transition: all 0.3s ease !important;
-  margin: 0.4rem 2rem !important;
-  background-color: transparent !important;
-  box-shadow: none !important;
-}
+	background-color: #ffffff !important;
+	box-shadow: none !important;
+	.toolbar {
+		justify-content: center !important;
+	}
+	.containerButtons {
+		display: flex !important;
+		gap: 4px !important;
+	}
 
-.buttons:hover {
-  background-color: rgba(77, 77, 77, 0.5) !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
-  text-decoration: none !important;
+	.buttons {
+		width: 150px;
+		color: #fff !important;
+		font-size: 1rem !important;
+		font-weight: bold !important;
+		border-radius: 24px !important;
+		margin: 0.4rem 2rem !important;
+		background: linear-gradient(90deg, #810000 60%, #b00 100%) !important;
+		box-shadow: 0 2px 8px rgba(129, 0, 0, 0.08) !important;
+		border: none !important;
+		transition:
+			background 0.2s,
+			transform 0.15s !important;
+		position: relative;
+		overflow: hidden;
+	}
+	.buttons:active {
+		transform: scale(0.97);
+	}
+	.buttons:hover {
+		background: linear-gradient(90deg, #b00 60%, #810000 100%) !important;
+		box-shadow: 0 4px 12px rgba(129, 0, 0, 0.15) !important;
+		text-decoration: none !important;
+	}
+	.buttons:disabled {
+		background: #ccc !important;
+		color: #888 !important;
+		cursor: not-allowed !important;
+	}
+
+	@media (max-width: 900px) {
+		.containerButtons {
+			flex-direction: column !important;
+			gap: 8px !important;
+			align-items: stretch !important;
+		}
+		.buttons {
+			width: 100% !important;
+			margin: 0.4rem 0.5rem !important;
+			font-size: 0.98rem !important;
+		}
+	}
+	@media (max-width: 600px) {
+		.containerButtons {
+			flex-direction: column !important;
+			gap: 4px !important;
+			align-items: stretch !important;
+		}
+		.buttons {
+			width: 100% !important;
+			margin: 0.2rem 0.2rem !important;
+			font-size: 0.93rem !important;
+		}
+	}
 }

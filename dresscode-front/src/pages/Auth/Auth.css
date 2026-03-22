@@ -1,87 +1,169 @@
+/* Modern button and input styles for auth forms */
+.modern-btn {
+	width: 100%;
+	padding: 12px 0;
+	border: none;
+	border-radius: 24px;
+	background: linear-gradient(90deg, #810000 60%, #b00 100%);
+	color: #fff;
+	font-size: 1.1rem;
+	font-weight: bold;
+	box-shadow: 0 2px 8px rgba(129, 0, 0, 0.08);
+	cursor: pointer;
+	transition:
+		background 0.2s,
+		transform 0.15s;
+	margin-top: 1.2rem;
+}
+.modern-btn:active {
+	transform: scale(0.97);
+}
+.modern-btn:disabled {
+	background: #ccc;
+	color: #888;
+	cursor: not-allowed;
+}
+.modern-btn:hover:not(:disabled) {
+	background: linear-gradient(90deg, #b00 60%, #810000 100%);
+}
+
+.auth-form input[type="text"],
+.auth-form input[type="email"],
+.auth-form input[type="password"] {
+	width: 100%;
+	padding: 10px 14px;
+	border: 1.5px solid #ddd;
+	border-radius: 16px;
+	margin-bottom: 1rem;
+	font-size: 1rem;
+	transition:
+		border 0.2s,
+		box-shadow 0.2s;
+	outline: none;
+	background: #faf9fa;
+}
+.auth-form input:focus {
+	border: 1.5px solid #810000;
+	box-shadow: 0 0 0 2px rgba(129, 0, 0, 0.08);
+}
+.auth-form label {
+	font-weight: 500;
+	color: #810000;
+	margin-bottom: 0.2rem;
+	display: block;
+}
+.auth-form .error {
+	color: #b00;
+	font-size: 0.95rem;
+	margin-bottom: 0.7rem;
+}
 /* Estilos para las páginas de autenticación (Login y Register) */
 
 .auth-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh; /* Altura mínima de la ventana */
-  background-color: #111111; /* Fondo oscuro para la página */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-height: 100vh; /* Altura mínima de la ventana */
+	background-color: #111111; /* Fondo oscuro para la página */
 }
 
 .auth-form {
-  background-color: #242424; /* Fondo más oscuro para el formulario */
-  padding: 30px;
-  border-radius: 5px; /* Bordes ligeramente redondeados */
-  margin: 0.8rem;
-  width: 350px; /* Ancho fijo para el formulario */
-  text-align: center; /* Centrar contenido del formulario */
+	background-color: #242424; /* Fondo más oscuro para el formulario */
+	padding: 30px;
+	border-radius: 5px; /* Bordes ligeramente redondeados */
+	margin: 0.8rem;
+	width: 350px; /* Ancho fijo para el formulario */
+	text-align: center; /* Centrar contenido del formulario */
 }
 
 .auth-form h1 {
-  color: white;
-  margin-bottom: 20px;
+	color: white;
+	margin-bottom: 20px;
 }
 
 .auth-form h2 {
-  color: white;
-  margin-bottom: 10px;
+	color: white;
+	margin-bottom: 10px;
 }
 
 .auth-form p {
-  color: white;
-  margin-bottom: 20px;
+	color: white;
+	margin-bottom: 20px;
 }
 
 .auth-form div {
-  margin-bottom: 15px; /* Aumentar espacio entre campos */
-  text-align: left; /* Alinear etiquetas a la izquierda */
+	margin-bottom: 15px; /* Aumentar espacio entre campos */
+	text-align: left; /* Alinear etiquetas a la izquierda */
 }
 
 label {
-  display: block;
-  margin-bottom: 5px;
-  color: white;
-  font-size: 0.9em; /* Tamaño de fuente ligeramente más pequeño */
+	display: block;
+	margin-bottom: 5px;
+	color: white;
+	font-size: 0.9em; /* Tamaño de fuente ligeramente más pequeño */
 }
 
 input[type="email"],
 input[type="password"],
 input[type="text"] {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 0; /* Eliminar margin-bottom aquí ya que el div padre lo tiene */
-  border: none;
-  background-color: #333;
-  color: white;
-  box-sizing: border-box;
+	width: 100%;
+	padding: 10px;
+	margin-bottom: 0; /* Eliminar margin-bottom aquí ya que el div padre lo tiene */
+	border: none;
+	background-color: #333;
+	color: white;
+	box-sizing: border-box;
 }
 
 button {
-  width: 100%;
-  padding: 10px;
-  background-color: #a00;
-  color: white;
-  border: none;
-  cursor: pointer;
-  margin-top: 20px; /* Espacio encima del botón */
+	width: 100%;
+	padding: 10px;
+}
+
+@media (max-width: 600px) {
+	.auth-form {
+		width: 98vw;
+		padding: 12px;
+		margin: 0.2rem;
+	}
+	.auth-form h1, .auth-form h2 {
+		font-size: 1.2rem;
+	}
+	.auth-form p {
+		font-size: 0.98rem;
+	}
+	.auth-form input {
+		font-size: 0.98rem;
+		padding: 8px 8px;
+	}
+	.modern-btn {
+		font-size: 0.98rem;
+		padding: 10px 0;
+	}
+}
+	background-color: #a00;
+	color: white;
+	border: none;
+	cursor: pointer;
+	margin-top: 20px; /* Espacio encima del botón */
 }
 
 button:hover {
-  background-color: #c00;
+	background-color: #c00;
 }
 
 .auth-form > p {
-  color: white;
-  text-align: center;
-  margin-top: 20px;
+	color: white;
+	text-align: center;
+	margin-top: 20px;
 }
 
 .auth-form > p a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
+	color: white;
+	text-decoration: none;
+	font-weight: bold;
 }
 
 .auth-form > p a:hover {
-  text-decoration: underline;
+	text-decoration: underline;
 }

@@ -6,6 +6,8 @@ import { useUsuarioStore } from "../../store/userStore";
 import { useNavigate } from "react-router-dom";
 import type { MetodoPago } from "../../types/enums/MetodoPago";
 import type { EstadoOrden } from "../../types/enums/EstadoOrden";
+import Loader from "../../components/ui/Loader/Loader";
+import { sileo } from "sileo";
 
 const Cart = () => {
   const { cart, updateQuantity, removeFromCart, clearCart } = useCartStore();
@@ -14,6 +16,7 @@ const Cart = () => {
   const { usuarioActual } = useUsuarioStore();
   const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(false);
   const getPrecioFinal = (item: any) => {
     const descuentoActivo =
       item.descuentos &&
@@ -58,16 +61,23 @@ const Cart = () => {
         fecha: new Date().toISOString(),
         precioTotal: subtotal,
         metodoPago: "MERCADO_PAGO" as MetodoPago,
-        estadoOrden: "PEDIDO" as EstadoOrden,
+            sileo.error({
+              title: "Debes iniciar sesión",
+              description: "Inicia sesión para finalizar la compra.",
+              type: "error",
+            });
         detalles: cart.map((item) => ({
           productoTalle: {
             productoId: item.productoId,
             talle: {
-              id: item.talleId!,
-              activo: true,
-              tipoTalle: item.tipoTalle || "", // Asegúrate de que `tipoTalle` esté definido
+            sileo.error({
+              title: "Falta dirección",
+              description: "Debes tener al menos una dirección cargada para finalizar la compra.",
+              type: "error",
+            });
             },
             activo: true,
+          setLoading(true);
             cantidad: item.cantidad,
           },
           cantidad: item.cantidad,
