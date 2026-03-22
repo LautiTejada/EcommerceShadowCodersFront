@@ -51,7 +51,8 @@ export const AgregarDescuento = () => {
     <div className={styles.container}>
   <MenuAdmin />
   <main className={styles.mainContent}>
-    <form className={styles.form} onSubmit={handleAddDiscount}>
+    <form className={styles.form} onSubmit={handleAddDiscount} role="form" aria-labelledby="agregar-descuento-title">
+      <h2 id="agregar-descuento-title" style={{marginBottom: 16}}>Agregar descuento</h2>
       <div className={styles.formRow}>
         {/* Fecha Inicio */}
         <div className={styles.formGroup}>

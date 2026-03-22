@@ -36,22 +36,26 @@ function Login() {
 	return (
 		<div className="auth-container">
 			<div className="auth-form">
-				<h1
-					style={{
+					<h1
+					  id="login-title"
+					  style={{
 						letterSpacing: 1,
 						fontWeight: 700,
 						fontSize: "2rem",
 						color: "#fff",
-					}}>
-					Iniciar sesión
-				</h1>
+					  }}>
+					  Iniciar sesión
+					</h1>
 				<p style={{ color: "#ccc", marginBottom: 24 }}>
 					¡Bienvenido de vuelta!
 				</p>
-				<form
-					onSubmit={handleSubmit}
-					autoComplete="on"
-					style={{ width: "100%" }}>
+					<form
+					  onSubmit={handleSubmit}
+					  autoComplete="on"
+					  style={{ width: "100%" }}
+					  role="form"
+					  aria-labelledby="login-title"
+					>
 					{localError && (
 						<div className="error" role="alert">
 							{localError}

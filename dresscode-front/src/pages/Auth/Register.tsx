@@ -57,9 +57,9 @@ function Register() {
 			<div className="auth-form">
 				{/* Placeholder para el logo */}
 
-				<h1>Crear cuenta</h1>
+				<h1 id="register-title">Crear cuenta</h1>
 				<p>Bienvenido al team!</p>
-				<form onSubmit={handleSubmit}>
+				<form onSubmit={handleSubmit} role="form" aria-labelledby="register-title">
 					{error && (
 						<div style={{ color: "red", marginBottom: "10px" }}>{error}</div>
 					)}

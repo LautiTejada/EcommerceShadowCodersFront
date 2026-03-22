@@ -140,17 +140,25 @@ export const ProductDetails = () => {
 						<div className={styles.quantitySection}>
 							<button
 								onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-								className={styles.qtyBtn}>
+								className={styles.qtyBtn}
+								aria-label="Disminuir cantidad"
+							>
 								-
 							</button>
 							<span className={styles.qtyValue}>{quantity}</span>
 							<button
 								onClick={() => setQuantity((q) => q + 1)}
-								className={styles.qtyBtn}>
+								className={styles.qtyBtn}
+								aria-label="Aumentar cantidad"
+							>
 								+
 							</button>
 						</div>
-						<button className={styles.addToCartBtn} onClick={handleAddToCart}>
+						<button
+							className={styles.addToCartBtn}
+							onClick={handleAddToCart}
+							aria-label="Añadir producto al carrito"
+						>
 							AÑADIR AL CARRO
 						</button>
 					</div>
