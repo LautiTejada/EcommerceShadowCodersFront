@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { sileo } from "sileo";
 import styles from "./ProductDetails.module.css";
 import { CategoryBar } from "../CategoryBar/CategoryBar";
@@ -36,7 +37,15 @@ export const ProductDetails = () => {
 
 	if (!productoActual) {
 		return (
-			<div className={styles.productNoFound}>ERROR: Producto no encontrado</div>
+			<>
+				<Helmet>
+					<title>Producto no encontrado | DressCode</title>
+					<meta name="robots" content="noindex" />
+				</Helmet>
+				<div className={styles.productNoFound}>
+					ERROR: Producto no encontrado
+				</div>
+			</>
 		);
 	}
 	const handleAddToCart = () => {
@@ -66,6 +75,64 @@ export const ProductDetails = () => {
 
 	return (
 		<>
+			<Helmet>
+				<title>{`${productoActual.nombre} | DressCode`}</title>
+				<meta
+					name="description"
+					content={
+						productoActual.descripcion?.slice(0, 150) ||
+						"Detalle de producto en DressCode"
+					}
+				/>
+				<meta
+					property="og:title"
+					content={`${productoActual.nombre} | DressCode`}
+				/>
+				<meta
+					property="og:description"
+					content={
+						productoActual.descripcion?.slice(0, 150) ||
+						"Detalle de producto en DressCode"
+					}
+				/>
+				<meta property="og:type" content="product" />
+				<meta
+					property="og:url"
+					content={`https://tusitio.com/product/${productoActual.id}`}
+				/>
+				<meta
+					property="og:image"
+					content={
+						productoActual.imagenes?.[0]?.urlImagen
+							? `https://tusitio.com${productoActual.imagenes[0].urlImagen}`
+							: "/public/assets/ImagesCarousel/og-default.jpg"
+					}
+				/>
+				<meta name="twitter:card" content="summary_large_image" />
+				<meta
+					name="twitter:title"
+					content={`${productoActual.nombre} | DressCode`}
+				/>
+				<meta
+					name="twitter:description"
+					content={
+						productoActual.descripcion?.slice(0, 150) ||
+						"Detalle de producto en DressCode"
+					}
+				/>
+				<meta
+					name="twitter:image"
+					content={
+						productoActual.imagenes?.[0]?.urlImagen
+							? `https://tusitio.com${productoActual.imagenes[0].urlImagen}`
+							: "/public/assets/ImagesCarousel/og-default.jpg"
+					}
+				/>
+				<link
+					rel="canonical"
+					href={`https://tusitio.com/product/${productoActual.id}`}
+				/>
+			</Helmet>
 			<CategoryBar />
 			<div className={styles.bg}>
 				<div className={styles.container}>
@@ -75,7 +142,7 @@ export const ProductDetails = () => {
 							<img
 								key={idx}
 								src={`http://localhost:8080${encodeURI(img.urlImagen)}`}
-								alt={`Imagen ${idx + 1}`}
+								alt={`Imagen ${idx + 1} de ${productoActual.nombre}`}
 								loading="lazy"
 								className={`${styles.thumbnailImg} ${
 									selectedImage === img.urlImagen

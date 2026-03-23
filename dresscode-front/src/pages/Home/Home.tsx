@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { CategoryBar } from "../../components/ui/CategoryBar/CategoryBar";
 import ImageCarousel from "../../components/ui/ImageCarousel/ImageCarousel";
 import OffersSection from "../../components/ui/OffersSection/OffersSection";
@@ -63,6 +64,40 @@ const Home = () => {
 
 	return (
 		<>
+			<Helmet>
+				<title>DressCode | Moda Urbana y Deportiva</title>
+				<meta
+					name="description"
+					content="Descubrí las últimas tendencias en zapatillas y remeras. Ofertas exclusivas en moda urbana y deportiva. ¡Estilo en cada línea!"
+				/>
+				<meta
+					property="og:title"
+					content="DressCode | Moda Urbana y Deportiva"
+				/>
+				<meta
+					property="og:description"
+					content="Descubrí las últimas tendencias en zapatillas y remeras. Ofertas exclusivas en moda urbana y deportiva."
+				/>
+				<meta property="og:type" content="website" />
+				<meta property="og:url" content="https://tusitio.com/" />
+				<meta
+					property="og:image"
+					content="/public/assets/ImagesCarousel/og-default.jpg"
+				/>
+				<meta name="twitter:card" content="summary_large_image" />
+				<meta
+					name="twitter:title"
+					content="DressCode | Moda Urbana y Deportiva"
+				/>
+				<meta
+					name="twitter:description"
+					content="Descubrí las últimas tendencias en zapatillas y remeras. Ofertas exclusivas en moda urbana y deportiva."
+				/>
+				<meta
+					name="twitter:image"
+					content="/public/assets/ImagesCarousel/og-default.jpg"
+				/>
+			</Helmet>
 			<CategoryBar />
 			<ImageCarousel />
 			<div className={styles.separador}></div>
