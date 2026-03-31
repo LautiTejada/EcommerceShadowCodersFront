@@ -1,6 +1,6 @@
 import styles from "./ModalEditarDescuento.module.css";
 import { useState } from "react";
-import Swal from "sweetalert2";
+
 import { validateForm, isRequired } from "../../../utils/validate";
 import { sileo } from "sileo";
 import { useDescuentoStore } from "../../../store/descuentoStore";

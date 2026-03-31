@@ -2,8 +2,14 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { CategoryBar } from "../../components/ui/CategoryBar/CategoryBar";
 import ImageCarousel from "../../components/ui/ImageCarousel/ImageCarousel";
-import OffersSection from "../../components/ui/OffersSection/OffersSection";
-import ProductCarouselSection from "../../components/ui/ProductCarouselSection/ProductCarouselSection";
+import React, { Suspense } from "react";
+const OffersSection = React.lazy(
+	() => import("../../components/ui/OffersSection/OffersSection"),
+);
+const ProductCarouselSection = React.lazy(
+	() =>
+		import("../../components/ui/ProductCarouselSection/ProductCarouselSection"),
+);
 import { useCategoriaStore } from "../../store/categoriaStore";
 
 import styles from "./Home.module.css";
@@ -31,7 +37,6 @@ const Home = () => {
 					type: "error",
 				});
 			});
-		// eslint-disable-next-line
 	}, []);
 
 	const zapatillas = productosActivos.filter(
@@ -101,7 +106,9 @@ const Home = () => {
 			<CategoryBar />
 			<ImageCarousel />
 			<div className={styles.separador}></div>
-			{<OffersSection />}
+			<Suspense fallback={<Loader />}>
+				<OffersSection />
+			</Suspense>
 			{zapatillas.length === 0 && remeras.length === 0 ? (
 				<div
 					style={{
@@ -113,10 +120,12 @@ const Home = () => {
 					No hay productos destacados para mostrar.
 				</div>
 			) : (
-				<>
-					<ProductCarouselSection title="ZAPATILLAS" products={zapatillas} />
-					<ProductCarouselSection title="REMERAS" products={remeras} />
-				</>
+				<Suspense fallback={<Loader />}>
+					<>
+						<ProductCarouselSection title="ZAPATILLAS" products={zapatillas} />
+						<ProductCarouselSection title="REMERAS" products={remeras} />
+					</>
+				</Suspense>
 			)}
 			<div className={styles.eslogan}>
 				<h2>ESTILO EN CADA LINEA</h2>

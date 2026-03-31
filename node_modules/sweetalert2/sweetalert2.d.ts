@@ -322,14 +322,14 @@ declare module 'sweetalert2' {
     function argsToParams(params: SweetAlertArrayOptions | readonly [SweetAlertOptions]): SweetAlertOptions
 
     /**
-     * An enum of possible reasons that can explain an alert dismissal.
+     * An object of possible reasons that can explain an alert dismissal.
      */
-    enum DismissReason {
-      cancel,
-      backdrop,
-      close,
-      esc,
-      timer,
+    const DismissReason: {
+      readonly cancel: 'cancel'
+      readonly backdrop: 'backdrop'
+      readonly close: 'close'
+      readonly esc: 'esc'
+      readonly timer: 'timer'
     }
 
     /**
@@ -426,6 +426,15 @@ declare module 'sweetalert2' {
     | 'auto'
     | 'minimal'
     | 'borderless'
+    | 'bootstrap-4'
+    | 'bootstrap-4-light'
+    | 'bootstrap-4-dark'
+    | 'bootstrap-5'
+    | 'bootstrap-5-light'
+    | 'bootstrap-5-dark'
+    | 'material-ui'
+    | 'material-ui-light'
+    | 'material-ui-dark'
     | 'embed-iframe'
     | 'bulma'
     | 'bulma-light'
@@ -491,6 +500,8 @@ declare module 'sweetalert2' {
     | 'theme'
     | 'willClose'
 
+  export type DismissReason = 'cancel' | 'backdrop' | 'close' | 'esc' | 'timer'
+
   export interface SweetAlertCustomClass {
     container?: string | readonly string[]
     popup?: string | readonly string[]
@@ -516,7 +527,7 @@ declare module 'sweetalert2' {
     readonly isDenied: boolean
     readonly isDismissed: boolean
     readonly value?: T
-    readonly dismiss?: Swal.DismissReason
+    readonly dismiss?: DismissReason
   }
 
   export type SweetAlertOptions = SweetAlertInputValidator & {
@@ -1301,4 +1312,4 @@ declare module 'sweetalert2/*/sweetalert2.all.js' {
  * They will be merged with 'true' definitions.
  */
 
-interface JQuery {} // eslint-disable-line @typescript-eslint/no-empty-object-type
+interface JQuery {}

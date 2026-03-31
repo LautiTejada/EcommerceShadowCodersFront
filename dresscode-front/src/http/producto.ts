@@ -1,3 +1,40 @@
+import type { PagedResponse } from "../types/PagedResponse";
+// Obtener productos paginados con filtros y ordenamiento
+export const getProductosPaged = async ({
+	page = 0,
+	size = 12,
+	sort = "",
+	filtros = {},
+}: {
+	page?: number;
+	size?: number;
+	sort?: string;
+	filtros?: any;
+}): Promise<PagedResponse<Producto>> => {
+	const params = new URLSearchParams();
+	params.append("page", String(page));
+	params.append("size", String(size));
+	if (sort) params.append("sort", sort);
+
+	if (filtros.tipos?.length)
+		filtros.tipos.forEach((id: string) => params.append("tipoIds", id));
+	if (filtros.categorias?.length)
+		filtros.categorias.forEach((id: string) =>
+			params.append("categoriaIds", id),
+		);
+	if (filtros.marcas?.length)
+		filtros.marcas.forEach((marca: string) => params.append("marcas", marca));
+	if (filtros.precioMin) params.append("precioMin", filtros.precioMin);
+	if (filtros.precioMax) params.append("precioMax", filtros.precioMax);
+
+	const response = await fetch(
+		`${baseUrl}/productos/paged?${params.toString()}`,
+	);
+	if (!response.ok) {
+		throw new Error(`HTTP error! status: ${response.status}`);
+	}
+	return await response.json();
+};
 import type { Categoria } from "../types/Categoria";
 import type { ImagenProducto } from "../types/ImagenProducto";
 import type { Producto } from "../types/Producto";

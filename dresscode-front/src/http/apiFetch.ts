@@ -1,8 +1,5 @@
-// src/http/apiFetch.ts
-// Centraliza las llamadas a la API y agrega el token JWT automáticamente si existe.
-
 export interface ApiFetchOptions extends RequestInit {
-	auth?: boolean; // Si true, agrega el token JWT automáticamente
+	auth?: boolean;
 }
 
 export async function apiFetch<T = any>(
@@ -10,8 +7,8 @@ export async function apiFetch<T = any>(
 	options: ApiFetchOptions = {},
 ): Promise<T> {
 	const { auth, headers, ...rest } = options;
-	const finalHeaders: HeadersInit = {
-		...(headers || {}),
+	const finalHeaders: Record<string, string> = {
+		...((headers as Record<string, string>) || {}),
 		"Content-Type": "application/json",
 	};
 
@@ -36,7 +33,6 @@ export async function apiFetch<T = any>(
 		throw new Error(errorMsg);
 	}
 
-	// Si la respuesta es vacía (204), retorna null
 	if (response.status === 204) return null as T;
 
 	return response.json();

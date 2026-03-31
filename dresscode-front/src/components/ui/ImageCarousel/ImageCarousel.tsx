@@ -6,22 +6,22 @@ const ImageCarousel = () => {
 			<section className={styles.containerCarousel}>
 				<img
 					src="/public/assets/ImagesCarousel/imagenCarousel 1.png"
-					alt=""
+					alt="Zapatillas urbanas en oferta"
 					loading="lazy"
 				/>
 				<img
 					src="/public/assets/ImagesCarousel/imagenCarousel 2.png"
-					alt=""
+					alt="Remeras deportivas de temporada"
 					loading="lazy"
 				/>
 				<img
 					src="/public/assets/ImagesCarousel/imagenCarousel 3.png"
-					alt=""
+					alt="Buzos y camperas urbanas"
 					loading="lazy"
 				/>
 				<img
 					src="/public/assets/ImagesCarousel/imagenCarousel 4.png"
-					alt=""
+					alt="Accesorios y moda urbana DressCode"
 					loading="lazy"
 				/>
 			</section>

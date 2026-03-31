@@ -6,7 +6,6 @@ import {
 	deactivateTipo,
 	getCategoriasByTipo,
 	getTipoById,
-	getTipos,
 	getTiposActivos,
 	updateTipoStatus,
 	updateTipo,
@@ -18,12 +17,10 @@ interface TipoState {
 	cargando: boolean;
 	error: string | null;
 
-	// obtenerTipos: () => Promise<void>;
 	obtenerTiposActivos: () => Promise<void>;
 	obtenerTipoPorId: (id: number) => Promise<Tipo | null>;
 	crearTipo: (nuevoTipo: Tipo) => Promise<void>;
 	actualizarTipo: (id: number, tipo: Tipo) => Promise<void>;
-	cambiarEstadoTipo: (id: number) => Promise<void>;
 	setTipoActual: (tipo: Tipo | null) => void;
 	activarTipo: (id: number) => Promise<void>;
 	desactivarTipo: (id: number) => Promise<void>;
@@ -34,20 +31,6 @@ export const tipoStore = create<TipoState>((set, get) => ({
 	tipoActual: null,
 	cargando: false,
 	error: null,
-
-	// obtenerTipos: async () => {
-	//   set({ cargando: true, error: null });
-	//   try {
-	//     const tipos = await getTipos();
-	//     set({ tipos });
-	//   } catch (error: unknown) {
-	//     if (error instanceof Error) {
-	//       set({ error: error.message || "Error al obtener tipos" });
-	//     }
-	//   } finally {
-	//     set({ cargando: false });
-	//   }
-	// },
 
 	obtenerTiposActivos: async () => {
 		set({ cargando: true, error: null });
@@ -79,7 +62,7 @@ export const tipoStore = create<TipoState>((set, get) => ({
 		}
 	},
 
-	crearTipo: async (nuevoTipo) => {
+	crearTipo: async (nuevoTipo: Tipo) => {
 		set({ cargando: true, error: null });
 		try {
 			await createTipo(nuevoTipo);
@@ -93,7 +76,7 @@ export const tipoStore = create<TipoState>((set, get) => ({
 		}
 	},
 
-	actualizarTipo: async (id, tipo) => {
+	actualizarTipo: async (id: number, tipo: Tipo) => {
 		set({ cargando: true, error: null });
 		try {
 			await updateTipo(id, tipo);
@@ -107,7 +90,7 @@ export const tipoStore = create<TipoState>((set, get) => ({
 		}
 	},
 
-	cambiarEstadoTipo: async (id) => {
+	cambiarEstadoTipo: async (id: number) => {
 		set({ cargando: true, error: null });
 		try {
 			await updateTipoStatus(id);

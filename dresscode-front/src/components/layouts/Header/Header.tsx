@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
-import { AppBar, Toolbar, Button, Avatar, IconButton } from "@mui/material";
+import AppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import Button from "@mui/material/Button";
+import Avatar from "@mui/material/Avatar";
+import IconButton from "@mui/material/IconButton";
 import { Link, useLocation } from "react-router-dom";
 import styles from "./Header.module.css";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import { CartIcon } from "../../ui/CartIcon/CartIcon";
+
 import { useCartStore } from "../../../store/cartStore";
 import { motion } from "framer-motion";
 
@@ -16,7 +20,7 @@ const Header = () => {
 
 	useEffect(() => {
 		setUsername(localStorage.getItem("username"));
-	}, [location]); // <-- se actualiza cada vez que cambia la ruta
+	}, [location]);
 
 	return (
 		<header role="banner">

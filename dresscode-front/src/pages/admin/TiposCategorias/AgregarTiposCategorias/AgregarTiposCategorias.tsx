@@ -1,159 +1,161 @@
-import styles from "./AgregarTiposCategorias.module.css"
-
-import { useEffect, useState } from "react"
-import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin"
-import type { Tipo } from "../../../../types/Tipo"
-import type { Categoria } from "../../../../types/Categoria"
-import { useCategoriaStore } from "../../../../store/categoriaStore"
-import { tipoStore } from "../../../../store/tipoStore"
+import styles from "./AgregarTiposCategorias.module.css";
+import { useEffect, useState } from "react";
+import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin";
+import type { Tipo } from "../../../../types/Tipo";
+import type { Categoria } from "../../../../types/Categoria";
+import { useCategoriaStore } from "../../../../store/categoriaStore";
+import { tipoStore } from "../../../../store/tipoStore";
+import { sileo } from "sileo";
 
 export const AgregarTiposCategorias = () => {
+	const [tipo, setTipo] = useState<Tipo>({
+		nombre: "",
+	});
 
-  const [tipo, setTipo] = useState<Tipo>({
-    nombre: "",
-  })
+	const { crearTipo, tipos, obtenerTiposActivos, tipoActual, setTipoActual } =
+		tipoStore();
 
-  const {crearTipo , tipos, obtenerTiposActivos, tipoActual, setTipoActual} = tipoStore();
+	const handleInputTipo = (field: string, value: string) => {
+		setTipo({ ...tipo, [field]: value });
+	};
 
-  const handleInputTipo = (field: string, value: string) => {
-    setTipo({ ...tipo, [field]: value });
-  };
+	const handleAddTipo = (e: React.FormEvent) => {
+		e.preventDefault();
 
-  const handleAddTipo = (e: React.FormEvent) => {
-   e.preventDefault(); 
+		const nuevoTipo = {
+			...tipo,
+		};
 
-   const nuevoTipo = {
-     ...tipo, 
-   };
+		crearTipo(nuevoTipo);
 
-   crearTipo(nuevoTipo);
+		// Reseteo de formulario
+		setTipo({
+			nombre: "",
+		});
+	};
 
-   // Reseteo de formulario
-   setTipo({
-      nombre: "",
-  });
-  }
+	const [categoria, setCategoria] = useState<Categoria>({
+		nombreCategoria: "",
+		activo: false,
+	});
 
-    const [categoria, setCategoria] = useState<Categoria>({
-      nombreCategoria: "",
-      activo: false,
-    })
+	const { addCategoria } = useCategoriaStore();
 
-  
-    const { addCategoria } = useCategoriaStore()
+	useEffect(() => {
+		obtenerTiposActivos();
+	}, [obtenerTiposActivos]);
 
-   useEffect(()=> {
-    obtenerTiposActivos()
-   },[obtenerTiposActivos])
+	const [showCategory, setShowCategory] = useState(false);
 
-   const [showCategory, setShowCategory] = useState(false);
+	const handleInputCategoria = (field: string, value: string) => {
+		setCategoria({ ...categoria, [field]: value });
+	};
 
-   const handleInputCategoria = (field: string, value: string) => {
-    setCategoria({ ...categoria, [field]: value });
-  };
+	const handleAddCategoria = (e: React.FormEvent) => {
+		e.preventDefault();
 
-  const handleAddCategoria = (e: React.FormEvent) => {
-    e.preventDefault(); 
+		if (!tipoActual || tipoActual.id === undefined) {
+			sileo.error({
+				title: "Tipo requerido",
+				description: "Selecciona un tipo antes de agregar una categoría.",
+			});
+			return;
+		}
 
-    if(!tipoActual || tipoActual.id === undefined){
-        alert("Selecciona un tipo");
-      return
-    }
-    
-  
-    const nuevaCategoria = {
-      ...categoria, 
-    };
+		const nuevaCategoria = {
+			...categoria,
+		};
 
-    addCategoria(nuevaCategoria, tipoActual.id);
+		addCategoria(nuevaCategoria, tipoActual.id);
 
-    // Reseteo de formulario
-    setCategoria({
-        nombreCategoria: "",
-        activo: false,
-    });
+		// Reseteo de formulario
+		setCategoria({
+			nombreCategoria: "",
+			activo: false,
+		});
 
-    setTipoActual(null)
-  }
-  
+		setTipoActual(null);
+	};
 
-  return (
-    <div className={styles.container}>
-      <MenuAdmin />
-      <div className={styles.containerForms}>
-        <main className={styles.mainContent}>
-            <form className={styles.form} onSubmit={handleAddCategoria}>
-              <h3 className={styles.tituloCrear}>CREAR CATEGORIA</h3>
-              <div className={styles.formRow}>
-                <div className={styles.formGroup}>
-                  <label className={styles.label}>NOMBRE</label>
-                  <div className={styles.inputIcon}>
-                    <input
-                      className={styles.input}
-                      type="text"
-                      value={categoria.nombreCategoria}
-                      onChange={e => handleInputCategoria("nombreCategoria", e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
-              <div className={styles.formGroup}>
-                  <label className={styles.label}>CATEGORIA</label>
-                  <div
-                    className={styles.select}
-                    onClick={() => setShowCategory(!showCategory)}
-                    tabIndex={0}
-                  >
-                    {tipoActual?.nombre || "..."}
-                    <span className={styles.arrow} />
-                    {showCategory && (
-                      <div className={styles.dropdown}>
-                        {tipos.map(tipo => (
-                          <div
-                            key={tipo.id}
-                            className={styles.dropdownItem}
-                            onClick={() => setTipoActual(tipo)}
-                          >
-                            {tipo.nombre}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              <div className={styles.formRow}>
-                <button className={styles.addButton} type="submit">
-                  AGREGAR CATEGORIA
-                </button>
-              </div>
-            </form>
-          </main>
-        <main className={styles.mainContent}>
-          <form className={styles.form} onSubmit={handleAddTipo}>
-            <h3 className={styles.tituloCrear}>CREAR TIPO</h3>
-            <div className={styles.formRow}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>NOMBRE</label>
-                <div className={styles.inputIcon}>
-                  <input
-                    className={styles.input}
-                    type="text"
-                    value={tipo.nombre}
-                    onChange={e => handleInputTipo("nombre", e.target.value)}
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className={styles.formRow}>
-              <button className={styles.addButton} type="submit">
-                AGREGAR TIPO
-              </button>
-            </div>
-          </form>
-        </main>
-          
-      </div>
-      
-  </div>
-)}
+	return (
+		<>
+			<div className={styles.container}>
+				<MenuAdmin />
+				<div className={styles.containerForms}>
+					<main className={styles.mainContent}>
+						<form className={styles.form} onSubmit={handleAddCategoria}>
+							<h3 className={styles.tituloCrear}>CREAR CATEGORIA</h3>
+							<div className={styles.formRow}>
+								<div className={styles.formGroup}>
+									<label className={styles.label}>NOMBRE</label>
+									<div className={styles.inputIcon}>
+										<input
+											className={styles.input}
+											type="text"
+											value={categoria.nombreCategoria}
+											onChange={(e) =>
+												handleInputCategoria("nombreCategoria", e.target.value)
+											}
+										/>
+									</div>
+								</div>
+							</div>
+							<div className={styles.formGroup}>
+								<label className={styles.label}>CATEGORIA</label>
+								<div
+									className={styles.select}
+									onClick={() => setShowCategory(!showCategory)}
+									tabIndex={0}>
+									{tipoActual?.nombre || "..."}
+									<span className={styles.arrow} />
+									{showCategory && (
+										<div className={styles.dropdown}>
+											{tipos.map((tipo) => (
+												<div
+													key={tipo.id}
+													className={styles.dropdownItem}
+													onClick={() => setTipoActual(tipo)}>
+													{tipo.nombre}
+												</div>
+											))}
+										</div>
+									)}
+								</div>
+							</div>
+							<div className={styles.formRow}>
+								<button className={styles.addButton} type="submit">
+									AGREGAR CATEGORIA
+								</button>
+							</div>
+						</form>
+					</main>
+					<main className={styles.mainContent}>
+						<form className={styles.form} onSubmit={handleAddTipo}>
+							<h3 className={styles.tituloCrear}>CREAR TIPO</h3>
+							<div className={styles.formRow}>
+								<div className={styles.formGroup}>
+									<label className={styles.label}>NOMBRE</label>
+									<div className={styles.inputIcon}>
+										<input
+											className={styles.input}
+											type="text"
+											value={tipo.nombre}
+											onChange={(e) =>
+												handleInputTipo("nombre", e.target.value)
+											}
+										/>
+									</div>
+								</div>
+							</div>
+							<div className={styles.formRow}>
+								<button className={styles.addButton} type="submit">
+									AGREGAR TIPO
+								</button>
+							</div>
+						</form>
+					</main>
+				</div>
+			</div>
+		</>
+	);
+};

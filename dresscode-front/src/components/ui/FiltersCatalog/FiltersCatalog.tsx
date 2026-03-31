@@ -4,121 +4,114 @@ import { useCategoriaStore } from "../../../store/categoriaStore";
 import type { Marca } from "../../../types/enums/Marca";
 import { useProductoStore } from "../../../store/productoStore";
 
-// Si quieres que las marcas se obtengan automáticamente del enum, puedes definirlas así:
 const marcas: Marca[] = ["NIKE", "ADIDAS", "PUMA", "VANS", "JORDAN"];
 
 export const FiltersCatalog = () => {
-  // Stores
-  const { tipos, obtenerTiposActivos, obtenerTipoPorId } = tipoStore();
-  const { categoriasActivas, fetchCategoriasActivas } = useCategoriaStore();
-  const { fetchProductosFiltrados } = useProductoStore();
+	const { tipos, obtenerTiposActivos } = tipoStore();
+	const { categoriasActivas, fetchCategoriasActivas } = useCategoriaStore();
+	const { fetchProductosFiltrados } = useProductoStore();
 
-  // Estado UI
-  const [open, setOpen] = useState<{ [key: string]: boolean }>({});
-  const [checked, setChecked] = useState<{ [key: string]: string[] }>({});
-  const [price, setPrice] = useState<[number, number]>([0, 500000]);
+	const [open, setOpen] = useState<{ [key: string]: boolean }>({});
+	const [checked, setChecked] = useState<{ [key: string]: string[] }>({});
+	const [price, setPrice] = useState<[number, number]>([0, 500000]);
 
-  // Cargar tipos y categorías activas al montar
-  useEffect(() => {
-    obtenerTiposActivos();
-    fetchCategoriasActivas();
-  }, [obtenerTiposActivos, fetchCategoriasActivas]);
+	useEffect(() => {
+		obtenerTiposActivos();
+		fetchCategoriasActivas();
+	}, [obtenerTiposActivos, fetchCategoriasActivas]);
 
-  // Definir los filtros dinámicamente
-  const filterData = [
-    {
-      label: "Tipo de producto",
-      options: tipos.map((tipo) => ({
-        label: tipo.nombre,
-        value: tipo.id,
-      })),
-    },
-    {
-      label: "Categoria",
-      options: categoriasActivas.map((cat) => ({
-        label: cat.nombreCategoria,
-        value: cat.id,
-      })),
-    },
-    {
-      label: "Marca",
-      options: marcas.map((marca) => ({
-        label: marca,
-        value: marca,
-      })),
-    },
-  ];
+	const filterData = [
+		{
+			label: "Tipo de producto",
+			options: tipos.map((tipo) => ({
+				label: tipo.nombre,
+				value: tipo.id,
+			})),
+		},
+		{
+			label: "Categoria",
+			options: categoriasActivas.map((cat) => ({
+				label: cat.nombreCategoria,
+				value: cat.id,
+			})),
+		},
+		{
+			label: "Marca",
+			options: marcas.map((marca) => ({
+				label: marca,
+				value: marca,
+			})),
+		},
+	];
 
-  const toggleSection = (label: string) => {
-    setOpen((prev) => ({ ...prev, [label]: !prev[label] }));
-  };
+	const toggleSection = (label: string) => {
+		setOpen((prev) => ({ ...prev, [label]: !prev[label] }));
+	};
 
-  const handleCheck = (
-    section: string,
-    option: string | number | undefined
-  ) => {
-    if (option === undefined) return;
-    const optionStr = String(option);
-    setChecked((prev) => {
-      const current = prev[section] || [];
-      return {
-        ...prev,
-        [section]: current.includes(optionStr)
-          ? current.filter((o) => o !== optionStr)
-          : [...current, optionStr],
-      };
-    });
-  };
+	const handleCheck = (
+		section: string,
+		option: string | number | undefined,
+	) => {
+		if (option === undefined) return;
+		const optionStr = String(option);
+		setChecked((prev) => {
+			const current = prev[section] || [];
+			return {
+				...prev,
+				[section]: current.includes(optionStr)
+					? current.filter((o) => o !== optionStr)
+					: [...current, optionStr],
+			};
+		});
+	};
 
-  const handlePriceChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    idx: number
-  ) => {
-    const value = Number(e.target.value);
-    setPrice((prev) => {
-      const newPrice: [number, number] = [...prev] as [number, number];
-      newPrice[idx] = value;
-      return newPrice;
-    });
-  };
+	const handlePriceChange = (
+		e: React.ChangeEvent<HTMLInputElement>,
+		idx: number,
+	) => {
+		const value = Number(e.target.value);
+		setPrice((prev) => {
+			const newPrice: [number, number] = [...prev] as [number, number];
+			newPrice[idx] = value;
+			return newPrice;
+		});
+	};
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
 
-    // Convierte los IDs a números si es necesario
-    const tipos = (checked["Tipo de producto"] || []).map(Number);
-    const categorias = (checked["Categoria"] || []).map(Number);
-    const marcas = checked["Marca"] || [];
+		const tipos = (checked["Tipo de producto"] || []).map(Number);
+		const categorias = (checked["Categoria"] || []).map(Number);
+		const marcas = checked["Marca"] || [];
 
-    const filtros = {
-      tipos,
-      categorias,
-      marcas,
-      precioMin: price[0],
-      precioMax: price[1],
-    };
+		const filtros = {
+			tipos,
+			categorias,
+			marcas,
+			precioMin: price[0],
+			precioMax: price[1],
+		};
 
-    fetchProductosFiltrados(filtros);
-  };
+		fetchProductosFiltrados(filtros);
+	};
 
-  return (
-    <form
-      onSubmit={handleSubmit}
-      style={{
-        background: "#181818",
-        color: "#fff",
-        width: 260,
-        padding: 0,
-        borderRadius: 4,
-        fontFamily: "sans-serif",
-        boxSizing: "border-box",
-        display: "flex",
-        flexDirection: "column",
-        height: "100%",
-      }}
-    >
-      <style>
-        {`
+	return (
+		<form
+			onSubmit={handleSubmit}
+			style={{
+				background: "#181818",
+				color: "#fff",
+				width: 260,
+				padding: 0,
+				borderRadius: 4,
+				fontFamily: "sans-serif",
+				boxSizing: "border-box",
+				display: "flex",
+				flexDirection: "column",
+				height: "100%",
+			}}>
+			<style>
+				{`
           .dropdown-content {
             overflow: hidden;
             transition: max-height 0.3s cubic-bezier(.4,0,.2,1), opacity 0.3s;
@@ -158,140 +151,131 @@ export const FiltersCatalog = () => {
             transition-delay: 0.1s;
           }
         `}
-      </style>
-      <div style={{ flex: 1 }}>
-        {filterData.map((section) => (
-          <div key={section.label}>
-            <div
-              style={{
-                background: "#2c2c2c",
-                padding: "10px 16px",
-                cursor: "pointer",
-                borderBottom: "1px solid #333",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                fontWeight: 500,
-                fontSize: 15,
-                userSelect: "none",
-              }}
-              onClick={() => toggleSection(section.label)}
-            >
-              {section.label}
-              <span
-                className={`arrow${open[section.label] ? " open" : ""}`}
-              ></span>
-            </div>
-            <div
-              className={`dropdown-content${
-                open[section.label] ? " open" : ""
-              }`}
-              style={{
-                background: "#181818",
-                padding: open[section.label] ? "8px 24px" : "0 24px",
-              }}
-            >
-              {section.options.map((option, idx) => (
-                <label
-                  key={option.value}
-                  className="filter-option"
-                  style={{
-                    transitionDelay: open[section.label]
-                      ? `${0.05 * idx + 0.1}s`
-                      : "0s",
-                  }}
-                >
-                  <input
-                    type="checkbox"
-                    checked={
-                      checked[section.label]?.includes(String(option.value)) ||
-                      false
-                    }
-                    onChange={() => handleCheck(section.label, option.value)}
-                    style={{ marginRight: 8 }}
-                  />
-                  {option.label}
-                </label>
-              ))}
-            </div>
-          </div>
-        ))}
-        {/* Rango de precio */}
-        <div>
-          <div
-            style={{
-              background: "#2c2c2c",
-              padding: "10px 16px",
-              cursor: "pointer",
-              borderBottom: "1px solid #333",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              fontWeight: 500,
-              fontSize: 15,
-              userSelect: "none",
-            }}
-            onClick={() => toggleSection("Rango de precio")}
-          >
-            Rango de precio
-            <span
-              className={`arrow${open["Rango de precio"] ? " open" : ""}`}
-            ></span>
-          </div>
-          <div
-            className={`dropdown-content${
-              open["Rango de precio"] ? " open" : ""
-            }`}
-            style={{
-              background: "#181818",
-              padding: open["Rango de precio"] ? "16px 24px" : "0 24px",
-            }}
-          >
-            <div style={{ marginBottom: 8, fontSize: 14 }}>
-              Precio &nbsp;
-              <span style={{ color: "#fff" }}>
-                ${price[0].toLocaleString()} - ${price[1].toLocaleString()}
-              </span>
-            </div>
-            <input
-              type="range"
-              min={0}
-              max={500000}
-              step={1000}
-              value={price[0]}
-              onChange={(e) => handlePriceChange(e, 0)}
-              style={{ width: "100%" }}
-            />
-            <input
-              type="range"
-              min={0}
-              max={500000}
-              step={1000}
-              value={price[1]}
-              onChange={(e) => handlePriceChange(e, 1)}
-              style={{ width: "100%", marginTop: 8 }}
-            />
-          </div>
-        </div>
-      </div>
-      <button
-        type="submit"
-        style={{
-          margin: 2,
-          marginTop: 32,
-          padding: "12px 0",
-          background: "#333",
-          color: "#ccc",
-          border: "none",
-          borderRadius: 4,
-          fontWeight: 600,
-          fontSize: 14,
-          cursor: "pointer",
-          transition: "background 0.2s",
-        }}
-      >
-        APLICAR FILTROS
-      </button>
-    </form>
-  );
+			</style>
+			<div style={{ flex: 1 }}>
+				{filterData.map((section) => (
+					<div key={section.label}>
+						<div
+							style={{
+								background: "#2c2c2c",
+								padding: "10px 16px",
+								cursor: "pointer",
+								borderBottom: "1px solid #333",
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "space-between",
+								fontWeight: 500,
+								fontSize: 15,
+								userSelect: "none",
+							}}
+							onClick={() => toggleSection(section.label)}>
+							{section.label}
+							<span
+								className={`arrow${open[section.label] ? " open" : ""}`}></span>
+						</div>
+						<div
+							className={`dropdown-content${
+								open[section.label] ? " open" : ""
+							}`}
+							style={{
+								background: "#181818",
+								padding: open[section.label] ? "8px 24px" : "0 24px",
+							}}>
+							{section.options.map((option, idx) => (
+								<label
+									key={option.value}
+									className="filter-option"
+									style={{
+										transitionDelay: open[section.label]
+											? `${0.05 * idx + 0.1}s`
+											: "0s",
+									}}>
+									<input
+										type="checkbox"
+										checked={
+											checked[section.label]?.includes(String(option.value)) ||
+											false
+										}
+										onChange={() => handleCheck(section.label, option.value)}
+										style={{ marginRight: 8 }}
+									/>
+									{option.label}
+								</label>
+							))}
+						</div>
+					</div>
+				))}
+				<div>
+					<div
+						style={{
+							background: "#2c2c2c",
+							padding: "10px 16px",
+							cursor: "pointer",
+							borderBottom: "1px solid #333",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "space-between",
+							fontWeight: 500,
+							fontSize: 15,
+							userSelect: "none",
+						}}
+						onClick={() => toggleSection("Rango de precio")}>
+						Rango de precio
+						<span
+							className={`arrow${open["Rango de precio"] ? " open" : ""}`}></span>
+					</div>
+					<div
+						className={`dropdown-content${
+							open["Rango de precio"] ? " open" : ""
+						}`}
+						style={{
+							background: "#181818",
+							padding: open["Rango de precio"] ? "16px 24px" : "0 24px",
+						}}>
+						<div style={{ marginBottom: 8, fontSize: 14 }}>
+							Precio &nbsp;
+							<span style={{ color: "#fff" }}>
+								${price[0].toLocaleString()} - ${price[1].toLocaleString()}
+							</span>
+						</div>
+						<input
+							type="range"
+							min={0}
+							max={500000}
+							step={1000}
+							value={price[0]}
+							onChange={(e) => handlePriceChange(e, 0)}
+							style={{ width: "100%" }}
+						/>
+						<input
+							type="range"
+							min={0}
+							max={500000}
+							step={1000}
+							value={price[1]}
+							onChange={(e) => handlePriceChange(e, 1)}
+							style={{ width: "100%", marginTop: 8 }}
+						/>
+					</div>
+				</div>
+			</div>
+			<button
+				type="submit"
+				style={{
+					margin: 2,
+					marginTop: 32,
+					padding: "12px 0",
+					background: "#333",
+					color: "#ccc",
+					border: "none",
+					borderRadius: 4,
+					fontWeight: 600,
+					fontSize: 14,
+					cursor: "pointer",
+					transition: "background 0.2s",
+				}}>
+				APLICAR FILTROS
+			</button>
+		</form>
+	);
 };

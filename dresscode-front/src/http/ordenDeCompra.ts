@@ -60,7 +60,7 @@ export const actualizarEstadoOrdenDeCompra = async (
 export const crearOrdenDeCompra = async (ordenDeCompra: OrdenDeCompra) => {
 	try {
 		const token = localStorage.getItem("token");
-		console.log(localStorage.getItem("token"));
+
 		if (!token) {
 			throw new Error("Token de autenticación no encontrado");
 		}

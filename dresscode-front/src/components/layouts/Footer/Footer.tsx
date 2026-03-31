@@ -1,4 +1,6 @@
-import { Box, Typography, Grid } from "@mui/material";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 
@@ -15,7 +17,6 @@ const Footer = () => {
 					borderColor: "black",
 				}}>
 				<Grid container alignItems="center" justifyContent="space-between">
-					{/* Izquierda */}
 					<Grid item xs={12} md={4} sx={{ mb: { xs: 2, md: 0 } }}>
 						<Box
 							sx={{ textAlign: { xs: "center", md: "left" }, pl: { md: 4 } }}>
@@ -29,7 +30,7 @@ const Footer = () => {
 							<Typography variant="body2">2025</Typography>
 						</Box>
 					</Grid>
-					{/* Centro */}
+
 					<Grid
 						item
 						xs={12}
@@ -42,7 +43,7 @@ const Footer = () => {
 							style={{ height: 48, objectFit: "contain" }}
 						/>
 					</Grid>
-					{/* Derecha */}
+
 					<Grid item xs={12} md={4}>
 						<Box
 							sx={{

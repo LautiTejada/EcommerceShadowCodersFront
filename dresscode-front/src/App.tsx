@@ -19,11 +19,7 @@ const AgregarProducto = React.lazy(() =>
 		(m) => ({ default: m.AgregarProducto }),
 	),
 );
-const EditarProducto = React.lazy(() =>
-	import("./pages/admin/Productos/EditarProductos/EditarProducto").then(
-		(m) => ({ default: m.EditarProducto }),
-	),
-);
+
 const StockProducto = React.lazy(() =>
 	import("./pages/admin/Productos/StockProducto/StockProducto").then((m) => ({
 		default: m.StockProducto,
@@ -79,7 +75,6 @@ function App() {
 				<main role="main" tabIndex={-1} id="main-content">
 					<Suspense fallback={<Loader />}>
 						<Routes>
-							{/* Rutas públicas principales */}
 							<Route path="/" element={<Home />} />
 							<Route path="/product/:id" element={<ProductDetails />} />
 							<Route path="/catalog" element={<Catalog />} />
@@ -93,8 +88,26 @@ function App() {
 								element={<Catalog filter="OFERTAS" />}
 							/>
 							<Route path="/login" element={<Login />} />
-							<Route path="/register" element={<Register />} />
-							{/* Rutas privadas para usuarios logueados */}
+							<Route
+								path="/register"
+								element={
+									<Register
+										handleSubmit={() => {}}
+										error={null}
+										username={""}
+										setUserName={() => {}}
+										email={""}
+										setEmail={() => {}}
+										password={""}
+										setPassword={() => {}}
+										confirmPassword={""}
+										setConfirmPassword={() => {}}
+										errors={{}}
+										loading={false}
+									/>
+								}
+							/>
+
 							<Route
 								path="/cart"
 								element={
@@ -112,7 +125,6 @@ function App() {
 								}
 							/>
 
-							{/* Rutas de administración protegidas */}
 							<Route
 								path="/admin"
 								element={
@@ -129,14 +141,7 @@ function App() {
 									</AdminRoute>
 								}
 							/>
-							<Route
-								path="/admin/edit-product"
-								element={
-									<AdminRoute>
-										<EditarProducto />
-									</AdminRoute>
-								}
-							/>
+
 							<Route
 								path="/admin/stock-product"
 								element={
@@ -178,7 +183,6 @@ function App() {
 								}
 							/>
 
-							{/* Ruta 404 Not Found */}
 							<Route path="*" element={<NotFound />} />
 						</Routes>
 					</Suspense>

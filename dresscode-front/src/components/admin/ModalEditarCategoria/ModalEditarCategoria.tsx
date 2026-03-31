@@ -21,7 +21,10 @@ export const ModalEditarCategoria = ({
 		...categoria,
 	});
 
-	const [nuevoTipoId, setNuevoTipoId] = useState<number>(categoria.tipo!.id);
+	const [nuevoTipoId, setNuevoTipoId] = useState<number>(
+		(typeof categoria.tipo === "object" ? categoria.tipo.id : categoria.tipo) ??
+			0,
+	);
 
 	const { tipos, obtenerTiposActivos } = tipoStore();
 	const { updateCategoria } = useCategoriaStore();
