@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import styles from "./profile.module.css";
 import LockIcon from "@mui/icons-material/Lock";
 import EditIcon from "@mui/icons-material/Edit";
@@ -7,93 +6,36 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddLocationIcon from "@mui/icons-material/AddLocation";
 import { useAuth } from "../../hooks/useAuth";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { useUsuarioStore } from "../../store/userStore";
 import type { Usuario } from "../../types/Usuario";
 import CancelIcon from "@mui/icons-material/Cancel";
-import type { Direccion } from "../../types/Direccion";
 import { provincias, type Provincia } from "../../types/enums/Provincias";
 import { desactivarDireccionDeUsuario } from "../../http/usuario";
 import Loader from "../../components/ui/Loader/Loader";
 import { sileo } from "sileo";
-import type { OrdenDeCompra } from "../../types/OrdenDeCompra";
-import { getOrdenesPorUsuario } from "../../http/ordenDeCompra";
+import { useUsuarioStore } from "../../store/userStore";
 
 const Profile = () => {
+	const {
+		usuarioActual,
+		obtenerDireccionesUsuario,
+		actualizarUsuario,
+		obtenerUsuarioPorId,
+		direccionesUsuario,
+		crearDireccionUsuario,
+		actualizarDireccionUsuario,
+	} = useUsuarioStore();
 	const [activeSection, setActiveSection] = useState("accountInfo");
 	const { logout } = useAuth();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedUser, setEditedUser] = useState<Partial<Usuario>>({
 		password: "",
 	});
-	const [ordenesDeCompra, setOrdenesDeCompra] = useState<OrdenDeCompra[]>([]);
 	const [loading, setLoading] = useState(false);
 
 	const userId = Number(localStorage.getItem("usuario"));
-	const {
-				{/* Validación y feedback centralizado para dirección */}
-				<form
-				  className={styles.addressForm}
-				  onSubmit={async (e) => {
-				    e.preventDefault();
-				    const fields = {
-				      calle: direccionEdit?.calle,
-				      numero: direccionEdit?.numero,
-				      codigoPostal: direccionEdit?.codigoPostal,
-				      localidad: direccionEdit?.localidad,
-				      provincia: direccionEdit?.provincia,
-				    };
-				    const rules = {
-				      calle: [v => !!v],
-				      numero: [v => !!v],
-				      codigoPostal: [v => !!v],
-				      localidad: [v => !!v],
-				      provincia: [v => !!v],
-				    };
-				    const validationErrors = {};
-				    for (const key in rules) {
-				      for (const rule of rules[key]) {
-				        if (!rule(fields[key])) {
-				          validationErrors[key] = `Campo inválido: ${key}`;
-				          break;
-				        }
-				      }
-				    }
-				    if (Object.keys(validationErrors).length > 0) {
-				      window.sileo?.error?.({
-				        title: "Error",
-				        description: "Completa todos los campos requeridos.",
-				        type: "error",
-				      });
-				      // Aquí podrías guardar los errores en el estado si quieres mostrar inline
-				      return;
-				    }
-				    if (isAddingDireccion) {
-				      await crearDireccionUsuario(userId, {
-				        calle: direccionEdit.calle,
-				        numero: direccionEdit.numero,
-				        codigoPostal: direccionEdit.codigoPostal,
-				        localidad: direccionEdit.localidad,
-				        provincia: direccionEdit.provincia as Provincia,
-				        activo: true,
-				        pais: "Argentina",
-				      });
-				    } else if (isEditingDireccion && direccionEdit.id) {
-				      await actualizarDireccionUsuario(userId, direccionEdit.id, {
-				        calle: direccionEdit.calle,
-				        numero: direccionEdit.numero,
-				        codigoPostal: direccionEdit.codigoPostal,
-				        localidad: direccionEdit.localidad,
-				        provincia: direccionEdit.provincia as Provincia,
-				        activo: true,
-				        pais: "Argentina",
-				      });
-				    }
-				    setDireccionEdit(null);
-				    setIsAddingDireccion(false);
-				    setIsEditingDireccion(false);
-				    await obtenerDireccionesUsuario(userId);
-				  }}
 	const [isAddingDireccion, setIsAddingDireccion] = useState(false);
+	const [isEditingDireccion, setIsEditingDireccion] = useState(false);
+	const [direccionEdit, setDireccionEdit] = useState<any>(null);
 
 	useEffect(() => {
 		if (usuarioActual) {
@@ -137,7 +79,6 @@ const Profile = () => {
 					rol: usuarioActual.rol,
 				};
 
-				console.log("Enviando datos:", usuarioActualizado);
 				await actualizarUsuario(userId, usuarioActualizado);
 				localStorage.setItem("username", usuarioActualizado.username);
 				setIsEditing(false);
@@ -162,7 +103,6 @@ const Profile = () => {
 			case "accountInfo":
 				return (
 					<div className={styles.dataSection}>
-						{/* Botón de editar único */}
 						{!isEditing && (
 							<button
 								className={styles.editButton}
@@ -173,16 +113,12 @@ const Profile = () => {
 							</button>
 						)}
 						<div className={styles.inputGroup}>
-							<label htmlFor="username">NOMBRE</label>
+							<label htmlFor="username">USUARIO</label>
 							<input
 								type="text"
 								id="username"
 								name="username"
-								value={
-									isEditing
-										? editedUser.username || ""
-										: usuarioActual?.username || ""
-								}
+								value={editedUser.username || ""}
 								onChange={handleInputChange}
 								readOnly={!isEditing}
 								className={styles.inputField}
@@ -194,11 +130,7 @@ const Profile = () => {
 								type="email"
 								id="email"
 								name="email"
-								value={
-									isEditing
-										? editedUser.email || ""
-										: usuarioActual?.email || ""
-								}
+								value={editedUser.email || ""}
 								onChange={handleInputChange}
 								readOnly={!isEditing}
 								className={styles.inputField}
@@ -252,7 +184,6 @@ const Profile = () => {
 					</div>
 				);
 			case "addresses":
-				console.log("Direcciones del usuario:", direccionesUsuario);
 				return (
 					<div className={styles.dataSection}>
 						{direccionesUsuario.filter(
@@ -264,12 +195,12 @@ const Profile = () => {
 
 						{direccionesUsuario
 							.filter(
-								(direccion) =>
+								(direccion: any) =>
 									typeof direccion === "object" &&
 									direccion !== null &&
 									direccion.activo,
 							)
-							.map((direccion, idx) => (
+							.map((direccion: any, idx: number) => (
 								<div key={direccion.id ?? idx} className={styles.addressEntry}>
 									<div className={styles.addressInputFieldContainer}>
 										<label>Dirección</label>
@@ -351,7 +282,6 @@ const Profile = () => {
 										!direccionEdit?.localidad ||
 										!direccionEdit?.provincia
 									) {
-										// Puedes mostrar un mensaje de error aquí si quieres
 										return;
 									}
 									if (isAddingDireccion) {
@@ -387,7 +317,7 @@ const Profile = () => {
 										name="calle"
 										value={direccionEdit.calle || ""}
 										onChange={(e) =>
-											setDireccionEdit((prev) => ({
+											setDireccionEdit((prev: any) => ({
 												...prev!,
 												calle: e.target.value,
 											}))
@@ -402,7 +332,7 @@ const Profile = () => {
 										name="numero"
 										value={direccionEdit.numero || ""}
 										onChange={(e) =>
-											setDireccionEdit((prev) => ({
+											setDireccionEdit((prev: any) => ({
 												...prev!,
 												numero: e.target.value,
 											}))
@@ -419,7 +349,7 @@ const Profile = () => {
 										pattern="\d{4}"
 										value={direccionEdit.codigoPostal || ""}
 										onChange={(e) =>
-											setDireccionEdit((prev) => ({
+											setDireccionEdit((prev: any) => ({
 												...prev!,
 												codigoPostal: e.target.value.replace(/\D/, ""),
 											}))
@@ -434,7 +364,7 @@ const Profile = () => {
 										name="localidad"
 										value={direccionEdit.localidad || ""}
 										onChange={(e) =>
-											setDireccionEdit((prev) => ({
+											setDireccionEdit((prev: any) => ({
 												...prev!,
 												localidad: e.target.value,
 											}))
@@ -449,7 +379,7 @@ const Profile = () => {
 										name="provincia"
 										value={direccionEdit.provincia || ""}
 										onChange={(e) =>
-											setDireccionEdit((prev) => ({
+											setDireccionEdit((prev: any) => ({
 												...prev!,
 												provincia: e.target.value as Provincia,
 											}))
@@ -458,7 +388,7 @@ const Profile = () => {
 										<option value="">Selecciona una provincia</option>
 										{provincias.map((prov) => (
 											<option key={prov} value={prov}>
-												{prov.replaceAll("_", " ")}
+												{prov.replace(/_/g, " ")}
 											</option>
 										))}
 									</select>
@@ -501,42 +431,7 @@ const Profile = () => {
 					</div>
 				);
 			case "orderHistory":
-				return (
-					<div className={styles.orderHistorySection}>
-						{ordenesDeCompra.length === 0 ? (
-							<p>No tienes órdenes de compra registradas.</p>
-						) : (
-							ordenesDeCompra.map((orden) => (
-								<div key={orden.id} className={styles.orderHistoryEntry}>
-									<div className={styles.orderDetails}>
-										<span className={styles.orderDate}>
-											Fecha: {new Date(orden.fecha).toLocaleDateString()}
-										</span>
-										<span className={styles.orderTotal}>
-											Total: ${orden.precioTotal.toLocaleString("es-AR")}
-										</span>
-										<span className={styles.orderStatus}>
-											Estado: {orden.estadoOrden}
-										</span>
-									</div>
-									<div className={styles.orderAddress}>
-										Dirección: {orden.direccion.calle} {orden.direccion.numero},{" "}
-										{orden.direccion.localidad}, {orden.direccion.provincia}
-									</div>
-									<div className={styles.orderItems}>
-										{orden.detalles?.map((detalle, idx) => (
-											<div key={idx} className={styles.orderItem}>
-												<span>{detalle.productoTalle.productoId}</span>
-												<span>Cantidad: {detalle.cantidad}</span>
-												<span>Precio: ${detalle.precioUnitario}</span>
-											</div>
-										))}
-									</div>
-								</div>
-							))
-						)}
-					</div>
-				);
+				return <div className={styles.orderHistorySection}></div>;
 			default:
 				return null;
 		}

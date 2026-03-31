@@ -8,11 +8,9 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-	// Buscar descuento activo de forma segura
 	const descuentoActivo = product.descuentos?.find(
 		(d) => d && d.activo && d.descuento && d.descuento.activo,
 	);
-	// Calcular precio con descuento si corresponde
 	let precioConDescuento = product.precio;
 	if (descuentoActivo && descuentoActivo.descuento) {
 		precioConDescuento = Math.round(
@@ -36,13 +34,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 				}}
 				transition={{ type: "spring", stiffness: 260, damping: 20 }}
 				aria-label={`Ver detalles de ${product.nombre}`}>
-				{/* Etiqueta de descuento */}
 				{descuentoActivo && (
 					<div className={styles.discountLabel}>
 						-{descuentoActivo.descuento.porcentajeDescuento}%
 					</div>
 				)}
-				{/* Imagen */}
+
 				<div className={styles.imageContainer}>
 					{product.imagenes && product.imagenes.length > 0 ? (
 						<img
@@ -55,9 +52,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 						<div className={styles.noImage}>Sin imagen</div>
 					)}
 				</div>
-				{/* Nombre */}
+
 				<div className={styles.productName}>{product.nombre}</div>
-				{/* Precios */}
+
 				<div>
 					{descuentoActivo && descuentoActivo.descuento ? (
 						<>

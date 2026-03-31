@@ -3,14 +3,12 @@ import "./Auth.css";
 
 import { useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { sileo } from "sileo";
-import { validateForm, isRequired } from "../../utils/validate";
 
 function Login() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
-	const { login, loading } = useAuth();
-	const [errors, setErrors] = useState<Record<string, string>>({});
+	const { loading } = useAuth();
+	const [errors] = useState<Record<string, string>>({});
 	const [localError, setLocalError] = useState<string | null>(null);
 
 	const handleSubmit = async (e: React.FormEvent) => {

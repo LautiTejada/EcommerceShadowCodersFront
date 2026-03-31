@@ -23,7 +23,11 @@ export const ProductDetails = () => {
 	}, [id, fetchProductoById]);
 
 	useEffect(() => {
-		if (productoActual?.imagenes?.length) {
+		if (
+			productoActual &&
+			Array.isArray(productoActual.imagenes) &&
+			productoActual.imagenes.length
+		) {
 			// Busca la imagen principal, si no hay, toma la primera
 			const principal =
 				productoActual.imagenes.find((img) => img.principal) ||
@@ -31,7 +35,6 @@ export const ProductDetails = () => {
 			setSelectedImage(principal.urlImagen);
 		}
 	}, [productoActual]);
-	console.log(productoActual);
 
 	const [quantity, setQuantity] = useState(1);
 
@@ -136,9 +139,8 @@ export const ProductDetails = () => {
 			<CategoryBar />
 			<div className={styles.bg}>
 				<div className={styles.container}>
-					{/* Miniaturas */}
 					<div className={styles.thumbnails}>
-						{productoActual.imagenes.map((img, idx) => (
+						{productoActual.imagenes?.map((img, idx) => (
 							<img
 								key={idx}
 								src={`http://localhost:8080${encodeURI(img.urlImagen)}`}
@@ -153,11 +155,11 @@ export const ProductDetails = () => {
 							/>
 						))}
 					</div>
-					{/* Imagen principal */}
+
 					<div className={styles.mainImageContainer}>
 						{productoActual.imagenes && productoActual.imagenes.length > 0 ? (
 							<img
-								src={`http://localhost:8080${encodeURI(selectedImage)}`}
+								src={`http://localhost:8080${encodeURI(selectedImage || "")}`}
 								alt={productoActual.nombre}
 								loading="lazy"
 								className={styles.mainImage}
@@ -166,7 +168,7 @@ export const ProductDetails = () => {
 							<div className={styles.noImage}>Sin imagen</div>
 						)}
 					</div>
-					{/* Info producto */}
+
 					<div className={styles.infoBox}>
 						<h2 className={styles.productName}>{productoActual.nombre}</h2>
 						<div className={styles.category}>
@@ -205,7 +207,7 @@ export const ProductDetails = () => {
 						<div className={styles.color}>
 							Color: <span>{productoActual.color}</span>
 						</div>
-						{/* Cantidad */}
+
 						<div className={styles.quantitySection}>
 							<button
 								onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -229,7 +231,7 @@ export const ProductDetails = () => {
 						</button>
 					</div>
 				</div>
-				{/* Descripción */}
+
 				<div className={styles.descriptionBox}>
 					<span className={styles.descLabel}>Descripcion: </span>
 					<span className={styles.descText}>{productoActual.descripcion}</span>

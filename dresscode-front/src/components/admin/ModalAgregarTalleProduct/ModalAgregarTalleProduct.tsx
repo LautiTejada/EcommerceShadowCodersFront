@@ -88,8 +88,7 @@ export const ModalAgregarTalleProduct = ({
 						}}
 						required
 						aria-invalid={!!errors.talle}
-						aria-describedby={errors.talle ? "talle-error" : undefined}
-					>
+						aria-describedby={errors.talle ? "talle-error" : undefined}>
 						<option value="">Seleccionar talle</option>
 						{tallesDisponibles.map((talle) => (
 							<option key={talle.id} value={talle.id}>
@@ -98,7 +97,9 @@ export const ModalAgregarTalleProduct = ({
 						))}
 					</select>
 					{errors.talle && (
-						<div className={styles.error} id="talle-error" role="alert">{errors.talle}</div>
+						<div className={styles.error} id="talle-error" role="alert">
+							{errors.talle}
+						</div>
 					)}
 
 					<label className={styles.label}>CANTIDAD</label>
@@ -113,9 +114,10 @@ export const ModalAgregarTalleProduct = ({
 						aria-describedby={errors.cantidad ? "cantidad-error" : undefined}
 					/>
 					{errors.cantidad && (
-						<div className={styles.error} id="cantidad-error" role="alert">{errors.cantidad}</div>
+						<div className={styles.error} id="cantidad-error" role="alert">
+							{errors.cantidad}
+						</div>
 					)}
-					/>
 
 					<button type="submit" className={styles.button}>
 						CREAR TALLE

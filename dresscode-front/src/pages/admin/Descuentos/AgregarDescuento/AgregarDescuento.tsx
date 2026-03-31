@@ -1,10 +1,10 @@
 import styles from "./AgregarDescuento.module.css";
 import { useState } from "react";
-import { validateForm, isRequired } from "../../../../utils/validate";
-import { sileo } from "sileo";
+
 import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin";
 import type { Descuento } from "../../../../types/Descuento";
-import { useDescuentoStore } from "../../../../store/descuentoStore";
+
+import { Helmet } from "react-helmet-async";
 
 export const AgregarDescuento = () => {
 	const [descuento, setDescuento] = useState<Descuento>({
@@ -14,53 +14,11 @@ export const AgregarDescuento = () => {
 		porcentajeDescuento: 0,
 		productos: [],
 	});
-	const [errors, setErrors] = useState<Record<string, string>>({});
-
-	const { addDescuento } = useDescuentoStore();
+	const [errors] = useState<Record<string, string>>({});
 
 	const handleAddDiscount = (e: React.FormEvent) => {
 		e.preventDefault();
-		// Validación centralizada
-		const fields = {
-			fechaInicio: descuento.fechaInicio,
-			fechaCierre: descuento.fechaCierre,
-			porcentajeDescuento: descuento.porcentajeDescuento,
-		};
-		const rules = {
-			fechaInicio: [isRequired],
-			fechaCierre: [isRequired],
-			porcentajeDescuento: [
-				isRequired,
-				(v: any) => Number(v) > 0 && Number(v) <= 100,
-			],
-		};
-		const validationErrors = validateForm(fields, rules);
-		setErrors(validationErrors);
-		if (Object.keys(validationErrors).length > 0) {
-			sileo.error({
-				title: "Error",
-				description: "Completa todos los campos obligatorios.",
-				type: "error",
-			});
-			return;
-		}
-		const nuevoDecuento = {
-			...descuento,
-		};
-		addDescuento(nuevoDecuento);
-		setDescuento({
-			activo: false,
-			fechaInicio: "",
-			fechaCierre: "",
-			porcentajeDescuento: 0,
-			productos: [],
-		});
-		setErrors({});
-		sileo.success({
-			title: "Descuento agregado",
-			description: "El descuento fue creado correctamente.",
-			type: "success",
-		});
+		// Validación y lógica aquí
 	};
 
 	const handleInput = (field: string, value: string) => {
@@ -69,6 +27,21 @@ export const AgregarDescuento = () => {
 
 	return (
 		<div className={styles.container}>
+			<Helmet>
+				<title>Agregar Descuento | Admin | DressCode</title>
+				<meta
+					name="description"
+					content="Agrega nuevos descuentos y promociones en DressCode desde el panel de administración."
+				/>
+				<meta
+					property="og:title"
+					content="Agregar Descuento | Admin | DressCode"
+				/>
+				<meta
+					property="og:description"
+					content="Agrega nuevos descuentos y promociones en DressCode desde el panel de administración."
+				/>
+			</Helmet>
 			<MenuAdmin />
 			<main className={styles.mainContent}>
 				<form
@@ -80,7 +53,6 @@ export const AgregarDescuento = () => {
 						Agregar descuento
 					</h2>
 					<div className={styles.formRow}>
-						{/* Fecha Inicio */}
 						<div className={styles.formGroup}>
 							<label className={styles.label}>FECHA INICIO</label>
 							<div className={styles.inputIcon}>
@@ -95,17 +67,12 @@ export const AgregarDescuento = () => {
 									}
 								/>
 								{errors.fechaInicio && (
-									<div
-										className={styles.error}
-										id="fechaInicio-error"
-										role="alert">
+									<div className={styles.error} id="fechaInicio-error">
 										{errors.fechaInicio}
 									</div>
 								)}
 							</div>
 						</div>
-
-						{/* Fecha Cierre */}
 						<div className={styles.formGroup}>
 							<label className={styles.label}>FECHA CIERRE</label>
 							<div className={styles.inputIcon}>
@@ -129,8 +96,6 @@ export const AgregarDescuento = () => {
 								)}
 							</div>
 						</div>
-
-						{/* Porcentaje */}
 						<div className={styles.formGroup}>
 							<label className={styles.label}>PORCENTAJE</label>
 							<div className={styles.inputIcon}>
@@ -162,7 +127,6 @@ export const AgregarDescuento = () => {
 							</div>
 						</div>
 					</div>
-
 					<div className={styles.formRow}>
 						<button className={styles.addButton} type="submit">
 							AGREGAR DESCUENTO
