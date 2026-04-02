@@ -6,11 +6,10 @@ import Avatar from "@mui/material/Avatar";
 import IconButton from "@mui/material/IconButton";
 import { Link, useLocation } from "react-router-dom";
 import styles from "./Header.module.css";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-
 import { useCartStore } from "../../../store/cartStore";
 import { motion } from "framer-motion";
+import { CategoryBar } from "../../ui/CategoryBar/CategoryBar";
 
 const Header = () => {
 	const [username, setUsername] = useState<string | null>(null);
@@ -41,44 +40,10 @@ const Header = () => {
 							/>
 						</Button>
 					</div>
-					<nav className={styles.navMenu} aria-label="Navegación principal">
-						<motion.div
-							whileTap={{ scale: 0.96 }}
-							whileHover={{ scale: 1.04 }}
-							style={{ display: "inline-block" }}>
-							<Button
-								color="inherit"
-								component={Link}
-								to="/catalog"
-								className={
-									location.pathname.startsWith("/catalog")
-										? styles.activeLink
-										: ""
-								}
-								aria-current={
-									location.pathname.startsWith("/catalog") ? "page" : undefined
-								}>
-								Catálogo
-							</Button>
-						</motion.div>
-						<motion.div
-							whileTap={{ scale: 0.96 }}
-							whileHover={{ scale: 1.04 }}
-							style={{ display: "inline-block" }}>
-							<Button
-								color="inherit"
-								component={Link}
-								to="/ofertas"
-								className={
-									location.pathname === "/ofertas" ? styles.activeLink : ""
-								}
-								aria-current={
-									location.pathname === "/ofertas" ? "page" : undefined
-								}>
-								Ofertas
-							</Button>
-						</motion.div>
-					</nav>
+
+					{/* CategoryBar integrado en el header */}
+					<CategoryBar />
+
 					<div className={styles.buttonsContainer}>
 						<motion.div
 							whileTap={{ scale: 0.92 }}
@@ -124,13 +89,27 @@ const Header = () => {
 								whileHover={{ scale: 1.06 }}
 								style={{ display: "inline-block" }}>
 								<Button
-									color="inherit"
 									component={Link}
-									to="/login"
-									className={styles.loginButton}
-									aria-label="Iniciar sesión o registrarse">
-									LOGIN / REGISTER
-									<AccountCircleIcon />
+									to="/auth/login"
+									aria-label="Iniciar sesión"
+									sx={{
+										color: "#fff",
+										fontWeight: "bold",
+										fontSize: "1rem",
+										borderRadius: "24px",
+										padding: "6px 20px",
+										background:
+											"linear-gradient(90deg, #810000 60%, #b00 100%)",
+										boxShadow: "0 2px 8px rgba(129,0,0,0.08)",
+										border: "none",
+										textTransform: "uppercase",
+										"&:hover": {
+											background:
+												"linear-gradient(90deg, #b00 60%, #810000 100%)",
+											boxShadow: "0 4px 12px rgba(129,0,0,0.15)",
+										},
+									}}>
+									Iniciar sesión
 								</Button>
 							</motion.div>
 						)}
