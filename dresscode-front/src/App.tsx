@@ -106,25 +106,7 @@ function App() {
 									element={<Catalog filter="OFERTAS" />}
 								/>
 								<Route path="/login" element={<Login />} />
-								<Route
-									path="/register"
-									element={
-										<Register
-											handleSubmit={() => {}}
-											error={null}
-											username={""}
-											setUserName={() => {}}
-											email={""}
-											setEmail={() => {}}
-											password={""}
-											setPassword={() => {}}
-											confirmPassword={""}
-											setConfirmPassword={() => {}}
-											errors={{}}
-											loading={false}
-										/>
-									}
-								/>
+								<Route path="/register" element={<Register />} />
 
 								<Route
 									path="/cart"

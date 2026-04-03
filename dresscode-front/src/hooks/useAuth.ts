@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUsuarioStore } from "../store/userStore";
 
 interface AuthResponse {
 	success: boolean;
@@ -70,12 +71,22 @@ export const useAuth = () => {
 			// Si el registro es exitoso y recibimos un token, lo guardamos
 			if (responseData.token) {
 				localStorage.setItem("token", responseData.token);
-				navigate("/");
-				if (responseData.username) {
-					localStorage.setItem("username", responseData.username);
-				} else {
-					navigate("/login");
+				const usuarioData = responseData.usuario;
+				const username =
+					responseData.username ?? usuarioData?.username ?? userData.username;
+				const userId =
+					responseData.id ?? responseData.userId ?? usuarioData?.id;
+				const rol = usuarioData?.rol ?? responseData.rol ?? "USER";
+				if (username) localStorage.setItem("username", username);
+				if (userId) localStorage.setItem("usuario", String(userId));
+				if (rol) localStorage.setItem("rol", rol);
+
+				if (usuarioData) {
+					useUsuarioStore.getState().setUsuarioActual(usuarioData);
+				} else if (userId) {
+					await useUsuarioStore.getState().obtenerUsuarioPorId(Number(userId));
 				}
+				navigate("/");
 			}
 
 			return responseData;
@@ -121,16 +132,22 @@ export const useAuth = () => {
 
 			if (responseData.token) {
 				localStorage.setItem("token", responseData.token);
-				localStorage.setItem("usuario", JSON.stringify(responseData.usuario));
-				if (responseData.username) {
-					localStorage.setItem("username", responseData.username);
-				}
-			}
+				const usuarioData = responseData.usuario;
+				const username = responseData.username ?? usuarioData?.username;
+				const userId =
+					responseData.id ?? responseData.userId ?? usuarioData?.id;
+				const rol = usuarioData?.rol ?? responseData.rol;
+				if (username) localStorage.setItem("username", username);
+				if (userId) localStorage.setItem("usuario", String(userId));
+				if (rol) localStorage.setItem("rol", rol);
 
-			// Guarda el id del usuario, sea 'id' o 'userId'
-			const userId = responseData.id ?? responseData.userId;
-			if (userId) {
-				localStorage.setItem("usuario", String(userId));
+				// Populate the store immediately so PrivateRoute doesn't redirect
+				if (usuarioData) {
+					useUsuarioStore.getState().setUsuarioActual(usuarioData);
+				} else if (userId) {
+					// Backend returned id/username flat (not nested) — fetch full object
+					await useUsuarioStore.getState().obtenerUsuarioPorId(Number(userId));
+				}
 			}
 
 			navigate("/");
@@ -149,6 +166,8 @@ export const useAuth = () => {
 		localStorage.removeItem("token");
 		localStorage.removeItem("username");
 		localStorage.removeItem("usuario");
+		localStorage.removeItem("rol");
+		useUsuarioStore.getState().setUsuarioActual(null);
 		navigate("/login");
 	};
 
