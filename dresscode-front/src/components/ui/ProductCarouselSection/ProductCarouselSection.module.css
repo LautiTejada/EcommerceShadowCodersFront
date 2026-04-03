@@ -1,59 +1,43 @@
 /* ─── Section wrapper ─────────────────────────────────────── */
 .section {
 	background: #fff;
-	padding: 36px 24px 48px;
+	padding: 40px 0 48px;
 }
 
 /* ─── Header row ──────────────────────────────────────────── */
 .sectionHeader {
 	display: flex;
-	align-items: flex-end;
-	justify-content: center;
-	position: relative;
-	margin-bottom: 24px;
+	align-items: baseline;
+	justify-content: space-between;
+	margin-bottom: 20px;
+	padding: 0 24px;
 }
 
 /* ─── Section title ───────────────────────────────────────── */
 .sectionTitle {
-	font-size: 1.3rem;
-	font-weight: 800;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
+	font-size: 1.4rem;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	text-transform: none;
 	color: #111;
-	text-align: center;
 	margin: 0;
-	padding-bottom: 10px;
-	position: relative;
-}
-
-.sectionTitle::after {
-	content: "";
-	position: absolute;
-	bottom: 0;
-	left: 50%;
-	transform: translateX(-50%);
-	width: 36px;
-	height: 3px;
-	background: #b00;
-	border-radius: 2px;
 }
 
 /* ─── "VER TODO" link ─────────────────────────────────────── */
 .seeAll {
-	position: absolute;
-	right: 0;
-	bottom: 4px;
-	font-size: 0.75rem;
-	font-weight: 700;
-	color: #888;
-	text-transform: uppercase;
-	letter-spacing: 0.07em;
-	text-decoration: none;
-	transition: color 0.18s;
+	font-size: 0.82rem;
+	font-weight: 600;
+	color: #111;
+	text-transform: none;
+	letter-spacing: 0;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	transition: opacity 0.18s;
+	white-space: nowrap;
 }
 
 .seeAll:hover {
-	color: #b00;
+	opacity: 0.6;
 }
 
 /* ─── Swiper arrow overrides ──────────────────────────────── */
