@@ -43,7 +43,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 				<div className={styles.imageContainer}>
 					{product.imagenes && product.imagenes.length > 0 ? (
 						<img
-							src={`http://localhost:8080${encodeURI(product.imagenes[0].urlImagen)}`}
+							src={(() => {
+								const u = product.imagenes![0].urlImagen;
+								return u.startsWith("/") || u.startsWith("http")
+									? u
+									: `http://localhost:8080${encodeURI(u)}`;
+							})()}
 							alt={product.nombre}
 							loading="lazy"
 							className={styles.productImage}
@@ -55,7 +60,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
 				<div className={styles.productName}>{product.nombre}</div>
 
-				<div>
+				<div className={styles.priceWrapper}>
 					{descuentoActivo && descuentoActivo.descuento ? (
 						<>
 							<span style={{ color: "#e53935", fontWeight: 700, fontSize: 18 }}>

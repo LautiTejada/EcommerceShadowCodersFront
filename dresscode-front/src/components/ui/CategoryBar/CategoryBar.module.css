@@ -1,66 +1,63 @@
-.containerCategories {
-	background-color: #ffffff !important;
-	box-shadow: none !important;
-	.toolbar {
-		justify-content: center !important;
-	}
+.containerButtons {
+	display: flex;
+	gap: 0.5rem;
+	align-items: center;
+	margin-left: 2rem;
+}
+
+.buttons {
+	width: 130px;
+	color: #fff !important;
+	font-size: 1rem !important;
+	font-weight: bold !important;
+	border-radius: 24px !important;
+	margin: 0 0.5rem !important;
+	background: linear-gradient(90deg, #810000 60%, #b00 100%) !important;
+	box-shadow: 0 2px 8px rgba(129, 0, 0, 0.08) !important;
+	border: none !important;
+	transition:
+		background 0.2s,
+		transform 0.15s !important;
+	position: relative;
+	overflow: hidden;
+}
+.buttons:active {
+	transform: scale(0.97);
+}
+.buttons:hover {
+	background: linear-gradient(90deg, #b00 60%, #810000 100%) !important;
+	box-shadow: 0 4px 12px rgba(129, 0, 0, 0.15) !important;
+	text-decoration: none !important;
+}
+.buttons:disabled {
+	background: #ccc !important;
+	color: #888 !important;
+	cursor: not-allowed !important;
+}
+
+@media (max-width: 900px) {
 	.containerButtons {
-		display: flex !important;
-		gap: 4px !important;
+		flex-direction: column;
+		gap: 8px;
+		align-items: stretch;
+		margin-left: 0.5rem;
 	}
-
 	.buttons {
-		width: 150px;
-		color: #fff !important;
-		font-size: 1rem !important;
-		font-weight: bold !important;
-		border-radius: 24px !important;
-		margin: 0.4rem 2rem !important;
-		background: linear-gradient(90deg, #810000 60%, #b00 100%) !important;
-		box-shadow: 0 2px 8px rgba(129, 0, 0, 0.08) !important;
-		border: none !important;
-		transition:
-			background 0.2s,
-			transform 0.15s !important;
-		position: relative;
-		overflow: hidden;
+		width: 100% !important;
+		margin: 0.4rem 0.5rem !important;
+		font-size: 0.98rem !important;
 	}
-	.buttons:active {
-		transform: scale(0.97);
+}
+@media (max-width: 600px) {
+	.containerButtons {
+		flex-direction: column;
+		gap: 4px;
+		align-items: stretch;
+		margin-left: 0.2rem;
 	}
-	.buttons:hover {
-		background: linear-gradient(90deg, #b00 60%, #810000 100%) !important;
-		box-shadow: 0 4px 12px rgba(129, 0, 0, 0.15) !important;
-		text-decoration: none !important;
-	}
-	.buttons:disabled {
-		background: #ccc !important;
-		color: #888 !important;
-		cursor: not-allowed !important;
-	}
-
-	@media (max-width: 900px) {
-		.containerButtons {
-			flex-direction: column !important;
-			gap: 8px !important;
-			align-items: stretch !important;
-		}
-		.buttons {
-			width: 100% !important;
-			margin: 0.4rem 0.5rem !important;
-			font-size: 0.98rem !important;
-		}
-	}
-	@media (max-width: 600px) {
-		.containerButtons {
-			flex-direction: column !important;
-			gap: 4px !important;
-			align-items: stretch !important;
-		}
-		.buttons {
-			width: 100% !important;
-			margin: 0.2rem 0.2rem !important;
-			font-size: 0.93rem !important;
-		}
+	.buttons {
+		width: 100% !important;
+		margin: 0.2rem 0.2rem !important;
+		font-size: 0.93rem !important;
 	}
 }

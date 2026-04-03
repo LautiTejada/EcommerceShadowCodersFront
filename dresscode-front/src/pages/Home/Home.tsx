@@ -20,7 +20,7 @@ import { sileo } from "sileo";
 const Home = () => {
 	const { fetchCategoriasActivas } = useCategoriaStore();
 	const { productosActivos, fetchProductosActivos } = useProductoStore();
-	const [loading, setLoading] = useState(true);
+	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	useEffect(() => {
@@ -103,9 +103,7 @@ const Home = () => {
 					content="/public/assets/ImagesCarousel/og-default.jpg"
 				/>
 			</Helmet>
-			<CategoryBar />
 			<ImageCarousel />
-			<div className={styles.separador}></div>
 			<Suspense fallback={<Loader />}>
 				<OffersSection />
 			</Suspense>

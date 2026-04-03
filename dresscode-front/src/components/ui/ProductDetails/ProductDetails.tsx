@@ -136,7 +136,6 @@ export const ProductDetails = () => {
 					href={`https://tusitio.com/product/${productoActual.id}`}
 				/>
 			</Helmet>
-			<CategoryBar />
 			<div className={styles.bg}>
 				<div className={styles.container}>
 					<div className={styles.thumbnails}>

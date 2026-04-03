@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { Categoria } from "../types/Categoria";
 import type { Producto } from "../types/Producto";
+import { mockProductos } from "../mocks/mockProducts";
 import {
 	activateProducto,
 	addProductoConCategoria,
@@ -46,8 +47,8 @@ interface ProductoState {
 	}) => Promise<void>;
 }
 export const useProductoStore = create<ProductoState>((set, get) => ({
-	productos: [],
-	productosActivos: [],
+	productos: mockProductos,
+	productosActivos: mockProductos,
 	productoActual: null,
 	pagedProductos: [],
 	totalPages: 0,
@@ -89,7 +90,9 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 	fetchProductosActivos: async () => {
 		try {
 			const productos = await getProductosActivos();
-			set({ productosActivos: productos });
+			if (productos && productos.length > 0) {
+				set({ productosActivos: productos });
+			}
 		} catch (error) {
 			console.error("Error cargando productos activos:", error);
 		}

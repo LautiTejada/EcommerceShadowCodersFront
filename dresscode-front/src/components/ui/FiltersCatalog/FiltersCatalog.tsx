@@ -18,7 +18,8 @@ export const FiltersCatalog = () => {
 	useEffect(() => {
 		obtenerTiposActivos();
 		fetchCategoriasActivas();
-	}, [obtenerTiposActivos, fetchCategoriasActivas]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const filterData = [
 		{
