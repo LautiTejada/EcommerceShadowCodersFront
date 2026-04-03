@@ -136,7 +136,6 @@ export const ProductDetails = () => {
 					href={`https://tusitio.com/product/${productoActual.id}`}
 				/>
 			</Helmet>
-			<CategoryBar />
 			<div className={styles.bg}>
 				<div className={styles.container}>
 					<div className={styles.thumbnails}>
@@ -174,7 +173,10 @@ export const ProductDetails = () => {
 						<div className={styles.category}>
 							{productoActual.categoria?.nombreCategoria}
 						</div>
-						<div className={styles.brand}>{productoActual.marca}</div>
+						<div className={styles.brand}>
+							{(productoActual.marca as any)?.nombreMarca ??
+								String(productoActual.marca ?? "")}
+						</div>
 						<div className={styles.price}>
 							${productoActual.precio.toLocaleString()}
 						</div>
@@ -205,7 +207,11 @@ export const ProductDetails = () => {
 							</div>
 						</div>
 						<div className={styles.color}>
-							Color: <span>{productoActual.color}</span>
+							Color:{" "}
+							<span>
+								{(productoActual.color as any)?.nombreColor ??
+									String(productoActual.color ?? "")}
+							</span>
 						</div>
 
 						<div className={styles.quantitySection}>

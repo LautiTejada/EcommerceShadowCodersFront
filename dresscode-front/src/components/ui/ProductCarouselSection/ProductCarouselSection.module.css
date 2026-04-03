@@ -1,0 +1,58 @@
+/* ─── Section wrapper ─────────────────────────────────────── */
+.section {
+	background: #fff;
+	padding: 40px 0 48px;
+}
+
+/* ─── Header row ──────────────────────────────────────────── */
+.sectionHeader {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	margin-bottom: 20px;
+	padding: 0 24px;
+}
+
+/* ─── Section title ───────────────────────────────────────── */
+.sectionTitle {
+	font-size: 1.4rem;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	text-transform: none;
+	color: #111;
+	margin: 0;
+}
+
+/* ─── "VER TODO" link ─────────────────────────────────────── */
+.seeAll {
+	font-size: 0.82rem;
+	font-weight: 600;
+	color: #111;
+	text-transform: none;
+	letter-spacing: 0;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	transition: opacity 0.18s;
+	white-space: nowrap;
+}
+
+.seeAll:hover {
+	opacity: 0.6;
+}
+
+/* ─── Swiper arrow overrides ──────────────────────────────── */
+:global(.swiper-button-prev),
+:global(.swiper-button-next) {
+	color: #111 !important;
+	background: rgba(255, 255, 255, 0.92) !important;
+	border-radius: 50% !important;
+	width: 36px !important;
+	height: 36px !important;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14) !important;
+}
+
+:global(.swiper-button-prev::after),
+:global(.swiper-button-next::after) {
+	font-size: 13px !important;
+	font-weight: 900 !important;
+}

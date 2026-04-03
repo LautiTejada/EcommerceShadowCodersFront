@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import styles from "./ProductCard.module.css";
 import type { Producto } from "../../../types/Producto";
 
@@ -19,71 +18,62 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 		);
 	}
 
+	const nombreMarca = (product.marca as any)?.nombreMarca ?? "";
+	const nombreCategoria = product.categoria?.nombreCategoria ?? "";
+
+	const imgSrc = (() => {
+		const u = product.imagenes?.[0]?.urlImagen;
+		if (!u) return null;
+		if (u.startsWith("http")) return u;
+		return `http://localhost:8080${encodeURI(u)}`;
+	})();
+
 	return (
-		<Link
-			to={`/product/${product.id}`}
-			className={styles.link}
-			style={{ textDecoration: "none", color: "inherit" }}>
-			<motion.div
-				className={styles.cardContainer}
-				initial={{ opacity: 0, y: 30 }}
-				animate={{ opacity: 1, y: 0 }}
-				whileHover={{
-					scale: 1.03,
-					boxShadow: "0 8px 32px rgba(129,0,0,0.18), 0 2px 8px rgba(0,0,0,0.1)",
-				}}
-				transition={{ type: "spring", stiffness: 260, damping: 20 }}
-				aria-label={`Ver detalles de ${product.nombre}`}>
-				{descuentoActivo && (
-					<div className={styles.discountLabel}>
-						-{descuentoActivo.descuento.porcentajeDescuento}%
-					</div>
-				)}
-
-				<div className={styles.imageContainer}>
-					{product.imagenes && product.imagenes.length > 0 ? (
-						<img
-							src={`http://localhost:8080${encodeURI(product.imagenes[0].urlImagen)}`}
-							alt={product.nombre}
-							loading="lazy"
-							className={styles.productImage}
-						/>
-					) : (
-						<div className={styles.noImage}>Sin imagen</div>
-					)}
-				</div>
-
-				<div className={styles.productName}>{product.nombre}</div>
-
-				<div>
-					{descuentoActivo && descuentoActivo.descuento ? (
-						<>
-							<span style={{ color: "#e53935", fontWeight: 700, fontSize: 18 }}>
-								{typeof precioConDescuento === "number"
-									? `$${precioConDescuento.toLocaleString()}`
-									: "Sin precio"}
-							</span>
-							<span
-								style={{
-									color: "#888",
-									textDecoration: "line-through",
-									marginLeft: 8,
-									fontSize: 14,
-								}}>
-								{typeof product.precio === "number"
-									? `$${product.precio.toLocaleString()}`
-									: "Sin precio"}
-							</span>
-						</>
-					) : (
-						<span style={{ color: "#222", fontWeight: 700, fontSize: 18 }}>
-							{typeof product.precio === "number"
-								? `$${product.precio.toLocaleString()}`
-								: "Sin precio"}
+		<Link to={`/product/${product.id}`} className={styles.link}>
+			<div className={styles.card}>
+				{/* Imagen */}
+				<div className={styles.imageWrap}>
+					{descuentoActivo && (
+						<span className={styles.badge}>
+							-{descuentoActivo.descuento.porcentajeDescuento}%
 						</span>
 					)}
+					{imgSrc ? (
+						<img
+							src={imgSrc}
+							alt={product.nombre}
+							loading="lazy"
+							className={styles.img}
+						/>
+					) : (
+						<div className={styles.noImg}>Sin imagen</div>
+					)}
 				</div>
-			</motion.div>
+
+				{/* Info */}
+				<div className={styles.info}>
+					{(nombreCategoria || nombreMarca) && (
+						<p className={styles.meta}>{nombreCategoria || nombreMarca}</p>
+					)}
+					<p className={styles.nombre}>{product.nombre}</p>
+					<div className={styles.precios}>
+						{descuentoActivo && descuentoActivo.descuento ? (
+							<>
+								<span className={styles.precioDesc}>
+									${precioConDescuento.toLocaleString()}
+								</span>
+								<span className={styles.precioOrig}>
+									${product.precio.toLocaleString()}
+								</span>
+							</>
+						) : (
+							<span className={styles.precio}>
+								${product.precio.toLocaleString()}
+							</span>
+						)}
+					</div>
+				</div>
+			</div>
 		</Link>
 	);
 };
