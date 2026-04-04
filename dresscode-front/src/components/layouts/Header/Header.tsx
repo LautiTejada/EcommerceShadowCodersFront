@@ -13,12 +13,14 @@ import { CategoryBar } from "../../ui/CategoryBar/CategoryBar";
 
 const Header = () => {
 	const [username, setUsername] = useState<string | null>(null);
+	const [rol, setRol] = useState<string | null>(null);
 	const location = useLocation();
 	const { cart } = useCartStore();
 	const totalItems = cart.reduce((sum, item) => sum + item.cantidad, 0);
 
 	useEffect(() => {
 		setUsername(localStorage.getItem("username"));
+		setRol(localStorage.getItem("rol"));
 	}, [location]);
 
 	return (
@@ -69,14 +71,16 @@ const Header = () => {
 								<IconButton
 									color="inherit"
 									component={Link}
-									to="/profile"
+									to={rol === "ADMIN" ? "/admin" : "/profile"}
 									className={styles.accountButton}
-									aria-label="Ver perfil">
+									aria-label={
+										rol === "ADMIN" ? "Panel de administración" : "Ver perfil"
+									}>
 									<Avatar
 										sx={{
 											width: 32,
 											height: 32,
-											bgcolor: "#810000",
+											bgcolor: rol === "ADMIN" ? "#b8860b" : "#810000",
 											fontSize: 16,
 										}}>
 										{username[0]?.toUpperCase()}
@@ -90,7 +94,7 @@ const Header = () => {
 								style={{ display: "inline-block" }}>
 								<Button
 									component={Link}
-									to="/auth/login"
+									to="/login"
 									aria-label="Iniciar sesión"
 									sx={{
 										color: "#fff",

@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./profile.module.css";
 import LockIcon from "@mui/icons-material/Lock";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddLocationIcon from "@mui/icons-material/AddLocation";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import { useAuth } from "../../hooks/useAuth";
 import LogoutIcon from "@mui/icons-material/Logout";
 import type { Usuario } from "../../types/Usuario";
@@ -24,6 +26,8 @@ const Profile = () => {
 		crearDireccionUsuario,
 		actualizarDireccionUsuario,
 	} = useUsuarioStore();
+	const navigate = useNavigate();
+	const isAdmin = usuarioActual?.rol === "ADMIN";
 	const [activeSection, setActiveSection] = useState("accountInfo");
 	const { logout } = useAuth();
 	const [isEditing, setIsEditing] = useState(false);
@@ -443,6 +447,7 @@ const Profile = () => {
 	return (
 		<div className={styles.profileContainer}>
 			<aside className={styles.sidebar}>
+				{isAdmin && <div className={styles.sidebarRole}>ADMINISTRADOR</div>}
 				<div
 					className={`${styles.sidebarItem} ${
 						activeSection === "accountInfo" ? styles.active : ""
@@ -450,28 +455,49 @@ const Profile = () => {
 					onClick={() => setActiveSection("accountInfo")}>
 					INFORMACIÓN DE LA CUENTA
 				</div>
-				<div
-					className={`${styles.sidebarItem} ${
-						activeSection === "addresses" ? styles.active : ""
-					}`}
-					onClick={() => setActiveSection("addresses")}>
-					DIRECCIONES
-				</div>
-				<div
-					className={`${styles.sidebarItem} ${
-						activeSection === "orderHistory" ? styles.active : ""
-					}`}
-					onClick={() => setActiveSection("orderHistory")}>
-					HISTORIAL DE PEDIDOS
-				</div>
+				{isAdmin ? (
+					<div
+						className={styles.sidebarItem}
+						onClick={() => navigate("/admin")}>
+						PANEL DE ADMINISTRACIÓN
+					</div>
+				) : (
+					<>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "addresses" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("addresses")}>
+							DIRECCIONES
+						</div>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "orderHistory" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("orderHistory")}>
+							HISTORIAL DE PEDIDOS
+						</div>
+					</>
+				)}
 			</aside>
 			<main className={styles.mainContent}>
 				<h2 className={styles.mainTitle}>
-					{activeSection === "accountInfo" && "DATOS"}
+					{activeSection === "accountInfo" && (isAdmin ? "MI CUENTA" : "DATOS")}
 					{activeSection === "addresses" && "DIRECCIONES"}
 					{activeSection === "orderHistory" && "HISTORIAL DE PEDIDOS"}
 				</h2>
 				{renderContent()}
+				{isAdmin && activeSection === "accountInfo" && (
+					<div style={{ marginTop: "2rem" }}>
+						<button
+							className={styles.editButton}
+							onClick={() => navigate("/admin")}
+							style={{ gap: 10, padding: "12px 20px" }}>
+							<DashboardIcon />
+							<span>IR AL PANEL DE ADMINISTRACIÓN</span>
+						</button>
+					</div>
+				)}
 			</main>
 		</div>
 	);

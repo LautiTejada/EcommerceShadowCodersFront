@@ -12,7 +12,7 @@ export const getUsuariosActivos = async () => {
 };
 
 export const getUsuarioPorId = async (id: number) => {
-	return apiFetch(`${baseUrl}/usuarios/${id}`);
+	return apiFetch(`${baseUrl}/usuarios/${id}`, { auth: true });
 };
 
 export const crearUsuario = async (usuario: Usuario) => {

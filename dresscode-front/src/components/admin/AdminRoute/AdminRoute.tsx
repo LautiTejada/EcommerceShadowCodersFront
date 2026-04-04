@@ -12,15 +12,15 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
 	const usuarioActual = useUsuarioStore((s: any) => s.usuarioActual);
 	const cargando = useUsuarioStore((s: any) => s.cargando);
 
-	if (cargando) {
+	// Si hay token pero el usuario aún no se cargó en el store, esperar
+	const tieneToken = Boolean(localStorage.getItem("token"));
+	if (cargando || (tieneToken && !usuarioActual)) {
 		return <Loader />;
 	}
 	if (!usuarioActual) {
-		// No logueado
 		return <Navigate to="/login" replace />;
 	}
 	if (usuarioActual.rol !== "ADMIN") {
-		// Logueado pero no admin
 		return <Navigate to="/" replace />;
 	}
 	return <>{children}</>;

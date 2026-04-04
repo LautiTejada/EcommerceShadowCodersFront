@@ -39,10 +39,20 @@ interface UsuarioState {
 	limpiarError: () => void;
 }
 
+// Hydrate synchronously at module load so PrivateRoute never sees null on first render
+const _syncUsuario = (() => {
+	const userId = localStorage.getItem("usuario");
+	const token = localStorage.getItem("token");
+	if (!userId || !token) return null;
+	const username = localStorage.getItem("username") ?? "";
+	const rol = localStorage.getItem("rol") ?? "USER";
+	return { id: Number(userId), username, rol } as any;
+})();
+
 export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 	usuarios: [],
 	direccionesUsuario: [],
-	usuarioActual: null,
+	usuarioActual: _syncUsuario,
 	cargando: false,
 	error: null,
 
@@ -201,16 +211,28 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 	},
 
 	inicializarUsuario: async () => {
-		set({ cargando: true });
+		const userId = localStorage.getItem("usuario");
+		const token = localStorage.getItem("token");
+
+		if (!userId || !token) {
+			set({ usuarioActual: null, cargando: false });
+			return;
+		}
+
+		// Hydrate instantly from localStorage so routes render without waiting for the API
+		const username = localStorage.getItem("username") ?? "";
+		const rol = localStorage.getItem("rol") ?? "USER";
+		set({
+			usuarioActual: { id: Number(userId), username, rol } as any,
+			cargando: false,
+		});
+
+		// Silently refresh the full user object from the API in the background
 		try {
-			const userId = localStorage.getItem("usuario");
-			if (userId) {
-				await get().obtenerUsuarioPorId(Number(userId));
-			} else {
-				set({ usuarioActual: null });
-			}
-		} finally {
-			set({ cargando: false });
+			const usuario = await usuarioAPI.getUsuarioPorId(Number(userId));
+			set({ usuarioActual: usuario });
+		} catch {
+			// Keep the cached version; token may have expired — clear on 401 if needed
 		}
 	},
 
