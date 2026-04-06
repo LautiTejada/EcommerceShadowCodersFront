@@ -1,48 +1,113 @@
-.sidebar {
-  width: 270px;
-  background: #232323;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  padding-top: 0;
-  min-height: 100vh;
+/* ===== MENU ADMIN ===== */
+.menu {
+	display: flex;
+	flex-direction: column;
+	gap: 35px;
+	padding: 35px 0;
 }
 
 .menuSection {
-  margin-bottom: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 0;
 }
 
 .menuTitle {
-  font-size: 13px;
-  font-weight: 600;
-  padding: 18px 24px 10px 24px;
-  letter-spacing: 1px;
-  color: #bdbdbd;
-  background: #232323;
+	font-size: 0.62rem;
+	color: #333;
+	text-transform: uppercase;
+	font-weight: 700;
+	letter-spacing: 0.18em;
+	padding: 0 20px;
+	margin-bottom: 14px;
+	box-shadow: inset 0 -2px 0 #810000;
+	padding-bottom: 14px;
+}
+
+.menuItemLink {
+	text-decoration: none;
+	color: inherit;
+	transition: all 0.25s ease;
 }
 
 .menuItem {
-  padding: 12px 24px;
-  font-size: 15px;
-  cursor: pointer;
-  color: #fff;
-  background: #353232;
-  border: none;
-  outline: none;
-  transition: background 0.2s;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 13px 20px;
+	color: #555;
+	transition: all 0.25s ease;
+	border-left: 3px solid transparent;
+	cursor: pointer;
+	font-weight: 500;
+	font-size: 0.9rem;
+	user-select: none;
 }
 
-.menuItem:not(:first-child) {
-  border-top: 1px solid #232323;
+.menuItem:hover {
+	background-color: rgba(129, 0, 0, 0.08);
+	border-left-color: #810000;
+	color: #810000;
 }
 
-.menuItem:hover,
-.selected {
-  background: #8b1818;
-  color: #fff;
+.menuItem.active {
+	background-color: rgba(129, 0, 0, 0.12);
+	border-left-color: #810000;
+	color: #810000;
+	font-weight: 600;
 }
 
-.selected {
-  background: #8b1818;
-  color: #fff;
+.icon {
+	font-size: 1.1rem !important;
+	flex-shrink: 0;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 900px) {
+	.menu {
+		gap: 20px;
+		padding: 20px 0;
+		flex-direction: row;
+		overflow-x: auto;
+		padding: 0;
+	}
+
+	.menuSection {
+		display: flex;
+		flex-direction: row;
+		gap: 0;
+		white-space: nowrap;
+	}
+
+	.menuTitle {
+		display: none;
+	}
+
+	.menuItem {
+		padding: 12px 16px;
+		border-left: none;
+		border-bottom: 3px solid transparent;
+		font-size: 0.85rem;
+	}
+
+	.menuItem:hover,
+	.menuItem.active {
+		border-left: none;
+		border-bottom-color: #810000;
+	}
+}
+
+@media (max-width: 600px) {
+	.menu {
+		gap: 15px;
+	}
+
+	.menuItem {
+		padding: 10px 14px;
+		font-size: 0.8rem;
+	}
+
+	.icon {
+		font-size: 1rem !important;
+	}
 }
