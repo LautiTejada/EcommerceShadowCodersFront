@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import styles from "./profile.module.css";
 import LockIcon from "@mui/icons-material/Lock";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddLocationIcon from "@mui/icons-material/AddLocation";
-import DashboardIcon from "@mui/icons-material/Dashboard";
 import { useAuth } from "../../hooks/useAuth";
-import LogoutIcon from "@mui/icons-material/Logout";
 import type { Usuario } from "../../types/Usuario";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { provincias, type Provincia } from "../../types/enums/Provincias";
@@ -15,6 +12,7 @@ import { desactivarDireccionDeUsuario } from "../../http/usuario";
 import Loader from "../../components/ui/Loader/Loader";
 import { sileo } from "sileo";
 import { useUsuarioStore } from "../../store/userStore";
+import AdminPanel from "./AdminPanel/AdminPanel";
 
 const Profile = () => {
 	const {
@@ -26,9 +24,10 @@ const Profile = () => {
 		crearDireccionUsuario,
 		actualizarDireccionUsuario,
 	} = useUsuarioStore();
-	const navigate = useNavigate();
-	const isAdmin = usuarioActual?.rol === "ADMIN";
+	const isAdmin =
+		usuarioActual?.rol === "ADMIN" || localStorage.getItem("rol") === "ADMIN";
 	const [activeSection, setActiveSection] = useState("accountInfo");
+	const [adminActiveView, setAdminActiveView] = useState("home"); // home, products, discounts, etc
 	const { logout } = useAuth();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedUser, setEditedUser] = useState<Partial<Usuario>>({
@@ -49,6 +48,13 @@ const Profile = () => {
 			});
 		}
 	}, [usuarioActual]);
+
+	// Cargar datos del usuario al montar el componente
+	useEffect(() => {
+		if (userId && !usuarioActual) {
+			obtenerUsuarioPorId(userId);
+		}
+	}, [userId, usuarioActual, obtenerUsuarioPorId]);
 
 	const handleEdit = () => {
 		setIsEditing(true);
@@ -178,12 +184,7 @@ const Profile = () => {
 										</span>
 									</button>
 								</>
-							) : (
-								<button className={styles.logoutButton} onClick={logout}>
-									<LogoutIcon />
-									<span>CERRAR SESIÓN</span>
-								</button>
-							)}
+							) : null}
 						</div>
 					</div>
 				);
@@ -436,6 +437,13 @@ const Profile = () => {
 				);
 			case "orderHistory":
 				return <div className={styles.orderHistorySection}></div>;
+			case "adminPanel":
+				return (
+					<AdminPanel
+						activeView={adminActiveView}
+						onViewChange={setAdminActiveView}
+					/>
+				);
 			default:
 				return null;
 		}
@@ -457,8 +465,10 @@ const Profile = () => {
 				</div>
 				{isAdmin ? (
 					<div
-						className={styles.sidebarItem}
-						onClick={() => navigate("/admin")}>
+						className={`${styles.sidebarItem} ${
+							activeSection === "adminPanel" ? styles.active : ""
+						}`}
+						onClick={() => setActiveSection("adminPanel")}>
 						PANEL DE ADMINISTRACIÓN
 					</div>
 				) : (
@@ -485,19 +495,9 @@ const Profile = () => {
 					{activeSection === "accountInfo" && (isAdmin ? "MI CUENTA" : "DATOS")}
 					{activeSection === "addresses" && "DIRECCIONES"}
 					{activeSection === "orderHistory" && "HISTORIAL DE PEDIDOS"}
+					{activeSection === "adminPanel" && "PANEL DE ADMINISTRACIÓN"}
 				</h2>
 				{renderContent()}
-				{isAdmin && activeSection === "accountInfo" && (
-					<div style={{ marginTop: "2rem" }}>
-						<button
-							className={styles.editButton}
-							onClick={() => navigate("/admin")}
-							style={{ gap: 10, padding: "12px 20px" }}>
-							<DashboardIcon />
-							<span>IR AL PANEL DE ADMINISTRACIÓN</span>
-						</button>
-					</div>
-				)}
 			</main>
 		</div>
 	);

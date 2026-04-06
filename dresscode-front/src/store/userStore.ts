@@ -84,7 +84,10 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 		set({ cargando: true, error: null });
 		try {
 			const usuario = await usuarioAPI.getUsuarioPorId(id);
-
+			// Guardar el rol en localStorage
+			if (usuario.rol) {
+				localStorage.setItem("rol", usuario.rol);
+			}
 			set({ usuarioActual: usuario, cargando: false });
 		} catch (error) {
 			if (error instanceof Error) {

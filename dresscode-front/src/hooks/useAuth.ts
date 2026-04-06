@@ -137,16 +137,16 @@ export const useAuth = () => {
 				const userId =
 					responseData.id ?? responseData.userId ?? usuarioData?.id;
 				const rol = usuarioData?.rol ?? responseData.rol;
+
 				if (username) localStorage.setItem("username", username);
 				if (userId) localStorage.setItem("usuario", String(userId));
 				if (rol) localStorage.setItem("rol", rol);
 
-				// Populate the store immediately so PrivateRoute doesn't redirect
-				if (usuarioData) {
-					useUsuarioStore.getState().setUsuarioActual(usuarioData);
-				} else if (userId) {
-					// Backend returned id/username flat (not nested) — fetch full object
+				// Siempre cargar el usuario completo desde el servidor después del login
+				if (userId) {
 					await useUsuarioStore.getState().obtenerUsuarioPorId(Number(userId));
+				} else if (usuarioData) {
+					useUsuarioStore.getState().setUsuarioActual(usuarioData);
 				}
 			}
 
@@ -163,11 +163,14 @@ export const useAuth = () => {
 	};
 
 	const logout = () => {
+		// Limpiar todo el store primero
+		useUsuarioStore.getState().setUsuarioActual(null);
+		// Luego limpiar localStorage
 		localStorage.removeItem("token");
 		localStorage.removeItem("username");
 		localStorage.removeItem("usuario");
 		localStorage.removeItem("rol");
-		useUsuarioStore.getState().setUsuarioActual(null);
+		// Finalmente navegar a login
 		navigate("/login");
 	};
 
