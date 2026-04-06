@@ -21,11 +21,13 @@
 .adminContent {
 	background-color: transparent;
 	padding: 0;
-	overflow-y: auto;
+	overflow-x: hidden;
 	display: flex;
 	flex-direction: column;
 	gap: 0;
 	padding-left: 50px;
+	flex: 1;
+	min-height: 0;
 }
 
 .viewContent {

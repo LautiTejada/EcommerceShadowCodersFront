@@ -11,23 +11,28 @@ const Footer = () => {
 				sx={{
 					background: "#1a1a1a",
 					color: "#fff",
-					py: 4,
+					py: 1,
 					px: 2,
 					borderTop: "1px",
 					borderColor: "black",
 				}}>
 				<Grid container alignItems="center" justifyContent="space-between">
-					<Grid item xs={12} md={4} sx={{ mb: { xs: 2, md: 0 } }}>
+					<Grid item xs={12} md={4} sx={{ mb: { xs: 0.5, md: 0 } }}>
 						<Box
-							sx={{ textAlign: { xs: "center", md: "left" }, pl: { md: 4 } }}>
-							<Typography variant="body2" sx={{ mb: 1 }}>
-								MENDOZA -<br />
-								ARGENTINA.
+							sx={{ textAlign: { xs: "center", md: "left" }, pl: { md: 2 } }}>
+							<Typography
+								variant="caption"
+								sx={{ mb: 0.25, display: "block", fontSize: "0.65rem" }}>
+								MENDOZA - ARGENTINA.
 							</Typography>
-							<Typography variant="body2" sx={{ mb: 1 }}>
+							<Typography
+								variant="caption"
+								sx={{ mb: 0.25, display: "block", fontSize: "0.65rem" }}>
 								SHADOWCODERS ©
 							</Typography>
-							<Typography variant="body2">2025</Typography>
+							<Typography variant="caption" sx={{ fontSize: "0.65rem" }}>
+								2025
+							</Typography>
 						</Box>
 					</Grid>
 
@@ -35,12 +40,12 @@ const Footer = () => {
 						item
 						xs={12}
 						md={4}
-						sx={{ textAlign: "center", mb: { xs: 2, md: 0 } }}>
+						sx={{ textAlign: "center", mb: { xs: 0.5, md: 0 } }}>
 						<img
 							src="/public/assets/logo-dresscode.png"
 							alt="DRESSCODE Logo"
 							loading="lazy"
-							style={{ height: 48, objectFit: "contain" }}
+							style={{ height: 28, objectFit: "contain" }}
 						/>
 					</Grid>
 
@@ -49,22 +54,30 @@ const Footer = () => {
 							sx={{
 								display: "flex",
 								justifyContent: { xs: "center", md: "flex-end" },
-								gap: 2,
-								pr: { md: 4 },
+								gap: 1,
+								pr: { md: 2 },
 							}}>
 							<a
 								href="https://instagram.com"
 								target="_blank"
 								rel="noopener noreferrer"
-								style={{ color: "#fff" }}>
-								<InstagramIcon sx={{ fontSize: 32 }} />
+								style={{
+									color: "#fff",
+									display: "flex",
+									alignItems: "center",
+								}}>
+								<InstagramIcon sx={{ fontSize: 18 }} />
 							</a>
 							<a
 								href="https://facebook.com"
 								target="_blank"
 								rel="noopener noreferrer"
-								style={{ color: "#fff" }}>
-								<FacebookIcon sx={{ fontSize: 32 }} />
+								style={{
+									color: "#fff",
+									display: "flex",
+									alignItems: "center",
+								}}>
+								<FacebookIcon sx={{ fontSize: 18 }} />
 							</a>
 						</Box>
 					</Grid>
