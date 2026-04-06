@@ -6,6 +6,10 @@ import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { useProductoStore } from "../../../store/productoStore";
 import { useOrdenCompraStore } from "../../../store/ordenCompraStore";
 import Loader from "../../../components/ui/Loader/Loader";
+import {
+	obtenerEstadisticasDashboard,
+	type DashboardStats,
+} from "../../../http/estadisticas";
 
 interface StatCard {
 	title: string;
@@ -19,16 +23,24 @@ const HomeAdmin: React.FC = () => {
 	const [loading, setLoading] = useState(true);
 	const [lastProducts, setLastProducts] = useState<any[]>([]);
 	const [lastOrders, setLastOrders] = useState<any[]>([]);
+	const [dashboardData, setDashboardData] = useState<DashboardStats | null>(
+		null,
+	);
 
 	const { productos, obtenerProductos } = useProductoStore();
 	const { ordenesCompra, obtenerOrdenes } = useOrdenCompraStore();
 
+	// Cargar datos reales del dashboard
 	useEffect(() => {
 		const loadData = async () => {
 			try {
 				setLoading(true);
 
-				// Cargar datos necesarios
+				// Cargar estadísticas reales del backend
+				const estadisticas = await obtenerEstadisticasDashboard();
+				setDashboardData(estadisticas);
+
+				// Cargar datos de productos y órdenes para las listas
 				await Promise.all([obtenerProductos(), obtenerOrdenes()]);
 
 				setLoading(false);
@@ -43,48 +55,47 @@ const HomeAdmin: React.FC = () => {
 
 	// Calcular estadísticas cuando cambian los datos
 	useEffect(() => {
-		const totalProductos = productos?.length || 0;
-		const totalOrdenes = ordenesCompra?.length || 0;
-		const ingresoTotal =
-			ordenesCompra?.reduce(
-				(sum: number, orden: any) => sum + (orden.total || 0),
-				0,
-			) || 0;
+		if (dashboardData) {
+			// Usar datos reales del endpoint
+			const totalProductos = dashboardData.totalProductos;
+			const totalOrdenes = dashboardData.totalOrdenes;
+			const ingresoTotal = dashboardData.ingresosTotales;
 
-		// Últimos productos (últimos 5)
-		const last5Products = Array.isArray(productos)
-			? productos.slice(-5).reverse()
-			: [];
-		setLastProducts(last5Products);
+			// Últimos productos (últimos 5)
+			const last5Products = Array.isArray(productos)
+				? productos.slice(-5).reverse()
+				: [];
+			setLastProducts(last5Products);
 
-		// Últimas órdenes (últimas 5)
-		const last5Orders = Array.isArray(ordenesCompra)
-			? ordenesCompra.slice(-5).reverse()
-			: [];
-		setLastOrders(last5Orders);
+			// Últimas órdenes (últimas 5)
+			const last5Orders = Array.isArray(ordenesCompra)
+				? ordenesCompra.slice(-5).reverse()
+				: [];
+			setLastOrders(last5Orders);
 
-		// Set stats
-		setStats([
-			{
-				title: "Total Productos",
-				value: totalProductos,
-				icon: <ProductionQuantityLimitsIcon />,
-				color: "#810000",
-			},
-			{
-				title: "Total Órdenes",
-				value: totalOrdenes,
-				icon: <ShoppingCartIcon />,
-				color: "#810000",
-			},
-			{
-				title: "Ingresos Totales",
-				value: `$${ingresoTotal.toLocaleString("es-AR")}`,
-				icon: <TrendingUpIcon />,
-				color: "#810000",
-			},
-		]);
-	}, [productos, ordenesCompra]);
+			// Set stats con datos reales
+			setStats([
+				{
+					title: "Total Productos",
+					value: totalProductos,
+					icon: <ProductionQuantityLimitsIcon />,
+					color: "#810000",
+				},
+				{
+					title: "Total Órdenes",
+					value: totalOrdenes,
+					icon: <ShoppingCartIcon />,
+					color: "#810000",
+				},
+				{
+					title: "Ingresos Totales",
+					value: `$${ingresoTotal.toLocaleString("es-AR")}`,
+					icon: <TrendingUpIcon />,
+					color: "#810000",
+				},
+			]);
+		}
+	}, [dashboardData, productos, ordenesCompra]);
 
 	if (loading) {
 		return <Loader />;
