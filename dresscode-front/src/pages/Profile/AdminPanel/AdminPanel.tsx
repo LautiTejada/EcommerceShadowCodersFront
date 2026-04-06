@@ -1,6 +1,12 @@
-import React from "react";
+import React, { Suspense, lazy } from "react";
 import styles from "./AdminPanel.module.css";
 import MenuAdmin from "../../../components/admin/MenuAdmin/MenuAdmin";
+import Loader from "../../../components/ui/Loader/Loader";
+
+// Lazy load components
+const HomeAdmin = lazy(
+	() => import("../../../pages/admin/HomeAdmin/HomeAdmin"),
+);
 
 interface AdminPanelProps {
 	activeView: string;
@@ -15,13 +21,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 		switch (activeView) {
 			case "home":
 				return (
-					<div className={styles.viewContent}>
-						<h3>Dashboard - Admin Home</h3>
-						<p>
-							Welcome to the admin panel. Select an option from the menu to get
-							started.
-						</p>
-					</div>
+					<Suspense fallback={<Loader />}>
+						<HomeAdmin />
+					</Suspense>
 				);
 			case "add-product":
 				return (

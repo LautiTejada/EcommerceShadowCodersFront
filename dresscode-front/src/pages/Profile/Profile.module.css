@@ -1,7 +1,8 @@
 /* ===== PROFILE CONTAINER ===== */
 .profileContainer {
 	display: flex;
-	flex-grow: 1;
+	flex: 1;
+	min-height: 0;
 	background-color: #f7f6f9;
 	color: #1a1a1a;
 	font-family:
