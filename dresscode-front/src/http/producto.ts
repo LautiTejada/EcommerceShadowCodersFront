@@ -1,42 +1,5 @@
-import type { PagedResponse } from "../types/PagedResponse";
-// Obtener productos paginados con filtros y ordenamiento
-export const getProductosPaged = async ({
-	page = 0,
-	size = 12,
-	sort = "",
-	filtros = {},
-}: {
-	page?: number;
-	size?: number;
-	sort?: string;
-	filtros?: any;
-}): Promise<PagedResponse<Producto>> => {
-	const params = new URLSearchParams();
-	params.append("page", String(page));
-	params.append("size", String(size));
-	if (sort) params.append("sort", sort);
-
-	if (filtros.tipos?.length)
-		filtros.tipos.forEach((id: string) => params.append("tipoIds", id));
-	if (filtros.categorias?.length)
-		filtros.categorias.forEach((id: string) =>
-			params.append("categoriaIds", id),
-		);
-	if (filtros.marcas?.length)
-		filtros.marcas.forEach((marca: string) => params.append("marcas", marca));
-	if (filtros.precioMin) params.append("precioMin", filtros.precioMin);
-	if (filtros.precioMax) params.append("precioMax", filtros.precioMax);
-
-	const response = await fetch(
-		`${baseUrl}/productos/paged?${params.toString()}`,
-	);
-	if (!response.ok) {
-		throw new Error(`HTTP error! status: ${response.status}`);
-	}
-	return await response.json();
-};
 import type { Categoria } from "../types/Categoria";
-import type { ImagenProducto } from "../types/ImagenProducto";
+import type { PagedResponse } from "../types/PagedResponse";
 import type { Producto } from "../types/Producto";
 import { apiFetch } from "./apiFetch";
 const baseUrl = import.meta.env.VITE_API_URL;
@@ -66,6 +29,7 @@ export const addProductoConCategoria = async (
 	try {
 		return await apiFetch(`${baseUrl}/productos/${categoriaId}`, {
 			method: "POST",
+			auth: true,
 			body: JSON.stringify(producto),
 		});
 	} catch (error) {
@@ -85,8 +49,9 @@ export const getProductoById = async (id: number) => {
 
 export const updateProducto = async (id: number, producto: Producto) => {
 	try {
-		return await apiFetch(`${baseUrl}/productos/${id}/editar`, {
+		return await apiFetch(`${baseUrl}/productos/${id}`, {
 			method: "PUT",
+			auth: true,
 			body: JSON.stringify(producto),
 		});
 	} catch (error) {
@@ -95,128 +60,29 @@ export const updateProducto = async (id: number, producto: Producto) => {
 	}
 };
 
-export const activateProducto = async (id: number) => {
+export const cambiarEstadoProducto = async (id: number) => {
 	try {
-		return await apiFetch(`${baseUrl}/productos/${id}/activate`, {
-			method: "PUT",
+		return await apiFetch(`${baseUrl}/productos/${id}/status`, {
+			method: "PATCH",
+			auth: true,
 		});
 	} catch (error) {
-		console.error("Error activating producto:", error);
-		throw error;
-	}
-};
-
-export const desactivateProducto = async (id: number) => {
-	try {
-		const response = await fetch(`${baseUrl}/productos/${id}/deactivate`, {
-			method: "PUT",
-		});
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
-	} catch (error) {
-		console.error("Error deactivating producto:", error);
+		console.error("Error changing producto status:", error);
 		throw error;
 	}
 };
 
 export const getProductosPorCategoria = async (categoria: Categoria) => {
 	try {
-		const response = await fetch(
-			`${baseUrl}/productos/categoria/${categoria.id}`,
-		);
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
+		return await apiFetch(`${baseUrl}/productos/categoria/${categoria.id}`);
 	} catch (error) {
 		console.error("Error fetching productos by category:", error);
 		throw error;
 	}
 };
 
-//revisarlo proximamente
-export const crearImagenProducto = async (
-	imagenId: number,
-	imagen: ImagenProducto,
-) => {
-	try {
-		const formData = new FormData();
-		formData.append("file", imagen.urlImagen);
-
-		const response = await fetch(`${baseUrl}/productos/${imagenId}/imagen`, {
-			method: "POST",
-			body: formData,
-		});
-
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
-	} catch (error) {
-		console.error("Error uploading product image:", error);
-		throw error;
-	}
-};
-
-//REvisar tambien proximamente
-export const editarImagenProducto = async (
-	id: number,
-	imagen: ImagenProducto,
-) => {
-	try {
-		const formData = new FormData();
-		formData.append("file", imagen.urlImagen);
-
-		const response = await fetch(`${baseUrl}/productos/${id}/imagen`, {
-			method: "PUT",
-			body: formData,
-		});
-
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
-	} catch (error) {
-		console.error("Error updating product image:", error);
-		throw error;
-	}
-};
-
-//Revisar
-export const getImagenesProducto = async (id: number) => {
-	try {
-		const response = await fetch(`${baseUrl}/productos/${id}/imagenes`);
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
-	} catch (error) {
-		console.error("Error fetching product images:", error);
-		throw error;
-	}
-};
-
-//Revisar
-export const eliminarImagenProducto = async (id: number) => {
-	try {
-		const response = await fetch(`${baseUrl}/productos/${id}/imagen`, {
-			method: "DELETE",
-		});
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
-	} catch (error) {
-		console.error("Error deleting product image:", error);
-		throw error;
-	}
-};
-
 export const getProductosFiltrados = async (filtros: any) => {
 	const params = new URLSearchParams();
-
 	if (filtros.tipos?.length)
 		filtros.tipos.forEach((id: string) => params.append("tipoIds", id));
 	if (filtros.categorias?.length)
@@ -227,12 +93,33 @@ export const getProductosFiltrados = async (filtros: any) => {
 		filtros.marcas.forEach((marca: string) => params.append("marcas", marca));
 	if (filtros.precioMin) params.append("precioMin", filtros.precioMin);
 	if (filtros.precioMax) params.append("precioMax", filtros.precioMax);
+	return apiFetch(`${baseUrl}/productos/filtrar?${params.toString()}`);
+};
 
-	const response = await fetch(
-		`${baseUrl}/productos/filtrar?${params.toString()}`,
-	);
-	if (!response.ok) {
-		throw new Error(`HTTP error! status: ${response.status}`);
-	}
-	return await response.json();
+export const getProductosPaged = async ({
+	page = 0,
+	size = 12,
+	sort = "",
+	filtros = {},
+}: {
+	page?: number;
+	size?: number;
+	sort?: string;
+	filtros?: any;
+}): Promise<PagedResponse<Producto>> => {
+	const params = new URLSearchParams();
+	params.append("page", String(page));
+	params.append("size", String(size));
+	if (sort) params.append("sort", sort);
+	if (filtros.tipos?.length)
+		filtros.tipos.forEach((id: string) => params.append("tipoIds", id));
+	if (filtros.categorias?.length)
+		filtros.categorias.forEach((id: string) =>
+			params.append("categoriaIds", id),
+		);
+	if (filtros.marcas?.length)
+		filtros.marcas.forEach((marca: string) => params.append("marcas", marca));
+	if (filtros.precioMin) params.append("precioMin", filtros.precioMin);
+	if (filtros.precioMax) params.append("precioMax", filtros.precioMax);
+	return apiFetch(`${baseUrl}/productos/paged?${params.toString()}`);
 };

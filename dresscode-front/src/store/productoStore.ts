@@ -2,9 +2,8 @@ import { create } from "zustand";
 import type { Categoria } from "../types/Categoria";
 import type { Producto } from "../types/Producto";
 import {
-	activateProducto,
+	cambiarEstadoProducto,
 	addProductoConCategoria,
-	desactivateProducto,
 	getProductoById,
 	getProductos,
 	getProductosActivos,
@@ -129,7 +128,7 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 	},
 	activarProducto: async (id) => {
 		try {
-			await activateProducto(id);
+			await cambiarEstadoProducto(id);
 			await get().fetchProductos();
 			await get().fetchProductosActivos();
 		} catch (error) {
@@ -138,7 +137,7 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 	},
 	desactivarProducto: async (id) => {
 		try {
-			await desactivateProducto(id);
+			await cambiarEstadoProducto(id);
 			await get().fetchProductos();
 			await get().fetchProductosActivos();
 		} catch (error) {

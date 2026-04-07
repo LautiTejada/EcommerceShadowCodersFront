@@ -7,6 +7,9 @@ import Loader from "../../../components/ui/Loader/Loader";
 const HomeAdmin = lazy(
 	() => import("../../../pages/admin/HomeAdmin/HomeAdmin"),
 );
+const AgregarProducto = lazy(
+	() => import("../../../pages/admin/AgregarProducto/AgregarProducto"),
+);
 
 interface AdminPanelProps {
 	activeView: string;
@@ -27,10 +30,9 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 				);
 			case "add-product":
 				return (
-					<div className={styles.viewContent}>
-						<h3>Agregar Producto</h3>
-						<p>Add new product content goes here</p>
-					</div>
+					<Suspense fallback={<Loader />}>
+						<AgregarProducto />
+					</Suspense>
 				);
 			case "edit-product":
 				return (

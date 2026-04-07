@@ -1,7 +1,5 @@
 import { create } from "zustand";
 import {
-	activarDescuento,
-	desactivarDescuento,
 	eliminarProductoDeDescuento,
 	getDescuentoById,
 	getDescuentos,
@@ -146,7 +144,7 @@ export const useDescuentoStore = create<DescuentoState>((set, get) => ({
 
 	activateDescuento: async (id: number) => {
 		try {
-			await activarDescuento(id);
+			await changeDescuentoStatus(id);
 			await get().fetchDescuentos();
 		} catch (error) {
 			console.error(`Error al activar descuento con id ${id}:`, error);
@@ -155,7 +153,7 @@ export const useDescuentoStore = create<DescuentoState>((set, get) => ({
 
 	desactivateDescuento: async (id: number) => {
 		try {
-			await desactivarDescuento(id);
+			await changeDescuentoStatus(id);
 			await get().fetchDescuentos();
 		} catch (error) {
 			console.error(`Error al desactivar descuento con id ${id}:`, error);
