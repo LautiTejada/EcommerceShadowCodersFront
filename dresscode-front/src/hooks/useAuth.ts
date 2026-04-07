@@ -9,17 +9,18 @@ interface AuthResponse {
 }
 
 interface UserCredentials {
-	username: string;
+	email: string;
 	password: string;
 }
 
-interface RegisterData extends UserCredentials {
+interface RegisterData {
 	username: string;
-	email?: string;
+	email: string;
+	password: string;
 }
 
 // URL base del API - Asegúrate de que coincida con tu backend
-const API_URL = "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 export const useAuth = () => {
 	const [loading, setLoading] = useState(false);
@@ -131,22 +132,18 @@ export const useAuth = () => {
 			}
 
 			if (responseData.token) {
-				localStorage.setItem("token", responseData.token);
-				const usuarioData = responseData.usuario;
-				const username = responseData.username ?? usuarioData?.username;
-				const userId =
-					responseData.id ?? responseData.userId ?? usuarioData?.id;
-				const rol = usuarioData?.rol ?? responseData.rol;
+				const userId = responseData.userId;
+				const email = responseData.email;
+				const rol = responseData.rol;
 
-				if (username) localStorage.setItem("username", username);
+				localStorage.setItem("token", responseData.token);
+				if (email) localStorage.setItem("username", email);
 				if (userId) localStorage.setItem("usuario", String(userId));
 				if (rol) localStorage.setItem("rol", rol);
 
-				// Siempre cargar el usuario completo desde el servidor después del login
+				// Cargar el usuario completo desde el servidor después del login
 				if (userId) {
 					await useUsuarioStore.getState().obtenerUsuarioPorId(Number(userId));
-				} else if (usuarioData) {
-					useUsuarioStore.getState().setUsuarioActual(usuarioData);
 				}
 			}
 
