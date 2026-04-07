@@ -37,21 +37,10 @@ export const actualizarEstadoOrdenDeCompra = async (
 	estado: EstadoOrden,
 ) => {
 	try {
-		const token = localStorage.getItem("token");
-		const response = await fetch(
+		return await apiFetch(
 			`${baseUrl}/ordenes/${ordenId}/estado?estado=${estado}`,
-			{
-				method: "PATCH",
-				headers: {
-					"Content-Type": "application/json",
-					Authorization: `Bearer ${token}`,
-				},
-			},
+			{ method: "PATCH", auth: true },
 		);
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
 	} catch (error) {
 		console.error("Error updating estado orden:", error);
 		throw error;
@@ -60,25 +49,11 @@ export const actualizarEstadoOrdenDeCompra = async (
 
 export const crearOrdenDeCompra = async (ordenDeCompra: OrdenDeCompra) => {
 	try {
-		const token = localStorage.getItem("token");
-
-		if (!token) {
-			throw new Error("Token de autenticación no encontrado");
-		}
-
-		const response = await fetch(`${baseUrl}/ordenes/crear`, {
+		return await apiFetch(`${baseUrl}/ordenes/crear`, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-			},
+			auth: true,
 			body: JSON.stringify(ordenDeCompra),
 		});
-
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
 	} catch (error) {
 		console.error("Error creating orden de compra:", error);
 		throw error;

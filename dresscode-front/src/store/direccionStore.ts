@@ -1,9 +1,7 @@
 import { create } from "zustand";
 import type { Direccion } from "../types/Direccion";
 import {
-	activateDireccion,
 	changeDireccionStatus,
-	deactivateDireccion,
 	getDireccionById,
 	getDirecciones,
 	getDireccionesActivas,
@@ -62,7 +60,7 @@ export const useDireccionStore = create<DireccionState>((set, get) => ({
 
 	activateDireccion: async (id) => {
 		try {
-			await activateDireccion(id);
+			await changeDireccionStatus(id);
 			await get().fetchDirecciones();
 		} catch (error) {
 			console.error(`Error activando dirección con id ${id}:`, error);
@@ -71,7 +69,7 @@ export const useDireccionStore = create<DireccionState>((set, get) => ({
 
 	desactivateDireccion: async (id) => {
 		try {
-			await deactivateDireccion(id);
+			await changeDireccionStatus(id);
 			await get().fetchDirecciones();
 		} catch (error) {
 			console.error(`Error desactivando dirección con id ${id}:`, error);

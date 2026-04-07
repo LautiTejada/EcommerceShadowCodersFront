@@ -37,19 +37,8 @@ export const updateUsuario = async (id: number, usuario: Usuario) => {
 
 export const cambiarStateUsuario = async (id: number) => {
 	return apiFetch(`${baseUrl}/usuarios/${id}/status`, {
-		method: "PUT",
-	});
-};
-
-export const activateUsuario = async (id: number) => {
-	return apiFetch(`${baseUrl}/usuarios/${id}/activate`, {
-		method: "PUT",
-	});
-};
-
-export const desactivateUsuario = async (id: number) => {
-	return apiFetch(`${baseUrl}/usuarios/${id}/deactivate`, {
-		method: "PUT",
+		method: "PATCH",
+		auth: true,
 	});
 };
 
