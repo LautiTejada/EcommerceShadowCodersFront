@@ -1,11 +1,9 @@
-import styles from "./AgregarTiposCategorias.module.css";
-import { useEffect, useState } from "react";
-import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin";
+import React, { useEffect, useState } from "react";
+import styles from "../../AgregarProducto/AgregarProducto.module.css";
 import type { Tipo } from "../../../../types/Tipo";
 import type { Categoria } from "../../../../types/Categoria";
 import { useCategoriaStore } from "../../../../store/categoriaStore";
 import { tipoStore } from "../../../../store/tipoStore";
-import { sileo } from "sileo";
 
 export const AgregarTiposCategorias = () => {
 	const [tipo, setTipo] = useState<Tipo>({
@@ -45,7 +43,7 @@ export const AgregarTiposCategorias = () => {
 		obtenerTiposActivos();
 	}, [obtenerTiposActivos]);
 
-	const [showCategory, setShowCategory] = useState(false);
+	const [catError, setCatError] = useState<string | null>(null);
 
 	const handleInputCategoria = (field: string, value: string) => {
 		setCategoria({ ...categoria, [field]: value });
@@ -55,12 +53,10 @@ export const AgregarTiposCategorias = () => {
 		e.preventDefault();
 
 		if (!tipoActual || tipoActual.id === undefined) {
-			sileo.error({
-				title: "Tipo requerido",
-				description: "Selecciona un tipo antes de agregar una categoría.",
-			});
+			setCatError("Seleccioná un tipo antes de agregar una categoría.");
 			return;
 		}
+		setCatError(null);
 
 		const nuevaCategoria = {
 			...categoria,
@@ -78,84 +74,93 @@ export const AgregarTiposCategorias = () => {
 	};
 
 	return (
-		<>
-			<div className={styles.container}>
-				<MenuAdmin />
-				<div className={styles.containerForms}>
-					<main className={styles.mainContent}>
-						<form className={styles.form} onSubmit={handleAddCategoria}>
-							<h3 className={styles.tituloCrear}>CREAR CATEGORIA</h3>
-							<div className={styles.formRow}>
-								<div className={styles.formGroup}>
-									<label className={styles.label}>NOMBRE</label>
-									<div className={styles.inputIcon}>
-										<input
-											className={styles.input}
-											type="text"
-											value={categoria.nombreCategoria}
-											onChange={(e) =>
-												handleInputCategoria("nombreCategoria", e.target.value)
-											}
-										/>
-									</div>
-								</div>
-							</div>
-							<div className={styles.formGroup}>
-								<label className={styles.label}>CATEGORIA</label>
-								<div
-									className={styles.select}
-									onClick={() => setShowCategory(!showCategory)}
-									tabIndex={0}>
-									{tipoActual?.nombre || "..."}
-									<span className={styles.arrow} />
-									{showCategory && (
-										<div className={styles.dropdown}>
-											{tipos.map((tipo) => (
-												<div
-													key={tipo.id}
-													className={styles.dropdownItem}
-													onClick={() => setTipoActual(tipo)}>
-													{tipo.nombre}
-												</div>
-											))}
-										</div>
-									)}
-								</div>
-							</div>
-							<div className={styles.formRow}>
-								<button className={styles.addButton} type="submit">
-									AGREGAR CATEGORIA
-								</button>
-							</div>
-						</form>
-					</main>
-					<main className={styles.mainContent}>
-						<form className={styles.form} onSubmit={handleAddTipo}>
-							<h3 className={styles.tituloCrear}>CREAR TIPO</h3>
-							<div className={styles.formRow}>
-								<div className={styles.formGroup}>
-									<label className={styles.label}>NOMBRE</label>
-									<div className={styles.inputIcon}>
-										<input
-											className={styles.input}
-											type="text"
-											value={tipo.nombre}
-											onChange={(e) =>
-												handleInputTipo("nombre", e.target.value)
-											}
-										/>
-									</div>
-								</div>
-							</div>
-							<div className={styles.formRow}>
-								<button className={styles.addButton} type="submit">
-									AGREGAR TIPO
-								</button>
-							</div>
-						</form>
-					</main>
-				</div>
+		<div className={styles.container}>
+			<div className={styles.header}>
+				<h1>Agregar Tipo y Categoría</h1>
+				<p>Creá nuevos tipos y categorías para clasificar los productos</p>
 			</div>
-		</>
+
+			<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+				<form className={styles.form} onSubmit={handleAddTipo} noValidate>
+					<h2
+						style={{
+							fontSize: "1rem",
+							fontWeight: 700,
+							color: "#1a1a1a",
+							marginBottom: 16,
+						}}>
+						Crear Tipo
+					</h2>
+					<div className={styles.fieldGroup}>
+						<label className={styles.label}>
+							Nombre <span className={styles.required}>*</span>
+						</label>
+						<input
+							className={styles.input}
+							type="text"
+							value={tipo.nombre}
+							onChange={(e) => handleInputTipo("nombre", e.target.value)}
+							placeholder="Ej: Ropa, Calzado..."
+						/>
+					</div>
+					<div className={styles.actions}>
+						<button type="submit" className={styles.btnPrimary}>
+							Agregar tipo
+						</button>
+					</div>
+				</form>
+
+				<form className={styles.form} onSubmit={handleAddCategoria} noValidate>
+					<h2
+						style={{
+							fontSize: "1rem",
+							fontWeight: 700,
+							color: "#1a1a1a",
+							marginBottom: 16,
+						}}>
+						Crear Categoría
+					</h2>
+					{catError && <div className={styles.errorMsg}>{catError}</div>}
+					<div className={styles.fieldGroup}>
+						<label className={styles.label}>
+							Nombre <span className={styles.required}>*</span>
+						</label>
+						<input
+							className={styles.input}
+							type="text"
+							value={categoria.nombreCategoria}
+							onChange={(e) =>
+								handleInputCategoria("nombreCategoria", e.target.value)
+							}
+							placeholder="Ej: Remeras, Pantalones..."
+						/>
+					</div>
+					<div className={styles.fieldGroup}>
+						<label className={styles.label}>
+							Tipo <span className={styles.required}>*</span>
+						</label>
+						<select
+							className={styles.select}
+							value={tipoActual?.id ?? ""}
+							onChange={(e) => {
+								const t = tipos.find((t) => t.id === Number(e.target.value));
+								setTipoActual(t ?? null);
+							}}>
+							<option value="">Seleccioná un tipo</option>
+							{tipos.map((t) => (
+								<option key={t.id} value={t.id}>
+									{t.nombre}
+								</option>
+							))}
+						</select>
+					</div>
+					<div className={styles.actions}>
+						<button type="submit" className={styles.btnPrimary}>
+							Agregar categoría
+						</button>
+					</div>
+				</form>
+			</div>
+		</div>
 	);
 };
