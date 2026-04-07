@@ -77,22 +77,83 @@ export const ListaDescuentos = () => {
 						No hay descuentos registrados.
 					</p>
 				) : (
-					<table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
+					<table
+						style={{
+							width: "100%",
+							borderCollapse: "collapse",
+							fontSize: "0.875rem",
+						}}>
 						<thead>
 							<tr style={{ borderBottom: "2px solid #810000" }}>
-								<th style={{ padding: "10px 12px", textAlign: "left", fontSize: "0.75rem", fontWeight: 600, color: "#555", textTransform: "uppercase" }}>Desde</th>
-								<th style={{ padding: "10px 12px", textAlign: "left", fontSize: "0.75rem", fontWeight: 600, color: "#555", textTransform: "uppercase" }}>Hasta</th>
-								<th style={{ padding: "10px 12px", textAlign: "left", fontSize: "0.75rem", fontWeight: 600, color: "#555", textTransform: "uppercase" }}>%</th>
-								<th style={{ padding: "10px 12px", textAlign: "left", fontSize: "0.75rem", fontWeight: 600, color: "#555", textTransform: "uppercase" }}>Estado</th>
-								<th style={{ padding: "10px 12px", textAlign: "left", fontSize: "0.75rem", fontWeight: 600, color: "#555", textTransform: "uppercase" }}>Acciones</th>
+								<th
+									style={{
+										padding: "10px 12px",
+										textAlign: "left",
+										fontSize: "0.75rem",
+										fontWeight: 600,
+										color: "#555",
+										textTransform: "uppercase",
+									}}>
+									Desde
+								</th>
+								<th
+									style={{
+										padding: "10px 12px",
+										textAlign: "left",
+										fontSize: "0.75rem",
+										fontWeight: 600,
+										color: "#555",
+										textTransform: "uppercase",
+									}}>
+									Hasta
+								</th>
+								<th
+									style={{
+										padding: "10px 12px",
+										textAlign: "left",
+										fontSize: "0.75rem",
+										fontWeight: 600,
+										color: "#555",
+										textTransform: "uppercase",
+									}}>
+									%
+								</th>
+								<th
+									style={{
+										padding: "10px 12px",
+										textAlign: "left",
+										fontSize: "0.75rem",
+										fontWeight: 600,
+										color: "#555",
+										textTransform: "uppercase",
+									}}>
+									Estado
+								</th>
+								<th
+									style={{
+										padding: "10px 12px",
+										textAlign: "left",
+										fontSize: "0.75rem",
+										fontWeight: 600,
+										color: "#555",
+										textTransform: "uppercase",
+									}}>
+									Acciones
+								</th>
 							</tr>
 						</thead>
 						<tbody>
 							{descuentos.map((desc) => (
 								<tr key={desc.id} style={{ borderBottom: "1px solid #f0eef6" }}>
-									<td style={{ padding: "12px", color: "#1a1a1a" }}>{desc.fechaInicio}</td>
-									<td style={{ padding: "12px", color: "#1a1a1a" }}>{desc.fechaCierre}</td>
-									<td style={{ padding: "12px", color: "#1a1a1a" }}>{desc.porcentajeDescuento}%</td>
+									<td style={{ padding: "12px", color: "#1a1a1a" }}>
+										{desc.fechaInicio}
+									</td>
+									<td style={{ padding: "12px", color: "#1a1a1a" }}>
+										{desc.fechaCierre}
+									</td>
+									<td style={{ padding: "12px", color: "#1a1a1a" }}>
+										{desc.porcentajeDescuento}%
+									</td>
 									<td style={{ padding: "12px" }}>
 										<span
 											style={{
@@ -100,13 +161,21 @@ export const ListaDescuentos = () => {
 												borderRadius: 4,
 												fontSize: "0.75rem",
 												fontWeight: 600,
-												background: desc.activo ? "rgba(30,126,52,0.1)" : "rgba(129,0,0,0.1)",
+												background: desc.activo
+													? "rgba(30,126,52,0.1)"
+													: "rgba(129,0,0,0.1)",
 												color: desc.activo ? "#1e7e34" : "#810000",
 											}}>
 											{desc.activo ? "Activo" : "Inactivo"}
 										</span>
 									</td>
-									<td style={{ padding: "12px", display: "flex", gap: 6, alignItems: "center" }}>
+									<td
+										style={{
+											padding: "12px",
+											display: "flex",
+											gap: 6,
+											alignItems: "center",
+										}}>
 										<button
 											className={styles.btnSecondary}
 											style={{ padding: "4px 8px", minWidth: 0 }}
@@ -129,7 +198,9 @@ export const ListaDescuentos = () => {
 											<AddIcon style={{ fontSize: 16 }} />
 										</button>
 										<button
-											className={desc.activo ? styles.btnSecondary : styles.btnPrimary}
+											className={
+												desc.activo ? styles.btnSecondary : styles.btnPrimary
+											}
 											style={{ padding: "4px 10px", fontSize: "0.75rem" }}
 											onClick={() => handleToggleActivo(desc)}>
 											{desc.activo ? "Desactivar" : "Activar"}

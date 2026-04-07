@@ -83,11 +83,19 @@ export const ListaTiposCategorias = () => {
 
 			<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
 				<div className={styles.form}>
-					<h2 style={{ fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", marginBottom: 16 }}>
+					<h2
+						style={{
+							fontSize: "1rem",
+							fontWeight: 700,
+							color: "#1a1a1a",
+							marginBottom: 16,
+						}}>
 						Tipos
 					</h2>
 					{tipos.length === 0 ? (
-						<p style={{ color: "#888", fontSize: "0.875rem" }}>Sin tipos registrados.</p>
+						<p style={{ color: "#888", fontSize: "0.875rem" }}>
+							Sin tipos registrados.
+						</p>
 					) : (
 						<ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
 							{tipos.map((tipo) => (
@@ -113,7 +121,12 @@ export const ListaTiposCategorias = () => {
 										</button>
 										<button
 											className={styles.btnSecondary}
-											style={{ padding: "4px 8px", minWidth: 0, borderColor: "#810000", color: "#810000" }}
+											style={{
+												padding: "4px 8px",
+												minWidth: 0,
+												borderColor: "#810000",
+												color: "#810000",
+											}}
 											onClick={() => handleToggleStateTipo(tipo)}
 											title="Desactivar">
 											<DeleteIcon style={{ fontSize: 16 }} />
@@ -126,11 +139,19 @@ export const ListaTiposCategorias = () => {
 				</div>
 
 				<div className={styles.form}>
-					<h2 style={{ fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", marginBottom: 16 }}>
+					<h2
+						style={{
+							fontSize: "1rem",
+							fontWeight: 700,
+							color: "#1a1a1a",
+							marginBottom: 16,
+						}}>
 						Categorías
 					</h2>
 					{categoriasActivas.length === 0 ? (
-						<p style={{ color: "#888", fontSize: "0.875rem" }}>Sin categorías registradas.</p>
+						<p style={{ color: "#888", fontSize: "0.875rem" }}>
+							Sin categorías registradas.
+						</p>
 					) : (
 						<ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
 							{categoriasActivas.map((cat) => (
@@ -156,7 +177,12 @@ export const ListaTiposCategorias = () => {
 										</button>
 										<button
 											className={styles.btnSecondary}
-											style={{ padding: "4px 8px", minWidth: 0, borderColor: "#810000", color: "#810000" }}
+											style={{
+												padding: "4px 8px",
+												minWidth: 0,
+												borderColor: "#810000",
+												color: "#810000",
+											}}
 											onClick={() => handleToggleStateCategoria(cat)}
 											title="Desactivar">
 											<DeleteIcon style={{ fontSize: 16 }} />

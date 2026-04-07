@@ -45,7 +45,12 @@ export const EditarProducto: React.FC = () => {
 		fetchMarcasActivas();
 		fetchColoresActivos();
 		fetchProductosActivos();
-	}, [fetchCategoriasActivas, fetchMarcasActivas, fetchColoresActivos, fetchProductosActivos]);
+	}, [
+		fetchCategoriasActivas,
+		fetchMarcasActivas,
+		fetchColoresActivos,
+		fetchProductosActivos,
+	]);
 
 	const handleSelectProduct = (producto: Producto) => {
 		setSelectedProduct(producto);
@@ -77,7 +82,9 @@ export const EditarProducto: React.FC = () => {
 	};
 
 	const handleChange = (
-		e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+		e: React.ChangeEvent<
+			HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+		>,
 	) => {
 		const { name, value } = e.target;
 		setForm((prev) => ({ ...prev, [name]: value }));
@@ -112,15 +119,20 @@ export const EditarProducto: React.FC = () => {
 				nombre: form.nombre.trim(),
 				precio: Number(form.precio),
 				descripcion: form.descripcion.trim(),
-				color: coloresActivos.find((c) => c.id === Number(form.colorId))?.nombreColor,
+				color: coloresActivos.find((c) => c.id === Number(form.colorId))
+					?.nombreColor,
 				marca: marcasActivas.find((m) => m.id === Number(form.marcaId))
 					?.nombreMarca as Marca | undefined,
-				categoria: categoriasActivas.find((c) => c.id === Number(form.categoriaId)),
+				categoria: categoriasActivas.find(
+					(c) => c.id === Number(form.categoriaId),
+				),
 			};
 			await editarProducto(selectedProduct!.id!, updatedProducto);
 			setSuccess(true);
 		} catch (err) {
-			setError(err instanceof Error ? err.message : "Error al editar el producto");
+			setError(
+				err instanceof Error ? err.message : "Error al editar el producto",
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -192,12 +204,9 @@ export const EditarProducto: React.FC = () => {
 									}}
 									onMouseDown={() => handleSelectProduct(prod)}
 									onMouseEnter={(e) =>
-										(e.currentTarget.style.background =
-											"rgba(129,0,0,0.07)")
+										(e.currentTarget.style.background = "rgba(129,0,0,0.07)")
 									}
-									onMouseLeave={(e) =>
-										(e.currentTarget.style.background = "")
-									}>
+									onMouseLeave={(e) => (e.currentTarget.style.background = "")}>
 									{prod.nombre}
 								</div>
 							))}
@@ -332,4 +341,3 @@ export const EditarProducto: React.FC = () => {
 		</div>
 	);
 };
-

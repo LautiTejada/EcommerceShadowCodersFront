@@ -31,14 +31,14 @@ const ListaDescuentos = lazy(() =>
 	),
 );
 const AgregarTiposCategorias = lazy(() =>
-	import(
-		"../../../pages/admin/TiposCategorias/AgregarTiposCategorias/AgregarTiposCategorias"
-	).then((m) => ({ default: m.AgregarTiposCategorias })),
+	import("../../../pages/admin/TiposCategorias/AgregarTiposCategorias/AgregarTiposCategorias").then(
+		(m) => ({ default: m.AgregarTiposCategorias }),
+	),
 );
 const ListaTiposCategorias = lazy(() =>
-	import(
-		"../../../pages/admin/TiposCategorias/ListaTiposCategorias/ListaTiposCategorias"
-	).then((m) => ({ default: m.ListaTiposCategorias })),
+	import("../../../pages/admin/TiposCategorias/ListaTiposCategorias/ListaTiposCategorias").then(
+		(m) => ({ default: m.ListaTiposCategorias }),
+	),
 );
 
 interface AdminPanelProps {

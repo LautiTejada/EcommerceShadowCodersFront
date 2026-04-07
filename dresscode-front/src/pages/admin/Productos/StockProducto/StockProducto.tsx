@@ -165,12 +165,9 @@ export const StockProducto = () => {
 									}}
 									onMouseDown={() => handleSelectProducto(prod)}
 									onMouseEnter={(e) =>
-										(e.currentTarget.style.background =
-											"rgba(129,0,0,0.07)")
+										(e.currentTarget.style.background = "rgba(129,0,0,0.07)")
 									}
-									onMouseLeave={(e) =>
-										(e.currentTarget.style.background = "")
-									}>
+									onMouseLeave={(e) => (e.currentTarget.style.background = "")}>
 									{prod.nombre}
 								</div>
 							))}

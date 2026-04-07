@@ -82,7 +82,13 @@ export const AgregarTiposCategorias = () => {
 
 			<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
 				<form className={styles.form} onSubmit={handleAddTipo} noValidate>
-					<h2 style={{ fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", marginBottom: 16 }}>
+					<h2
+						style={{
+							fontSize: "1rem",
+							fontWeight: 700,
+							color: "#1a1a1a",
+							marginBottom: 16,
+						}}>
 						Crear Tipo
 					</h2>
 					<div className={styles.fieldGroup}>
@@ -105,7 +111,13 @@ export const AgregarTiposCategorias = () => {
 				</form>
 
 				<form className={styles.form} onSubmit={handleAddCategoria} noValidate>
-					<h2 style={{ fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", marginBottom: 16 }}>
+					<h2
+						style={{
+							fontSize: "1rem",
+							fontWeight: 700,
+							color: "#1a1a1a",
+							marginBottom: 16,
+						}}>
 						Crear Categoría
 					</h2>
 					{catError && <div className={styles.errorMsg}>{catError}</div>}
