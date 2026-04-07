@@ -36,7 +36,7 @@
 /* ===== STATS GRID ===== */
 .statsGrid {
 	display: grid;
-	grid-template-columns: repeat(3, 1fr);
+	grid-template-columns: repeat(4, 1fr);
 	gap: 10px;
 	margin-bottom: 10px;
 	flex-shrink: 0;
@@ -70,6 +70,7 @@
 	height: 40px;
 	background-color: rgba(129, 0, 0, 0.08);
 	border-radius: 4px;
+	color: #810000;
 }
 
 .cardContent {
@@ -91,6 +92,14 @@
 	font-weight: 700;
 	line-height: 1;
 	letter-spacing: -0.3px;
+	margin-bottom: 2px;
+}
+
+.cardSub {
+	font-size: 0.65rem;
+	color: #999;
+	font-weight: 400;
+	margin: 0;
 }
 
 /* ===== CONTENT GRID ===== */
@@ -276,4 +285,20 @@
 		grid-template-columns: 1fr;
 		gap: 12px;
 	}
+}
+
+/* ===== ESTADOS EXTRA ===== */
+.errorMsg {
+	font-size: 0.8rem;
+	color: #c0392b;
+	background-color: rgba(192, 57, 43, 0.08);
+	border: 1px solid rgba(192, 57, 43, 0.2);
+	border-radius: 4px;
+	padding: 8px 12px;
+	flex-shrink: 0;
+}
+
+.badgeInactivo {
+	background-color: rgba(0, 0, 0, 0.06);
+	color: #999;
 }

@@ -1,5 +1,7 @@
 import { apiFetch } from "./apiFetch";
 
+const baseUrl = import.meta.env.VITE_API_URL;
+
 export interface DashboardStats {
 	totalProductos: number;
 	totalProductosActivos: number;
@@ -12,39 +14,28 @@ export interface DashboardStats {
 
 /**
  * Obtener estadísticas del dashboard
- * @requires Authorization header con token
+ * @requires token en localStorage
  */
 export const obtenerEstadisticasDashboard =
 	async (): Promise<DashboardStats> => {
-		const response = await apiFetch("estadisticas/dashboard", {
+		return await apiFetch(`${baseUrl}/estadisticas/dashboard`, {
 			method: "GET",
-			headers: {
-				"Content-Type": "application/json",
-			},
+			auth: true,
 		});
-
-		if (!response.ok) {
-			throw new Error("Error obteniendo estadísticas");
-		}
-
-		return response.json();
 	};
 
 /**
  * Descargar estadísticas en formato CSV
- * @requires Authorization header con token
+ * @requires token en localStorage
  */
 export const descargarEstadisticasCSV = async (): Promise<Blob> => {
-	const token = localStorage.getItem("accessToken");
-	const response = await fetch(
-		`${import.meta.env.VITE_API_URL || "http://localhost:8080/api"}/estadisticas/dashboard/csv`,
-		{
-			method: "GET",
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
+	const token = localStorage.getItem("token");
+	const response = await fetch(`${baseUrl}/estadisticas/dashboard/csv`, {
+		method: "GET",
+		headers: {
+			Authorization: `Bearer ${token}`,
 		},
-	);
+	});
 
 	if (!response.ok) {
 		throw new Error("Error descargando CSV");
@@ -55,19 +46,11 @@ export const descargarEstadisticasCSV = async (): Promise<Blob> => {
 
 /**
  * Obtener historial de auditoría
- * @requires Authorization header con token
+ * @requires token en localStorage
  */
 export const obtenerAuditoria = async () => {
-	const response = await apiFetch("estadisticas/auditoria", {
+	return await apiFetch(`${baseUrl}/estadisticas/auditoria`, {
 		method: "GET",
-		headers: {
-			"Content-Type": "application/json",
-		},
+		auth: true,
 	});
-
-	if (!response.ok) {
-		throw new Error("Error obteniendo auditoría");
-	}
-
-	return response.json();
 };

@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+﻿import React, { useEffect, useState } from "react";
 import styles from "./HomeAdmin.module.css";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import PeopleIcon from "@mui/icons-material/People";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { useProductoStore } from "../../../store/productoStore";
 import { useOrdenCompraStore } from "../../../store/ordenCompraStore";
 import Loader from "../../../components/ui/Loader/Loader";
@@ -11,91 +14,49 @@ import {
 	type DashboardStats,
 } from "../../../http/estadisticas";
 
-interface StatCard {
-	title: string;
-	value: string | number;
-	icon: React.ReactNode;
-	color: string;
-}
-
 const HomeAdmin: React.FC = () => {
-	const [stats, setStats] = useState<StatCard[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState<string | null>(null);
 	const [lastProducts, setLastProducts] = useState<any[]>([]);
 	const [lastOrders, setLastOrders] = useState<any[]>([]);
 	const [dashboardData, setDashboardData] = useState<DashboardStats | null>(
 		null,
 	);
 
-	const { productos, obtenerProductos } = useProductoStore();
-	const { ordenesCompra, obtenerOrdenes } = useOrdenCompraStore();
+	const { productos, fetchProductos } = useProductoStore();
+	const { ordenesCompra, fetchOrdenesDeCompra } = useOrdenCompraStore();
 
-	// Cargar datos reales del dashboard
 	useEffect(() => {
 		const loadData = async () => {
 			try {
 				setLoading(true);
+				setError(null);
 
-				// Cargar estadísticas reales del backend
-				const estadisticas = await obtenerEstadisticasDashboard();
+				const [estadisticas] = await Promise.all([
+					obtenerEstadisticasDashboard(),
+					fetchProductos(),
+					fetchOrdenesDeCompra(),
+				]);
 				setDashboardData(estadisticas);
-
-				// Cargar datos de productos y órdenes para las listas
-				await Promise.all([obtenerProductos(), obtenerOrdenes()]);
-
-				setLoading(false);
-			} catch (error) {
-				console.error("Error cargando datos del dashboard:", error);
+			} catch (err) {
+				console.error("Error cargando datos del dashboard:", err);
+				setError("No se pudieron cargar las estadÃ­sticas");
+			} finally {
 				setLoading(false);
 			}
 		};
 
 		loadData();
-	}, [obtenerProductos, obtenerOrdenes]);
+	}, [fetchProductos, fetchOrdenesDeCompra]);
 
-	// Calcular estadísticas cuando cambian los datos
 	useEffect(() => {
-		if (dashboardData) {
-			// Usar datos reales del endpoint
-			const totalProductos = dashboardData.totalProductos;
-			const totalOrdenes = dashboardData.totalOrdenes;
-			const ingresoTotal = dashboardData.ingresosTotales;
-
-			// Últimos productos (últimos 5)
-			const last5Products = Array.isArray(productos)
-				? productos.slice(-5).reverse()
-				: [];
-			setLastProducts(last5Products);
-
-			// Últimas órdenes (últimas 5)
-			const last5Orders = Array.isArray(ordenesCompra)
-				? ordenesCompra.slice(-5).reverse()
-				: [];
-			setLastOrders(last5Orders);
-
-			// Set stats con datos reales
-			setStats([
-				{
-					title: "Total Productos",
-					value: totalProductos,
-					icon: <ProductionQuantityLimitsIcon />,
-					color: "#810000",
-				},
-				{
-					title: "Total Órdenes",
-					value: totalOrdenes,
-					icon: <ShoppingCartIcon />,
-					color: "#810000",
-				},
-				{
-					title: "Ingresos Totales",
-					value: `$${ingresoTotal.toLocaleString("es-AR")}`,
-					icon: <TrendingUpIcon />,
-					color: "#810000",
-				},
-			]);
+		if (Array.isArray(productos)) {
+			setLastProducts(productos.slice(-5).reverse());
 		}
-	}, [dashboardData, productos, ordenesCompra]);
+		if (Array.isArray(ordenesCompra)) {
+			setLastOrders(ordenesCompra.slice(-5).reverse());
+		}
+	}, [productos, ordenesCompra]);
 
 	if (loading) {
 		return <Loader />;
@@ -106,29 +67,78 @@ const HomeAdmin: React.FC = () => {
 			{/* Header */}
 			<div className={styles.header}>
 				<h1>Dashboard</h1>
-				<p>Bienvenido al panel de administración</p>
+				<p>Bienvenido al panel de administraciÃ³n</p>
 			</div>
+
+			{error && <p className={styles.errorMsg}>{error}</p>}
 
 			{/* Stats Cards */}
 			<div className={styles.statsGrid}>
-				{stats.map((stat, idx) => (
-					<div key={idx} className={styles.statCard}>
-						<div className={styles.cardIcon} style={{ color: stat.color }}>
-							{stat.icon}
-						</div>
-						<div className={styles.cardContent}>
-							<p className={styles.cardTitle}>{stat.title}</p>
-							<p className={styles.cardValue}>{stat.value}</p>
-						</div>
+				<div className={styles.statCard}>
+					<div className={styles.cardIcon}>
+						<ProductionQuantityLimitsIcon />
 					</div>
-				))}
+					<div className={styles.cardContent}>
+						<p className={styles.cardTitle}>Productos</p>
+						<p className={styles.cardValue}>
+							{dashboardData?.totalProductos ?? 0}
+						</p>
+						<p className={styles.cardSub}>
+							{dashboardData?.totalProductosActivos ?? 0} activos
+						</p>
+					</div>
+				</div>
+
+				<div className={styles.statCard}>
+					<div className={styles.cardIcon}>
+						<ShoppingCartIcon />
+					</div>
+					<div className={styles.cardContent}>
+						<p className={styles.cardTitle}>Ã“rdenes</p>
+						<p className={styles.cardValue}>
+							{dashboardData?.totalOrdenes ?? 0}
+						</p>
+						<p className={styles.cardSub}>
+							{dashboardData?.totalOrdenesCompletadas ?? 0} completadas
+						</p>
+					</div>
+				</div>
+
+				<div className={styles.statCard}>
+					<div className={styles.cardIcon}>
+						<PeopleIcon />
+					</div>
+					<div className={styles.cardContent}>
+						<p className={styles.cardTitle}>Usuarios</p>
+						<p className={styles.cardValue}>
+							{dashboardData?.totalUsuarios ?? 0}
+						</p>
+						<p className={styles.cardSub}>registrados</p>
+					</div>
+				</div>
+
+				<div className={styles.statCard}>
+					<div className={styles.cardIcon}>
+						<TrendingUpIcon />
+					</div>
+					<div className={styles.cardContent}>
+						<p className={styles.cardTitle}>Ingresos Totales</p>
+						<p className={styles.cardValue}>
+							${(dashboardData?.ingresosTotales ?? 0).toLocaleString("es-AR")}
+						</p>
+						<p className={styles.cardSub}>
+							${(dashboardData?.ingresosUltimoMes ?? 0).toLocaleString("es-AR")}{" "}
+							este mes
+						</p>
+					</div>
+				</div>
 			</div>
 
 			{/* Content Grid */}
 			<div className={styles.contentGrid}>
-				{/* Últimos Productos */}
+				{/* Ãšltimos Productos */}
 				<div className={styles.section}>
-					<h2 className={styles.sectionTitle}>Últimos Productos</h2>
+					<h2 className={styles.sectionTitle}>Ãšltimos Productos</h2>
 					<div className={styles.listContainer}>
 						{lastProducts.length === 0 ? (
 							<p className={styles.emptyMessage}>No hay productos</p>
@@ -139,11 +149,12 @@ const HomeAdmin: React.FC = () => {
 										<div className={styles.productInfo}>
 											<p className={styles.productName}>{product.nombre}</p>
 											<p className={styles.productDetail}>
-												Precio: ${product.precioUnitario}
+												${product.precio?.toLocaleString("es-AR")}
 											</p>
 										</div>
-										<span className={styles.productBadge}>
-											{product.stock || 0} en stock
+										<span
+											className={`${styles.productBadge} ${product.activo === false ? styles.badgeInactivo : ""}`}>
+											{product.activo === false ? "Inactivo" : "Activo"}
 										</span>
 									</div>
 								))}
@@ -152,12 +163,12 @@ const HomeAdmin: React.FC = () => {
 					</div>
 				</div>
 
-				{/* Últimas Órdenes */}
+				{/* Ãšltimas Ã“rdenes */}
 				<div className={styles.section}>
-					<h2 className={styles.sectionTitle}>Últimas Órdenes</h2>
+					<h2 className={styles.sectionTitle}>Ãšltimas Ã“rdenes</h2>
 					<div className={styles.listContainer}>
 						{lastOrders.length === 0 ? (
-							<p className={styles.emptyMessage}>No hay órdenes</p>
+							<p className={styles.emptyMessage}>No hay Ã³rdenes</p>
 						) : (
 							<div className={styles.orderList}>
 								{lastOrders.map((order: any) => (
@@ -165,11 +176,11 @@ const HomeAdmin: React.FC = () => {
 										<div className={styles.orderInfo}>
 											<p className={styles.orderNumber}>Orden #{order.id}</p>
 											<p className={styles.orderDate}>
-												{new Date(order.fechaOrden).toLocaleDateString("es-AR")}
+												{new Date(order.fecha).toLocaleDateString("es-AR")}
 											</p>
 										</div>
 										<p className={styles.orderTotal}>
-											${order.total?.toLocaleString("es-AR") || 0}
+											${order.precioTotal?.toLocaleString("es-AR") || 0}
 										</p>
 									</div>
 								))}
