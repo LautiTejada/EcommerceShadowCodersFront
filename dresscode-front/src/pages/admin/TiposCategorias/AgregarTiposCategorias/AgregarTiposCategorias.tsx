@@ -150,4 +150,5 @@ export const AgregarTiposCategorias = () => {
 				</form>
 			</div>
 		</div>
+	);
 };
