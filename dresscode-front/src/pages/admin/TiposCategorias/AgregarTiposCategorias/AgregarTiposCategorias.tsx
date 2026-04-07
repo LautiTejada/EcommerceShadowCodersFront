@@ -1,10 +1,9 @@
+import React, { useEffect, useState } from "react";
 import styles from "../../AgregarProducto/AgregarProducto.module.css";
-import { useEffect, useState } from "react";
 import type { Tipo } from "../../../../types/Tipo";
 import type { Categoria } from "../../../../types/Categoria";
 import { useCategoriaStore } from "../../../../store/categoriaStore";
 import { tipoStore } from "../../../../store/tipoStore";
-import { sileo } from "sileo";
 
 export const AgregarTiposCategorias = () => {
 	const [tipo, setTipo] = useState<Tipo>({
@@ -44,6 +43,8 @@ export const AgregarTiposCategorias = () => {
 		obtenerTiposActivos();
 	}, [obtenerTiposActivos]);
 
+	const [catError, setCatError] = useState<string | null>(null);
+
 	const handleInputCategoria = (field: string, value: string) => {
 		setCategoria({ ...categoria, [field]: value });
 	};
@@ -52,12 +53,10 @@ export const AgregarTiposCategorias = () => {
 		e.preventDefault();
 
 		if (!tipoActual || tipoActual.id === undefined) {
-			sileo.error({
-				title: "Tipo requerido",
-				description: "Selecciona un tipo antes de agregar una categoría.",
-			});
+			setCatError("Seleccioná un tipo antes de agregar una categoría.");
 			return;
 		}
+		setCatError(null);
 
 		const nuevaCategoria = {
 			...categoria,
@@ -109,6 +108,7 @@ export const AgregarTiposCategorias = () => {
 					<h2 style={{ fontSize: "1rem", fontWeight: 700, color: "#1a1a1a", marginBottom: 16 }}>
 						Crear Categoría
 					</h2>
+					{catError && <div className={styles.errorMsg}>{catError}</div>}
 					<div className={styles.fieldGroup}>
 						<label className={styles.label}>
 							Nombre <span className={styles.required}>*</span>
