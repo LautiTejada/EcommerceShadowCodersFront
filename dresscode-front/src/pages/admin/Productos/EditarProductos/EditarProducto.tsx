@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import styles from "./EditarProducto.module.css";
+import styles from "../../AgregarProducto/AgregarProducto.module.css";
 import { useCategoriaStore } from "../../../../store/categoriaStore";
 import { useProductoStore } from "../../../../store/productoStore";
 import { useMarcaStore } from "../../../../store/marcaStore";
@@ -131,71 +131,107 @@ export const EditarProducto: React.FC = () => {
 	);
 
 	return (
-		<main className={styles.mainContent}>
+		<div className={styles.container}>
+			<div className={styles.header}>
+				<h1>Editar Producto</h1>
+				<p>Buscá el producto que querés modificar y actualizá sus datos</p>
+			</div>
+
 			<form className={styles.form} onSubmit={handleSubmit} noValidate>
-				<h2 className={styles.formTitle}>Editar Producto</h2>
-				{error && <div style={{ color: "#f55", marginBottom: 12 }}>{error}</div>}
+				{error && <div className={styles.errorMsg}>{error}</div>}
 				{success && (
-					<div style={{ color: "#5f5", marginBottom: 12 }}>
+					<div className={styles.successMsg}>
 						¡Producto actualizado correctamente!
 					</div>
 				)}
 
-				<div className={styles.formRow}>
-					<div className={styles.formGroupWide}>
-						<label className={styles.label}>BUSCAR PRODUCTO</label>
-						<div className={styles.inputDropdownWrapper}>
-							<div className={styles.inputIcon}>
-								<input
-									className={styles.input}
-									value={busqueda}
-									onChange={(e) => {
-										setBusqueda(e.target.value);
-										setShowProductos(true);
-										setSelectedProduct(null);
+				<div
+					className={`${styles.fieldGroup} ${styles.fullWidth}`}
+					style={{ position: "relative" }}>
+					<label className={styles.label}>
+						Buscar producto <span className={styles.required}>*</span>
+					</label>
+					<input
+						className={styles.input}
+						value={busqueda}
+						onChange={(e) => {
+							setBusqueda(e.target.value);
+							setShowProductos(true);
+							setSelectedProduct(null);
+							setForm(emptyForm);
+						}}
+						onFocus={() => setShowProductos(true)}
+						onBlur={() => setTimeout(() => setShowProductos(false), 150)}
+						placeholder="Escribí el nombre del producto..."
+					/>
+					{showProductos && busqueda && productosFiltrados.length > 0 && (
+						<div
+							style={{
+								position: "absolute",
+								top: "100%",
+								left: 0,
+								right: 0,
+								background: "#fff",
+								border: "1.5px solid #810000",
+								borderTop: "none",
+								borderRadius: "0 0 4px 4px",
+								zIndex: 10,
+								maxHeight: 200,
+								overflowY: "auto",
+								boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+							}}>
+							{productosFiltrados.map((prod) => (
+								<div
+									key={prod.id}
+									style={{
+										padding: "9px 12px",
+										cursor: "pointer",
+										fontSize: "0.875rem",
+										color: "#1a1a1a",
+										borderBottom: "1px solid #f0eef6",
 									}}
-									placeholder="Escribí el nombre del producto..."
-								/>
-							</div>
-							{showProductos && busqueda && productosFiltrados.length > 0 && (
-								<div className={styles.dropdown}>
-									{productosFiltrados.map((prod) => (
-										<div
-											key={prod.id}
-											className={styles.dropdownItem}
-											onClick={() => handleSelectProduct(prod)}>
-											{prod.nombre}
-										</div>
-									))}
+									onMouseDown={() => handleSelectProduct(prod)}
+									onMouseEnter={(e) =>
+										(e.currentTarget.style.background =
+											"rgba(129,0,0,0.07)")
+									}
+									onMouseLeave={(e) =>
+										(e.currentTarget.style.background = "")
+									}>
+									{prod.nombre}
 								</div>
-							)}
+							))}
 						</div>
-					</div>
+					)}
 				</div>
 
 				{selectedProduct && (
 					<>
-						<div className={styles.formRow}>
-							<div className={styles.formGroupWide}>
-								<label className={styles.label}>NOMBRE</label>
-								<div className={styles.inputIcon}>
-									<input
-										className={styles.input}
-										name="nombre"
-										type="text"
-										value={form.nombre}
-										onChange={handleChange}
-										maxLength={100}
-									/>
-								</div>
+						<div className={styles.formGrid}>
+							<div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
+								<label className={styles.label}>
+									Nombre <span className={styles.required}>*</span>
+								</label>
+								<input
+									name="nombre"
+									type="text"
+									className={styles.input}
+									value={form.nombre}
+									onChange={handleChange}
+									maxLength={100}
+								/>
 							</div>
-							<div className={styles.formGroup}>
-								<label className={styles.label}>PRECIO</label>
-								<div className={styles.inputIcon}>
+
+							<div className={styles.fieldGroup}>
+								<label className={styles.label}>
+									Precio <span className={styles.required}>*</span>
+								</label>
+								<div className={styles.inputPrefix}>
+									<span className={styles.prefix}>$</span>
 									<input
-										className={styles.input}
 										name="precio"
 										type="number"
+										className={styles.input}
 										value={form.precio}
 										onChange={handleChange}
 										min="0"
@@ -203,26 +239,24 @@ export const EditarProducto: React.FC = () => {
 									/>
 								</div>
 							</div>
-						</div>
 
-						<div className={styles.formRow}>
-							<div className={styles.formGroupWide}>
-								<label className={styles.label}>DESCRIPCIÓN</label>
-								<div className={styles.inputIcon}>
-									<input
-										className={styles.input}
-										name="descripcion"
-										type="text"
-										value={form.descripcion}
-										onChange={handleChange}
-									/>
-								</div>
+							<div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
+								<label className={styles.label}>
+									Descripción <span className={styles.required}>*</span>
+								</label>
+								<textarea
+									name="descripcion"
+									className={styles.textarea}
+									value={form.descripcion}
+									onChange={handleChange}
+									rows={3}
+								/>
 							</div>
-						</div>
 
-						<div className={styles.formRow}>
-							<div className={styles.formGroup}>
-								<label className={styles.label}>MARCA</label>
+							<div className={styles.fieldGroup}>
+								<label className={styles.label}>
+									Marca <span className={styles.required}>*</span>
+								</label>
 								<select
 									name="marcaId"
 									className={styles.select}
@@ -236,8 +270,11 @@ export const EditarProducto: React.FC = () => {
 									))}
 								</select>
 							</div>
-							<div className={styles.formGroup}>
-								<label className={styles.label}>COLOR</label>
+
+							<div className={styles.fieldGroup}>
+								<label className={styles.label}>
+									Color <span className={styles.required}>*</span>
+								</label>
 								<select
 									name="colorId"
 									className={styles.select}
@@ -251,8 +288,11 @@ export const EditarProducto: React.FC = () => {
 									))}
 								</select>
 							</div>
-							<div className={styles.formGroup}>
-								<label className={styles.label}>CATEGORÍA</label>
+
+							<div className={styles.fieldGroup}>
+								<label className={styles.label}>
+									Categoría <span className={styles.required}>*</span>
+								</label>
 								<select
 									name="categoriaId"
 									className={styles.select}
@@ -268,18 +308,28 @@ export const EditarProducto: React.FC = () => {
 							</div>
 						</div>
 
-						<div className={styles.formRow}>
+						<div className={styles.actions}>
 							<button
-								className={styles.addButton}
+								type="button"
+								className={styles.btnSecondary}
+								onClick={() => {
+									setSelectedProduct(null);
+									setBusqueda("");
+									setForm(emptyForm);
+								}}>
+								Cancelar
+							</button>
+							<button
 								type="submit"
+								className={styles.btnPrimary}
 								disabled={loading}>
-								{loading ? "GUARDANDO..." : "GUARDAR CAMBIOS"}
+								{loading ? "Guardando..." : "Guardar cambios"}
 							</button>
 						</div>
 					</>
 				)}
 			</form>
-		</main>
+		</div>
 	);
 };
 
