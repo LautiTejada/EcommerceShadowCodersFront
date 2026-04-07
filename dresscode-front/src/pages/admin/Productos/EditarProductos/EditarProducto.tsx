@@ -54,8 +54,17 @@ export const EditarProducto: React.FC = () => {
 		setSuccess(false);
 		setError(null);
 
-		const marcaMatch = marcasActivas.find((m) => m.nombreMarca === producto.marca);
-		const colorMatch = coloresActivos.find((c) => c.nombreColor === producto.color);
+		const rawColor =
+			typeof producto.color === "object" && producto.color !== null
+				? (producto.color as unknown as { nombreColor: string }).nombreColor
+				: producto.color;
+		const rawMarca =
+			typeof producto.marca === "object" && producto.marca !== null
+				? (producto.marca as unknown as { nombreMarca: string }).nombreMarca
+				: producto.marca;
+
+		const marcaMatch = marcasActivas.find((m) => m.nombreMarca === rawMarca);
+		const colorMatch = coloresActivos.find((c) => c.nombreColor === rawColor);
 
 		setForm({
 			nombre: producto.nombre,
