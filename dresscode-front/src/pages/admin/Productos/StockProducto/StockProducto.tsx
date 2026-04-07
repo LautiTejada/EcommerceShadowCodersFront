@@ -1,5 +1,4 @@
 import styles from "./StockProducto.module.css";
-import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin";
 import { useEffect, useState } from "react";
 import type { Producto } from "../../../../types/Producto";
 import { useProductoStore } from "../../../../store/productoStore";
@@ -118,8 +117,7 @@ export const StockProducto = () => {
 	};
 
 	return (
-		<div className={styles.container}>
-			<MenuAdmin />
+		<>
 			<main className={styles.mainContent}>
 				<form className={styles.form} onSubmit={handleCantidadProductoTalle}>
 					<div className={styles.formRow}>
@@ -229,6 +227,6 @@ export const StockProducto = () => {
 					onClose={handleCloseModal}
 				/>
 			)}
-		</div>
+		</>
 	);
 };

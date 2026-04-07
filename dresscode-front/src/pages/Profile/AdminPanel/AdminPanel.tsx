@@ -10,6 +10,36 @@ const HomeAdmin = lazy(
 const AgregarProducto = lazy(
 	() => import("../../../pages/admin/AgregarProducto/AgregarProducto"),
 );
+const EditarProducto = lazy(() =>
+	import("../../../pages/admin/Productos/EditarProductos/EditarProducto").then(
+		(m) => ({ default: m.EditarProducto }),
+	),
+);
+const StockProducto = lazy(() =>
+	import("../../../pages/admin/Productos/StockProducto/StockProducto").then(
+		(m) => ({ default: m.StockProducto }),
+	),
+);
+const AgregarDescuento = lazy(() =>
+	import("../../../pages/admin/Descuentos/AgregarDescuento/AgregarDescuento").then(
+		(m) => ({ default: m.AgregarDescuento }),
+	),
+);
+const ListaDescuentos = lazy(() =>
+	import("../../../pages/admin/Descuentos/ListaDescuentos/ListaDescuentos").then(
+		(m) => ({ default: m.ListaDescuentos }),
+	),
+);
+const AgregarTiposCategorias = lazy(() =>
+	import(
+		"../../../pages/admin/TiposCategorias/AgregarTiposCategorias/AgregarTiposCategorias"
+	).then((m) => ({ default: m.AgregarTiposCategorias })),
+);
+const ListaTiposCategorias = lazy(() =>
+	import(
+		"../../../pages/admin/TiposCategorias/ListaTiposCategorias/ListaTiposCategorias"
+	).then((m) => ({ default: m.ListaTiposCategorias })),
+);
 
 interface AdminPanelProps {
 	activeView: string;
@@ -36,45 +66,39 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 				);
 			case "edit-product":
 				return (
-					<div className={styles.viewContent}>
-						<h3>Editar Producto</h3>
-						<p>Edit product content goes here</p>
-					</div>
+					<Suspense fallback={<Loader />}>
+						<EditarProducto />
+					</Suspense>
 				);
 			case "stock-product":
 				return (
-					<div className={styles.viewContent}>
-						<h3>Stock de Productos</h3>
-						<p>Stock management content goes here</p>
-					</div>
+					<Suspense fallback={<Loader />}>
+						<StockProducto />
+					</Suspense>
 				);
 			case "add-discount":
 				return (
-					<div className={styles.viewContent}>
-						<h3>Agregar Descuento</h3>
-						<p>Add discount content goes here</p>
-					</div>
+					<Suspense fallback={<Loader />}>
+						<AgregarDescuento />
+					</Suspense>
 				);
 			case "list-discounts":
 				return (
-					<div className={styles.viewContent}>
-						<h3>Lista de Descuentos</h3>
-						<p>List discounts content goes here</p>
-					</div>
+					<Suspense fallback={<Loader />}>
+						<ListaDescuentos />
+					</Suspense>
 				);
 			case "add-type-category":
 				return (
-					<div className={styles.viewContent}>
-						<h3>Agregar Tipo/Categoría</h3>
-						<p>Add type/category content goes here</p>
-					</div>
+					<Suspense fallback={<Loader />}>
+						<AgregarTiposCategorias />
+					</Suspense>
 				);
 			case "list-type-category":
 				return (
-					<div className={styles.viewContent}>
-						<h3>Lista de Tipos/Categorías</h3>
-						<p>List types/categories content goes here</p>
-					</div>
+					<Suspense fallback={<Loader />}>
+						<ListaTiposCategorias />
+					</Suspense>
 				);
 			default:
 				return (

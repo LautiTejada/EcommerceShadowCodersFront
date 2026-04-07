@@ -1,6 +1,5 @@
 import styles from "./AgregarTiposCategorias.module.css";
 import { useEffect, useState } from "react";
-import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin";
 import type { Tipo } from "../../../../types/Tipo";
 import type { Categoria } from "../../../../types/Categoria";
 import { useCategoriaStore } from "../../../../store/categoriaStore";
@@ -79,9 +78,7 @@ export const AgregarTiposCategorias = () => {
 
 	return (
 		<>
-			<div className={styles.container}>
-				<MenuAdmin />
-				<div className={styles.containerForms}>
+			<div className={styles.containerForms}>
 					<main className={styles.mainContent}>
 						<form className={styles.form} onSubmit={handleAddCategoria}>
 							<h3 className={styles.tituloCrear}>CREAR CATEGORIA</h3>
@@ -154,7 +151,6 @@ export const AgregarTiposCategorias = () => {
 							</div>
 						</form>
 					</main>
-				</div>
 			</div>
 		</>
 	);

@@ -1,7 +1,6 @@
 import styles from "./AgregarDescuento.module.css";
 import { useState } from "react";
 
-import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin";
 import type { Descuento } from "../../../../types/Descuento";
 
 import { Helmet } from "react-helmet-async";
@@ -26,7 +25,7 @@ export const AgregarDescuento = () => {
 	};
 
 	return (
-		<div className={styles.container}>
+		<>
 			<Helmet>
 				<title>Agregar Descuento | Admin | DressCode</title>
 				<meta
@@ -42,7 +41,6 @@ export const AgregarDescuento = () => {
 					content="Agrega nuevos descuentos y promociones en DressCode desde el panel de administración."
 				/>
 			</Helmet>
-			<MenuAdmin />
 			<main className={styles.mainContent}>
 				<form
 					className={styles.form}
@@ -134,6 +132,6 @@ export const AgregarDescuento = () => {
 					</div>
 				</form>
 			</main>
-		</div>
+		</>
 	);
 };

@@ -3,7 +3,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import AppsIcon from "@mui/icons-material/Apps";
 import AddIcon from "@mui/icons-material/Add";
 import { useEffect, useState } from "react";
-import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin";
 import { useDescuentoStore } from "../../../../store/descuentoStore";
 import Swal from "sweetalert2";
 import type { Descuento } from "../../../../types/Descuento";
@@ -73,7 +72,6 @@ export const ListaDescuentos = () => {
 
 	return (
 		<div className={styles.listaDescuentosContainer}>
-			<MenuAdmin />
 			<h2 className={styles.title}>Lista de Descuentos</h2>
 			<ul className={styles.listaDescuentos}>
 				{descuentos.map((desc) => (

@@ -2,7 +2,6 @@ import styles from "./ListaTiposCategorias.module.css";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useState } from "react";
-import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin";
 import { useCategoriaStore } from "../../../../store/categoriaStore";
 import { tipoStore } from "../../../../store/tipoStore";
 import type { Tipo } from "../../../../types/Tipo";
@@ -91,7 +90,6 @@ export const ListaTiposCategorias = () => {
 		<>
 			<div>
 				<div className={styles.container}>
-					<MenuAdmin />
 					<div className={styles.containerLists}>
 						<div className={styles.containerTipos}>
 							<div className={styles.titleTipos}>
