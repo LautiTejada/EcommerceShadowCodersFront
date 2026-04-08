@@ -100,6 +100,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 						<ListaTiposCategorias />
 					</Suspense>
 				);
+			case "list-orders":
+				return (
+					<Suspense fallback={<Loader />}>
+						<ListaOrdenes />
+					</Suspense>
+				);
 			default:
 				return (
 					<div className={styles.viewContent}>

@@ -7,6 +7,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import StorageIcon from "@mui/icons-material/Storage";
 import DiscountIcon from "@mui/icons-material/Discount";
 import CategoryIcon from "@mui/icons-material/Category";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 
 interface MenuItem {
 	label: string;
@@ -76,6 +77,16 @@ const MenuAdmin: React.FC<MenuAdminProps> = ({
 					label: "Lista",
 					id: "list-type-category",
 					icon: CategoryIcon,
+				},
+			],
+		},
+		{
+			section: "ÓRDENES",
+			items: [
+				{
+					label: "Gestionar pedidos",
+					id: "list-orders",
+					icon: ReceiptLongIcon,
 				},
 			],
 		},
