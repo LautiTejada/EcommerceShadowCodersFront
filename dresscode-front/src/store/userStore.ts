@@ -17,8 +17,6 @@ interface UsuarioState {
 	crearUsuario: (usuario: Usuario) => Promise<void>;
 	actualizarUsuario: (id: number, datos: Usuario) => Promise<void>;
 	cambiarEstadoUsuario: (id: number) => Promise<void>;
-	activarUsuario: (id: number) => Promise<void>;
-	desactivarUsuario: (id: number) => Promise<void>;
 	crearDireccionUsuario: (
 		usuarioId: number,
 		direccion: Direccion,
@@ -84,7 +82,10 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 		set({ cargando: true, error: null });
 		try {
 			const usuario = await usuarioAPI.getUsuarioPorId(id);
-
+			// Guardar el rol en localStorage
+			if (usuario.rol) {
+				localStorage.setItem("rol", usuario.rol);
+			}
 			set({ usuarioActual: usuario, cargando: false });
 		} catch (error) {
 			if (error instanceof Error) {
@@ -127,36 +128,6 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 		set({ cargando: true, error: null });
 		try {
 			const actualizado = await usuarioAPI.cambiarStateUsuario(id);
-			set((state) => ({
-				usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
-				cargando: false,
-			}));
-		} catch (error) {
-			if (error instanceof Error) {
-				set({ error: error.message, cargando: false });
-			}
-		}
-	},
-
-	activarUsuario: async (id) => {
-		set({ cargando: true, error: null });
-		try {
-			const actualizado = await usuarioAPI.activateUsuario(id);
-			set((state) => ({
-				usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
-				cargando: false,
-			}));
-		} catch (error) {
-			if (error instanceof Error) {
-				set({ error: error.message, cargando: false });
-			}
-		}
-	},
-
-	desactivarUsuario: async (id) => {
-		set({ cargando: true, error: null });
-		try {
-			const actualizado = await usuarioAPI.desactivateUsuario(id);
 			set((state) => ({
 				usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
 				cargando: false,

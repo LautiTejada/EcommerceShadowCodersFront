@@ -6,8 +6,6 @@ import {
 	crearCategoria,
 	actualizarCategoria,
 	cambiarEstadoCategoria,
-	activarCategoria,
-	desactivarCategoria,
 } from "../http/categoria";
 
 interface CategoriaState {
@@ -80,7 +78,7 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
 
 	activateCategoria: async (id) => {
 		try {
-			await activarCategoria(id);
+			await cambiarEstadoCategoria(id);
 			await get().fetchCategoriasActivas();
 		} catch (error) {
 			console.error("Error activando categoría:", error);
@@ -89,11 +87,8 @@ export const useCategoriaStore = create<CategoriaState>((set, get) => ({
 
 	desactivateCategoria: async (id) => {
 		try {
-			await desactivarCategoria(id);
-
-			set((state) => ({
-				categoriasActivas: state.categoriasActivas.filter((c) => c.id !== id),
-			}));
+			await cambiarEstadoCategoria(id);
+			await get().fetchCategoriasActivas();
 		} catch (error) {
 			console.error("Error desactivando categoría:", error);
 		}

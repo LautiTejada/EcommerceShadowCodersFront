@@ -13,13 +13,14 @@ interface UserCredentials {
 	password: string;
 }
 
-interface RegisterData extends UserCredentials {
+interface RegisterData {
 	username: string;
-	email?: string;
+	email: string;
+	password: string;
 }
 
 // URL base del API - Asegúrate de que coincida con tu backend
-const API_URL = "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 export const useAuth = () => {
 	const [loading, setLoading] = useState(false);
@@ -131,21 +132,17 @@ export const useAuth = () => {
 			}
 
 			if (responseData.token) {
+				const userId = responseData.id ?? responseData.userId;
+				const username = responseData.username ?? responseData.email;
+				const rol = responseData.rol;
+
 				localStorage.setItem("token", responseData.token);
-				const usuarioData = responseData.usuario;
-				const username = responseData.username ?? usuarioData?.username;
-				const userId =
-					responseData.id ?? responseData.userId ?? usuarioData?.id;
-				const rol = usuarioData?.rol ?? responseData.rol;
 				if (username) localStorage.setItem("username", username);
 				if (userId) localStorage.setItem("usuario", String(userId));
 				if (rol) localStorage.setItem("rol", rol);
 
-				// Populate the store immediately so PrivateRoute doesn't redirect
-				if (usuarioData) {
-					useUsuarioStore.getState().setUsuarioActual(usuarioData);
-				} else if (userId) {
-					// Backend returned id/username flat (not nested) — fetch full object
+				// Cargar el usuario completo desde el servidor después del login
+				if (userId) {
 					await useUsuarioStore.getState().obtenerUsuarioPorId(Number(userId));
 				}
 			}
@@ -163,11 +160,14 @@ export const useAuth = () => {
 	};
 
 	const logout = () => {
+		// Limpiar todo el store primero
+		useUsuarioStore.getState().setUsuarioActual(null);
+		// Luego limpiar localStorage
 		localStorage.removeItem("token");
 		localStorage.removeItem("username");
 		localStorage.removeItem("usuario");
 		localStorage.removeItem("rol");
-		useUsuarioStore.getState().setUsuarioActual(null);
+		// Finalmente navegar a login
 		navigate("/login");
 	};
 

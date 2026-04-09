@@ -1,6 +1,5 @@
-import styles from "./StockProducto.module.css";
-import MenuAdmin from "../../../../components/admin/MenuAdmin/MenuAdmin";
-import { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import styles from "../../AgregarProducto/AgregarProducto.module.css";
 import type { Producto } from "../../../../types/Producto";
 import { useProductoStore } from "../../../../store/productoStore";
 import { useProductoTalleStore } from "../../../../store/talleProductoStore";
@@ -8,9 +7,16 @@ import type { ProductoTalle } from "../../../../types/ProductoTalle";
 import Swal from "sweetalert2";
 import { ModalAgregarTalleProduct } from "../../../../components/admin/ModalAgregarTalleProduct/ModalAgregarTalleProduct";
 
+const getColorLabel = (color: unknown): string => {
+	if (!color) return "";
+	if (typeof color === "string") return color;
+	if (typeof color === "object" && color !== null && "nombreColor" in color)
+		return (color as { nombreColor: string }).nombreColor;
+	return "";
+};
+
 export const StockProducto = () => {
 	const { updateCantidadProductoTalle } = useProductoTalleStore();
-
 	const {
 		productosActivos,
 		fetchProductosActivos,
@@ -19,89 +25,78 @@ export const StockProducto = () => {
 	} = useProductoStore();
 
 	const [product, setProduct] = useState<Producto | null>(null);
-	const [showCategory, setShowCategory] = useState(false);
-	const [talleActual, setTalleActual] = useState<ProductoTalle>();
+	const [talleActual, setTalleActual] = useState<ProductoTalle | null>(null);
 	const [busqueda, setBusqueda] = useState("");
 	const [showProductos, setShowProductos] = useState(false);
-	const [cantidad, setCantidad] = useState<number | null>(null);
+	const [cantidad, setCantidad] = useState<number | string>("");
 	const [productoAgregarTalle, setProductoAgregarTalle] =
-		useState<Producto | null>();
+		useState<Producto | null>(null);
+	const [loading, setLoading] = useState(false);
+	const dropdownRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
 		fetchProductosActivos();
 	}, [fetchProductosActivos]);
 
-	const handleSelectProducto = (producto: Producto) => {
-		setProduct(producto);
-		setProductoActual(producto);
-		setBusqueda("");
+	const handleSelectProducto = (prod: Producto) => {
+		setProduct(prod);
+		setProductoActual(prod);
+		setBusqueda(prod.nombre);
 		setShowProductos(false);
+		setTalleActual(null);
+		setCantidad("");
+	};
+
+	const handleTalleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+		const id = Number(e.target.value);
+		const talle = product?.talles?.find((t) => t.id === id) ?? null;
+		setTalleActual(talle);
+		setCantidad(talle?.cantidad ?? "");
 	};
 
 	const handleCantidadProductoTalle = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!product || !product.id) {
-			import("sileo").then(({ sileo }) => {
-				sileo.error({
-					title: "Producto requerido",
-					description: "Seleccioná un producto antes de continuar.",
-				});
-			});
+		if (!product?.id || !talleActual?.id) return;
+		const cant = Number(cantidad);
+		if (!cant || cant < 0) {
+			Swal.fire("Cantidad inválida", "Ingresá una cantidad válida.", "warning");
 			return;
 		}
-
-		if (cantidad === null || cantidad <= 0) {
-			import("sileo").then(({ sileo }) => {
-				sileo.error({
-					title: "Cantidad inválida",
-					description: "Ingresá una cantidad válida para continuar.",
-				});
-			});
-			return;
+		setLoading(true);
+		try {
+			await updateCantidadProductoTalle(talleActual.id, cant);
+			Swal.fire("Guardado", "Stock actualizado correctamente.", "success");
+			setTalleActual(null);
+			setCantidad("");
+			setBusqueda("");
+			setProduct(null);
+			fetchProductosActivos();
+		} finally {
+			setLoading(false);
 		}
-
-		if (talleActual && typeof talleActual.id === "number") {
-			await updateCantidadProductoTalle(talleActual.id, cantidad);
-		}
-
-		setProduct(null);
-		setProductoActual(null);
-		setBusqueda("");
-		setCantidad(null);
 	};
 
-	// 👉 Función para eliminar producto con SweetAlert
 	const handleEliminarProducto = async () => {
-		if (!product || !product.id) {
-			Swal.fire("Error", "Seleccioná un producto primero.", "error");
-			return;
-		}
-
-		const confirmacion = await Swal.fire({
-			title: "¿Estás seguro?",
-			text: `Vas a eliminar el producto ${product.nombre}. Esta acción no se puede deshacer.`,
+		if (!product?.id) return;
+		const result = await Swal.fire({
+			title: "¿Desactivar producto?",
+			text: `"${product.nombre}" será desactivado.`,
 			icon: "warning",
 			showCancelButton: true,
-			confirmButtonText: "Sí, eliminar",
+			confirmButtonColor: "#810000",
+			cancelButtonColor: "#666",
+			confirmButtonText: "Sí, desactivar",
 			cancelButtonText: "Cancelar",
 		});
-
-		if (confirmacion.isConfirmed) {
-			try {
-				await desactivarProducto(product.id);
-				Swal.fire(
-					"Eliminado",
-					"El producto fue eliminado correctamente.",
-					"success",
-				);
-				setProduct(null);
-				setProductoActual(null);
-				setBusqueda("");
-				setCantidad(null);
-				fetchProductosActivos();
-			} catch (error) {
-				Swal.fire("Error", "No se pudo eliminar el producto.", "error");
-			}
+		if (result.isConfirmed) {
+			await desactivarProducto(product.id);
+			Swal.fire("Desactivado", "El producto fue desactivado.", "success");
+			setProduct(null);
+			setProductoActual(null);
+			setBusqueda("");
+			setTalleActual(null);
+			setCantidad("");
+			fetchProductosActivos();
 		}
 	};
 
@@ -109,124 +104,159 @@ export const StockProducto = () => {
 		p.nombre.toLowerCase().includes(busqueda.toLowerCase()),
 	);
 
-	const handleAddTalle = (product: Producto) => {
-		setProductoAgregarTalle(product);
-	};
-
-	const handleCloseModal = () => {
-		setProductoAgregarTalle(null);
-	};
-
 	return (
 		<div className={styles.container}>
-			<MenuAdmin />
-			<main className={styles.mainContent}>
-				<form className={styles.form} onSubmit={handleCantidadProductoTalle}>
-					<div className={styles.formRow}>
-						<div className={styles.formGroupWide}>
-							<label className={styles.label}>BUSCAR PRODUCTO</label>
-							<div className={`${styles.inputDropdownWrapper}`}>
+			<div className={styles.header}>
+				<h1>Stock de Productos</h1>
+				<p>Buscá un producto, elegí el talle y actualizá el stock</p>
+			</div>
+
+			<form
+				className={styles.form}
+				onSubmit={handleCantidadProductoTalle}
+				noValidate>
+				{/* Búsqueda de producto */}
+				<div
+					className={`${styles.fieldGroup} ${styles.fullWidth}`}
+					style={{ position: "relative" }}>
+					<label className={styles.label}>
+						Buscar producto <span className={styles.required}>*</span>
+					</label>
+					<input
+						className={styles.input}
+						value={busqueda}
+						onChange={(e) => {
+							setBusqueda(e.target.value);
+							setShowProductos(true);
+							setProduct(null);
+							setTalleActual(null);
+							setCantidad("");
+						}}
+						onFocus={() => setShowProductos(true)}
+						onBlur={() => setTimeout(() => setShowProductos(false), 150)}
+						placeholder="Escribí el nombre del producto..."
+					/>
+					{showProductos && busqueda && productosFiltrados.length > 0 && (
+						<div
+							ref={dropdownRef}
+							style={{
+								position: "absolute",
+								top: "100%",
+								left: 0,
+								right: 0,
+								background: "#fff",
+								border: "1.5px solid #810000",
+								borderTop: "none",
+								borderRadius: "0 0 4px 4px",
+								zIndex: 10,
+								maxHeight: 200,
+								overflowY: "auto",
+								boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+							}}>
+							{productosFiltrados.map((prod) => (
+								<div
+									key={prod.id}
+									style={{
+										padding: "9px 12px",
+										cursor: "pointer",
+										fontSize: "0.875rem",
+										color: "#1a1a1a",
+										borderBottom: "1px solid #f0eef6",
+									}}
+									onMouseDown={() => handleSelectProducto(prod)}
+									onMouseEnter={(e) =>
+										(e.currentTarget.style.background = "rgba(129,0,0,0.07)")
+									}
+									onMouseLeave={(e) => (e.currentTarget.style.background = "")}>
+									{prod.nombre}
+								</div>
+							))}
+						</div>
+					)}
+				</div>
+
+				{/* Detalles del producto seleccionado */}
+				{product && (
+					<>
+						<div
+							style={{
+								display: "flex",
+								justifyContent: "space-between",
+								alignItems: "center",
+								padding: "10px 0 14px",
+								borderBottom: "1px solid #f0eef6",
+							}}>
+							<span
+								style={{
+									fontWeight: 700,
+									fontSize: "0.95rem",
+									color: "#1a1a1a",
+								}}>
+								{product.nombre}
+								{getColorLabel(product.color)
+									? ` — ${getColorLabel(product.color)}`
+									: ""}
+							</span>
+							<button
+								type="button"
+								className={styles.btnSecondary}
+								onClick={() => setProductoAgregarTalle(product)}>
+								+ Agregar talle
+							</button>
+						</div>
+
+						<div className={styles.formGrid}>
+							<div className={styles.fieldGroup}>
+								<label className={styles.label}>Talle</label>
+								<select
+									className={styles.select}
+									value={talleActual?.id ?? ""}
+									onChange={handleTalleChange}>
+									<option value="">Seleccioná un talle</option>
+									{product.talles?.map((t) => (
+										<option key={t.id} value={t.id}>
+											{t.talle.tipoTalle} — stock: {t.cantidad}
+										</option>
+									))}
+								</select>
+							</div>
+
+							<div className={styles.fieldGroup}>
+								<label className={styles.label}>Nueva cantidad</label>
 								<input
 									className={styles.input}
-									value={busqueda}
-									onChange={(e) => {
-										setBusqueda(e.target.value);
-										setShowProductos(true);
-									}}
-									placeholder="Escribí el nombre del producto..."
+									type="number"
+									min="0"
+									value={cantidad}
+									onChange={(e) => setCantidad(e.target.value)}
+									placeholder="0"
+									disabled={!talleActual}
 								/>
-								{showProductos && busqueda && (
-									<div className={styles.dropdown}>
-										{productosFiltrados.map((prod) => (
-											<div
-												key={prod.id}
-												className={styles.dropdownItem}
-												onClick={() => handleSelectProducto(prod)}>
-												{prod.nombre}
-											</div>
-										))}
-									</div>
-								)}
 							</div>
 						</div>
-					</div>
 
-					{product && (
-						<>
-							<div className={styles.header}>
-								<h2 className={styles.formTitle}>
-									STOCK: {product.nombre} - {product.color}
-								</h2>
-								<button
-									type="button"
-									className={styles.botonAgregar}
-									onClick={() => handleAddTalle(product)}>
-									AGREGAR TALLE
-								</button>
-							</div>
+						<div className={styles.actions}>
+							<button
+								type="button"
+								className={styles.btnSecondary}
+								onClick={handleEliminarProducto}>
+								Desactivar producto
+							</button>
+							<button
+								type="submit"
+								className={styles.btnPrimary}
+								disabled={loading || !talleActual}>
+								{loading ? "Guardando..." : "Guardar stock"}
+							</button>
+						</div>
+					</>
+				)}
+			</form>
 
-							<div className={styles.formRow}>
-								<div className={styles.formGroup}>
-									<label className={styles.label}>TALLE</label>
-									<div
-										className={styles.select}
-										onClick={() => setShowCategory(!showCategory)}
-										tabIndex={0}>
-										{talleActual?.talle.tipoTalle || "..."}
-										<span className={styles.arrow} />
-										{showCategory && (
-											<div className={styles.dropdown}>
-												{product.talles?.map((talles) => (
-													<div
-														key={talles.id}
-														className={styles.dropdownItem}
-														onClick={() => {
-															setTalleActual(talles);
-															setCantidad(talles.cantidad);
-															setShowCategory(false);
-														}}>
-														{talles.talle.tipoTalle}
-													</div>
-												))}
-											</div>
-										)}
-									</div>
-								</div>
-								<div className={styles.formRow}>
-									<div className={styles.formGroup}>
-										<label className={styles.label}>CANTIDAD</label>
-										<div className={styles.inputIcon}>
-											<input
-												className={styles.input}
-												type="number"
-												value={cantidad !== null ? cantidad : ""}
-												onChange={(e) => setCantidad(Number(e.target.value))}
-												placeholder="Cantidad"
-											/>
-										</div>
-									</div>
-								</div>
-							</div>
-
-							<div className={styles.formRow}>
-								<button className={styles.addButton} type="submit">
-									GUARDAR CANTIDAD
-								</button>
-								<button
-									className={styles.deleteButton}
-									type="button"
-									onClick={handleEliminarProducto}>
-									ELIMINAR PRODUCTO
-								</button>
-							</div>
-						</>
-					)}
-				</form>
-			</main>
 			{productoAgregarTalle && (
 				<ModalAgregarTalleProduct
-					producto={product!}
-					onClose={handleCloseModal}
+					producto={productoAgregarTalle}
+					onClose={() => setProductoAgregarTalle(null)}
 				/>
 			)}
 		</div>

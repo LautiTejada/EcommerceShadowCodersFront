@@ -1,6 +1,10 @@
 import { create } from "zustand";
 
-import { getProductoTalles, createProductoTalle } from "../http/productoTalle";
+import {
+	getProductoTalles,
+	createProductoTalle,
+	updateProductoTalleCantidad,
+} from "../http/productoTalle";
 import type { ProductoTalle } from "../types/ProductoTalle";
 
 interface ProductoTalleState {
@@ -14,11 +18,6 @@ interface ProductoTalleState {
 		talleId: number,
 		cantidad: number,
 	) => Promise<void>;
-	updaterProductoTalle: (
-		id: number,
-		productoTalle: ProductoTalle,
-	) => Promise<void>;
-	fetchCantidadTotal: (productoId: number) => Promise<number>;
 	updateCantidadProductoTalle: (
 		idProductoTalle: number,
 		cantidad: number,
@@ -58,39 +57,10 @@ export const useProductoTalleStore = create<ProductoTalleState>((set, get) => ({
 		}
 	},
 
-	updaterProductoTalle: async (_id, _productoTalle) => {
+	updateCantidadProductoTalle: async (idProductoTalle, cantidad) => {
 		set({ cargando: true, error: null });
 		try {
-			// Función no implementada
-			await get().fetchProductoTalles();
-		} catch (error: unknown) {
-			if (error instanceof Error) {
-				set({ error: error.message || "Error al actualizar producto talle" });
-			}
-		} finally {
-			set({ cargando: false });
-		}
-	},
-
-	fetchCantidadTotal: async (_productoId) => {
-		set({ cargando: true, error: null });
-		try {
-			// Función no implementada
-			return 0;
-		} catch (error: unknown) {
-			if (error instanceof Error) {
-				set({ error: error.message || "Error al obtener cantidad total" });
-			}
-			return 0;
-		} finally {
-			set({ cargando: false });
-		}
-	},
-
-	updateCantidadProductoTalle: async (_idProductoTalle, _cantidad) => {
-		set({ cargando: true, error: null });
-		try {
-			// Función no implementada
+			await updateProductoTalleCantidad(idProductoTalle, cantidad);
 			await get().fetchProductoTalles();
 		} catch (error: unknown) {
 			if (error instanceof Error) {

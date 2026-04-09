@@ -4,7 +4,7 @@ const baseUrl = import.meta.env.VITE_API_URL;
 
 export const getCategorias = async () => {
 	try {
-		return await apiFetch(`${baseUrl}/categorias/activas`);
+		return await apiFetch(`${baseUrl}/categorias`);
 	} catch (error) {
 		console.error("Error fetching categorias:", error);
 		throw error;
@@ -63,40 +63,11 @@ export const actualizarCategoria = async (
 export const cambiarEstadoCategoria = async (id: number) => {
 	try {
 		return await apiFetch(`${baseUrl}/categorias/${id}/status`, {
-			method: "PUT",
+			method: "PATCH",
+			auth: true,
 		});
 	} catch (error) {
 		console.error("Error changing categoria status:", error);
-		throw error;
-	}
-};
-
-export const activarCategoria = async (id: number) => {
-	try {
-		const response = await fetch(`${baseUrl}/categorias/${id}/activate`, {
-			method: "PUT",
-		});
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
-	} catch (error) {
-		console.error("Error activating categoria:", error);
-		throw error;
-	}
-};
-
-export const desactivarCategoria = async (id: number) => {
-	try {
-		const response = await fetch(`${baseUrl}/categorias/${id}/deactivate`, {
-			method: "PUT",
-		});
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
-	} catch (error) {
-		console.error("Error deactivating categoria:", error);
 		throw error;
 	}
 };
