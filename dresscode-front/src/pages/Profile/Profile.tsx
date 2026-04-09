@@ -4,6 +4,8 @@ import LockIcon from "@mui/icons-material/Lock";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddLocationIcon from "@mui/icons-material/AddLocation";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useAuth } from "../../hooks/useAuth";
 import type { Usuario } from "../../types/Usuario";
 import CancelIcon from "@mui/icons-material/Cancel";
@@ -12,6 +14,8 @@ import { desactivarDireccionDeUsuario } from "../../http/usuario";
 import Loader from "../../components/ui/Loader/Loader";
 import { sileo } from "sileo";
 import { useUsuarioStore } from "../../store/userStore";
+import { useOrdenCompraStore } from "../../store/ordenCompraStore";
+import type { EstadoOrden } from "../../types/enums/EstadoOrden";
 import AdminPanel from "./AdminPanel/AdminPanel";
 
 const Profile = () => {
@@ -24,10 +28,12 @@ const Profile = () => {
 		crearDireccionUsuario,
 		actualizarDireccionUsuario,
 	} = useUsuarioStore();
+	const { ordenesCompra, fetchOrdenesPorUsuario } = useOrdenCompraStore();
 	const isAdmin =
 		usuarioActual?.rol === "ADMIN" || localStorage.getItem("rol") === "ADMIN";
 	const [activeSection, setActiveSection] = useState("accountInfo");
-	const [adminActiveView, setAdminActiveView] = useState("home"); // home, products, discounts, etc
+	const [adminActiveView, setAdminActiveView] = useState("home");
+	const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
 	const { logout } = useAuth();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedUser, setEditedUser] = useState<Partial<Usuario>>({
@@ -74,7 +80,15 @@ const Profile = () => {
 		if (activeSection === "addresses" && userId) {
 			obtenerDireccionesUsuario(userId);
 		}
-	}, [activeSection, userId, obtenerDireccionesUsuario]);
+		if (activeSection === "orderHistory" && userId) {
+			fetchOrdenesPorUsuario(userId);
+		}
+	}, [
+		activeSection,
+		userId,
+		obtenerDireccionesUsuario,
+		fetchOrdenesPorUsuario,
+	]);
 
 	const handleSave = async () => {
 		if (userId && editedUser && usuarioActual) {
@@ -435,8 +449,232 @@ const Profile = () => {
 						)}
 					</div>
 				);
-			case "orderHistory":
-				return <div className={styles.orderHistorySection}></div>;
+			case "orderHistory": {
+				const ESTADO_LABEL: Record<EstadoOrden, string> = {
+					PEDIDO: "Pedido",
+					EN_PROCESO: "En proceso",
+					EN_CAMINO: "En camino",
+					ENTREGADO: "Entregado",
+				};
+				const ESTADO_COLOR: Record<
+					EstadoOrden,
+					{ background: string; color: string }
+				> = {
+					PEDIDO: { background: "rgba(129,0,0,0.08)", color: "#810000" },
+					EN_PROCESO: { background: "rgba(230,126,34,0.1)", color: "#c0710a" },
+					EN_CAMINO: { background: "rgba(41,128,185,0.1)", color: "#1a6da3" },
+					ENTREGADO: { background: "rgba(30,126,52,0.1)", color: "#1e7e34" },
+				};
+				if (ordenesCompra.length === 0) {
+					return (
+						<div className={styles.orderHistorySection}>
+							<p style={{ color: "#888", fontSize: "0.9rem" }}>
+								No tenés pedidos registrados.
+							</p>
+						</div>
+					);
+				}
+				return (
+					<div className={styles.orderHistorySection}>
+						{ordenesCompra.map((orden) => {
+							const isExpanded = expandedOrderId === orden.id;
+							const estadoStyle = ESTADO_COLOR[
+								orden.estadoOrden as EstadoOrden
+							] ?? { background: "#eee", color: "#555" };
+							return (
+								<div
+									key={orden.id}
+									className={styles.orderHistoryEntry}
+									style={{
+										flexDirection: "column",
+										alignItems: "stretch",
+										cursor: "default",
+									}}>
+									<div
+										style={{
+											display: "flex",
+											justifyContent: "space-between",
+											alignItems: "center",
+										}}>
+										<div
+											style={{
+												display: "flex",
+												flexDirection: "column",
+												gap: 4,
+											}}>
+											<span
+												style={{
+													fontWeight: 700,
+													color: "#810000",
+													fontSize: "0.95rem",
+												}}>
+												Pedido #{orden.id}
+											</span>
+											<span style={{ fontSize: "0.82rem", color: "#888" }}>
+												{orden.fecha
+													? new Date(orden.fecha).toLocaleDateString("es-AR", {
+															day: "2-digit",
+															month: "2-digit",
+															year: "numeric",
+														})
+													: "—"}
+											</span>
+										</div>
+										<div
+											style={{
+												display: "flex",
+												alignItems: "center",
+												gap: 12,
+											}}>
+											<span
+												style={{
+													...estadoStyle,
+													padding: "3px 10px",
+													borderRadius: 4,
+													fontSize: "0.75rem",
+													fontWeight: 700,
+												}}>
+												{ESTADO_LABEL[orden.estadoOrden as EstadoOrden] ??
+													orden.estadoOrden}
+											</span>
+											<span
+												style={{
+													fontWeight: 700,
+													fontSize: "1rem",
+													color: "#1a1a1a",
+												}}>
+												${orden.precioTotal?.toLocaleString("es-AR")}
+											</span>
+											<button
+												onClick={() =>
+													setExpandedOrderId(isExpanded ? null : orden.id!)
+												}
+												style={{
+													background: "none",
+													border: "none",
+													cursor: "pointer",
+													color: "#810000",
+													display: "flex",
+													alignItems: "center",
+												}}
+												title={isExpanded ? "Contraer" : "Ver detalles"}>
+												{isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+											</button>
+										</div>
+									</div>
+									{isExpanded && (
+										<div
+											style={{
+												marginTop: 16,
+												display: "grid",
+												gridTemplateColumns: "1fr 1fr",
+												gap: 16,
+											}}>
+											<div
+												style={{
+													background: "#f7f6f9",
+													borderRadius: 6,
+													padding: 14,
+												}}>
+												<p
+													style={{
+														fontSize: "0.72rem",
+														fontWeight: 700,
+														color: "#810000",
+														textTransform: "uppercase",
+														marginBottom: 8,
+													}}>
+													Dirección de entrega
+												</p>
+												{orden.direccion ? (
+													<>
+														<p style={{ fontSize: "0.83rem", margin: "2px 0" }}>
+															{orden.direccion.calle} {orden.direccion.numero}
+														</p>
+														<p
+															style={{
+																fontSize: "0.83rem",
+																color: "#555",
+																margin: "2px 0",
+															}}>
+															{orden.direccion.localidad},{" "}
+															{orden.direccion.provincia?.replace(/_/g, " ")}
+														</p>
+														{orden.direccion.codigoPostal && (
+															<p
+																style={{
+																	fontSize: "0.83rem",
+																	color: "#555",
+																	margin: "2px 0",
+																}}>
+																CP: {orden.direccion.codigoPostal}
+															</p>
+														)}
+													</>
+												) : (
+													<p style={{ fontSize: "0.83rem", color: "#888" }}>
+														Sin dirección
+													</p>
+												)}
+											</div>
+											<div
+												style={{
+													background: "#f7f6f9",
+													borderRadius: 6,
+													padding: 14,
+												}}>
+												<p
+													style={{
+														fontSize: "0.72rem",
+														fontWeight: 700,
+														color: "#810000",
+														textTransform: "uppercase",
+														marginBottom: 8,
+													}}>
+													Productos
+												</p>
+												{orden.detalles && orden.detalles.length > 0 ? (
+													<ul
+														style={{
+															listStyle: "none",
+															padding: 0,
+															margin: 0,
+														}}>
+														{orden.detalles.map((det) => (
+															<li
+																key={det.id}
+																style={{
+																	display: "flex",
+																	justifyContent: "space-between",
+																	fontSize: "0.82rem",
+																	padding: "4px 0",
+																	borderBottom: "1px solid #e8e6f0",
+																}}>
+																<span>
+																	Talle{" "}
+																	{det.productoTalle?.talle?.tipoTalle ?? "?"} ×{" "}
+																	{det.cantidad}
+																</span>
+																<span style={{ fontWeight: 600 }}>
+																	${det.precioUnitario?.toLocaleString("es-AR")}
+																</span>
+															</li>
+														))}
+													</ul>
+												) : (
+													<p style={{ fontSize: "0.82rem", color: "#888" }}>
+														Sin detalles
+													</p>
+												)}
+											</div>
+										</div>
+									)}
+								</div>
+							);
+						})}
+					</div>
+				);
+			}
 			case "adminPanel":
 				return (
 					<AdminPanel

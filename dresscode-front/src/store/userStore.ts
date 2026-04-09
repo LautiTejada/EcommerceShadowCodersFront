@@ -203,7 +203,7 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 			const usuario = await usuarioAPI.getUsuarioPorId(Number(userId));
 			set({ usuarioActual: usuario });
 		} catch {
-			// Keep the cached version; token may have expired — clear on 401 if needed
+			// Keep the cached version if the endpoint is unavailable or user lacks permission
 		}
 	},
 

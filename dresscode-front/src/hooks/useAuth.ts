@@ -134,17 +134,22 @@ export const useAuth = () => {
 			if (responseData.token) {
 				const userId = responseData.id ?? responseData.userId;
 				const username = responseData.username ?? responseData.email;
-				const rol = responseData.rol;
+				const rol = responseData.rol ?? "USER";
 
 				localStorage.setItem("token", responseData.token);
 				if (username) localStorage.setItem("username", username);
 				if (userId) localStorage.setItem("usuario", String(userId));
-				if (rol) localStorage.setItem("rol", rol);
+				localStorage.setItem("rol", rol);
 
-				// Cargar el usuario completo desde el servidor después del login
-				if (userId) {
-					await useUsuarioStore.getState().obtenerUsuarioPorId(Number(userId));
-				}
+				// Setear el usuario en el store directamente desde la respuesta del login
+				// (evita llamar a /usuarios/{id} que requiere ADMIN)
+				useUsuarioStore.getState().setUsuarioActual({
+					id: Number(userId),
+					username,
+					rol,
+					email: responseData.email ?? "",
+					activo: true,
+				} as any);
 			}
 
 			navigate("/");
