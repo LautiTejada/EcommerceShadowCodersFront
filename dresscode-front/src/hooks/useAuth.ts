@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUsuarioStore } from "../store/userStore";
 
 interface AuthResponse {
 	success: boolean;
@@ -12,13 +13,14 @@ interface UserCredentials {
 	password: string;
 }
 
-interface RegisterData extends UserCredentials {
+interface RegisterData {
 	username: string;
-	email?: string;
+	email: string;
+	password: string;
 }
 
 // URL base del API - Asegúrate de que coincida con tu backend
-const API_URL = "http://localhost:8080";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
 
 export const useAuth = () => {
 	const [loading, setLoading] = useState(false);
@@ -70,12 +72,22 @@ export const useAuth = () => {
 			// Si el registro es exitoso y recibimos un token, lo guardamos
 			if (responseData.token) {
 				localStorage.setItem("token", responseData.token);
-				navigate("/");
-				if (responseData.username) {
-					localStorage.setItem("username", responseData.username);
-				} else {
-					navigate("/login");
+				const usuarioData = responseData.usuario;
+				const username =
+					responseData.username ?? usuarioData?.username ?? userData.username;
+				const userId =
+					responseData.id ?? responseData.userId ?? usuarioData?.id;
+				const rol = usuarioData?.rol ?? responseData.rol ?? "USER";
+				if (username) localStorage.setItem("username", username);
+				if (userId) localStorage.setItem("usuario", String(userId));
+				if (rol) localStorage.setItem("rol", rol);
+
+				if (usuarioData) {
+					useUsuarioStore.getState().setUsuarioActual(usuarioData);
+				} else if (userId) {
+					await useUsuarioStore.getState().obtenerUsuarioPorId(Number(userId));
 				}
+				navigate("/");
 			}
 
 			return responseData;
@@ -120,17 +132,19 @@ export const useAuth = () => {
 			}
 
 			if (responseData.token) {
-				localStorage.setItem("token", responseData.token);
-				localStorage.setItem("usuario", JSON.stringify(responseData.usuario));
-				if (responseData.username) {
-					localStorage.setItem("username", responseData.username);
-				}
-			}
+				const userId = responseData.id ?? responseData.userId;
+				const username = responseData.username ?? responseData.email;
+				const rol = responseData.rol;
 
-			// Guarda el id del usuario, sea 'id' o 'userId'
-			const userId = responseData.id ?? responseData.userId;
-			if (userId) {
-				localStorage.setItem("usuario", String(userId));
+				localStorage.setItem("token", responseData.token);
+				if (username) localStorage.setItem("username", username);
+				if (userId) localStorage.setItem("usuario", String(userId));
+				if (rol) localStorage.setItem("rol", rol);
+
+				// Cargar el usuario completo desde el servidor después del login
+				if (userId) {
+					await useUsuarioStore.getState().obtenerUsuarioPorId(Number(userId));
+				}
 			}
 
 			navigate("/");
@@ -146,9 +160,14 @@ export const useAuth = () => {
 	};
 
 	const logout = () => {
+		// Limpiar todo el store primero
+		useUsuarioStore.getState().setUsuarioActual(null);
+		// Luego limpiar localStorage
 		localStorage.removeItem("token");
 		localStorage.removeItem("username");
 		localStorage.removeItem("usuario");
+		localStorage.removeItem("rol");
+		// Finalmente navegar a login
 		navigate("/login");
 	};
 

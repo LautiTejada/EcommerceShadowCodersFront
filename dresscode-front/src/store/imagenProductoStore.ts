@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import type { ImagenProducto } from "../types/ImagenProducto";
 import {
-	activarImagenProducto,
-	desactivarImagenProducto,
+	cambiarEstadoImagenProducto,
+	eliminarImagenProducto,
 	getImagenesProducto,
 } from "../http/imagenProducto";
 
@@ -61,6 +61,7 @@ export const useImagenProductoStore = create<imagenProductoState>(
 
 		deleteImagen: async (id) => {
 			try {
+				await eliminarImagenProducto(id);
 				await get().fetchImagenes();
 			} catch (error) {
 				console.error(`Error deleting imagen con id ${id}:`, error);
@@ -69,6 +70,7 @@ export const useImagenProductoStore = create<imagenProductoState>(
 
 		toggleStateImagen: async (id) => {
 			try {
+				await cambiarEstadoImagenProducto(id);
 				await get().fetchImagenes();
 			} catch (error) {
 				console.error(`Error toggling state of imagen con id ${id}:`, error);
@@ -77,7 +79,7 @@ export const useImagenProductoStore = create<imagenProductoState>(
 
 		activateImagen: async (id) => {
 			try {
-				await activarImagenProducto(id);
+				await cambiarEstadoImagenProducto(id);
 				await get().fetchImagenesActivas();
 			} catch (error) {
 				console.error(`Error activating imagen con id ${id}:`, error);
@@ -86,7 +88,7 @@ export const useImagenProductoStore = create<imagenProductoState>(
 
 		desactivateImagen: async (id) => {
 			try {
-				await desactivarImagenProducto(id);
+				await cambiarEstadoImagenProducto(id);
 				await get().fetchImagenesActivas();
 			} catch (error) {
 				console.error(`Error desactivating imagen con id ${id}:`, error);

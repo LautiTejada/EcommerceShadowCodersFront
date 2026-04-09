@@ -7,19 +7,29 @@ import IconButton from "@mui/material/IconButton";
 import { Link, useLocation } from "react-router-dom";
 import styles from "./Header.module.css";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import LogoutIcon from "@mui/icons-material/Logout";
 import { useCartStore } from "../../../store/cartStore";
 import { motion } from "framer-motion";
 import { CategoryBar } from "../../ui/CategoryBar/CategoryBar";
+import { useAuth } from "../../../hooks/useAuth";
 
 const Header = () => {
 	const [username, setUsername] = useState<string | null>(null);
+	const [rol, setRol] = useState<string | null>(null);
 	const location = useLocation();
 	const { cart } = useCartStore();
+	const { logout } = useAuth();
 	const totalItems = cart.reduce((sum, item) => sum + item.cantidad, 0);
 
 	useEffect(() => {
 		setUsername(localStorage.getItem("username"));
+		setRol(localStorage.getItem("rol"));
 	}, [location]);
+
+	// Ocultar CategoryBar en rutas específicas
+	const hideCategoryBar =
+		location.pathname === "/profile" ||
+		location.pathname.startsWith("/profile/");
 
 	return (
 		<header role="banner">
@@ -42,7 +52,7 @@ const Header = () => {
 					</div>
 
 					{/* CategoryBar integrado en el header */}
-					<CategoryBar />
+					{!hideCategoryBar && <CategoryBar />}
 
 					<div className={styles.buttonsContainer}>
 						<motion.div
@@ -62,27 +72,41 @@ const Header = () => {
 							</IconButton>
 						</motion.div>
 						{username ? (
-							<motion.div
-								whileTap={{ scale: 0.92 }}
-								whileHover={{ scale: 1.06 }}
-								style={{ display: "inline-block" }}>
-								<IconButton
-									color="inherit"
-									component={Link}
-									to="/profile"
-									className={styles.accountButton}
-									aria-label="Ver perfil">
-									<Avatar
-										sx={{
-											width: 32,
-											height: 32,
-											bgcolor: "#810000",
-											fontSize: 16,
-										}}>
-										{username[0]?.toUpperCase()}
-									</Avatar>
-								</IconButton>
-							</motion.div>
+							<>
+								<motion.div
+									whileTap={{ scale: 0.92 }}
+									whileHover={{ scale: 1.06 }}
+									style={{ display: "inline-block" }}>
+									<IconButton
+										color="inherit"
+										component={Link}
+										to="/profile"
+										className={styles.accountButton}
+										aria-label="Ver perfil">
+										<Avatar
+											sx={{
+												width: 32,
+												height: 32,
+												bgcolor: rol === "ADMIN" ? "#810000" : "#810000",
+												fontSize: 16,
+											}}>
+											{username[0]?.toUpperCase()}
+										</Avatar>
+									</IconButton>
+								</motion.div>
+								<motion.div
+									whileTap={{ scale: 0.92 }}
+									whileHover={{ scale: 1.06 }}
+									style={{ display: "inline-block" }}>
+									<IconButton
+										color="inherit"
+										onClick={logout}
+										aria-label="Cerrar sesión"
+										sx={{ marginLeft: "8px" }}>
+										<LogoutIcon />
+									</IconButton>
+								</motion.div>
+							</>
 						) : (
 							<motion.div
 								whileTap={{ scale: 0.92 }}
@@ -90,7 +114,7 @@ const Header = () => {
 								style={{ display: "inline-block" }}>
 								<Button
 									component={Link}
-									to="/auth/login"
+									to="/login"
 									aria-label="Iniciar sesión"
 									sx={{
 										color: "#fff",

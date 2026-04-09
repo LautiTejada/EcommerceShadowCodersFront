@@ -1,61 +1,123 @@
 import React from "react";
 import styles from "./MenuAdmin.module.css";
-import { Link } from "react-router-dom";
 
-interface MenuAdminProps {
-	selected?: string;
-	onSelect?: (item: string) => void;
+// Icons
+import AddIcon from "@mui/icons-material/Add";
+import EditIcon from "@mui/icons-material/Edit";
+import StorageIcon from "@mui/icons-material/Storage";
+import DiscountIcon from "@mui/icons-material/Discount";
+import CategoryIcon from "@mui/icons-material/Category";
+import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+
+interface MenuItem {
+	label: string;
+	id: string;
+	icon: React.ComponentType<any>;
 }
 
-const MenuAdmin: React.FC<MenuAdminProps> = () => {
+interface MenuSection {
+	section: string;
+	items: MenuItem[];
+}
+
+interface MenuAdminProps {
+	activeView?: string;
+	onViewChange?: (viewId: string) => void;
+}
+
+const MenuAdmin: React.FC<MenuAdminProps> = ({
+	activeView = "home",
+	onViewChange = () => {},
+}) => {
+	const menuSections: MenuSection[] = [
+		{
+			section: "PRODUCTOS",
+			items: [
+				{
+					label: "Agregar",
+					id: "add-product",
+					icon: AddIcon,
+				},
+				{
+					label: "Modificar",
+					id: "edit-product",
+					icon: EditIcon,
+				},
+				{
+					label: "Stock",
+					id: "stock-product",
+					icon: StorageIcon,
+				},
+			],
+		},
+		{
+			section: "DESCUENTOS",
+			items: [
+				{
+					label: "Agregar",
+					id: "add-discount",
+					icon: AddIcon,
+				},
+				{
+					label: "Lista",
+					id: "list-discounts",
+					icon: DiscountIcon,
+				},
+			],
+		},
+		{
+			section: "TIPOS/CATEGORÍAS",
+			items: [
+				{
+					label: "Agregar",
+					id: "add-type-category",
+					icon: AddIcon,
+				},
+				{
+					label: "Lista",
+					id: "list-type-category",
+					icon: CategoryIcon,
+				},
+			],
+		},
+		{
+			section: "ÓRDENES",
+			items: [
+				{
+					label: "Gestionar pedidos",
+					id: "list-orders",
+					icon: ReceiptLongIcon,
+				},
+			],
+		},
+	];
+
 	return (
-		<aside className={styles.sidebar}>
-			<div className={styles.menuSection}>
-				<div className={styles.menuTitle}>PRODUCTOS</div>
-				<Link to="/admin/add-product">
-					<div className={`${styles.menuItem} styles.selected : ""}`}>
-						AGREGAR UN PRODUCTO
-					</div>
-				</Link>
-				<Link to="/admin/edit-product">
-					<div className={`${styles.menuItem} $ styles.selected : ""}`}>
-						MODIFICAR UN PRODUCTO
-					</div>
-				</Link>
-				<Link to="/admin/stock-product">
-					<div className={`${styles.menuItem} styles.selected : ""}`}>
-						STOCK DE PRODUCTO
-					</div>
-				</Link>
-			</div>
-			<div className={styles.menuSection}>
-				<div className={styles.menuTitle}>DESCUENTOS</div>
-				<Link to="/admin/add-discount">
-					<div className={`${styles.menuItem} styles.selected : ""}`}>
-						AGREGAR UN DESCUENTO
-					</div>
-				</Link>
-				<Link to="/admin/list-discounts">
-					<div className={`${styles.menuItem} $ styles.selected : ""}`}>
-						LISTA DE DESCUENTOS
-					</div>
-				</Link>
-			</div>
-			<div className={styles.menuSection}>
-				<div className={styles.menuTitle}>TIPOS / CATEGORIAS</div>
-				<Link to="/admin/add-type-cateogory">
-					<div className={`${styles.menuItem} styles.selected : ""}`}>
-						AGREGAR
-					</div>
-				</Link>
-				<Link to="/admin/list-type-cateogory">
-					<div className={`${styles.menuItem} $ styles.selected : ""}`}>
-						TIPOS / CATEOGORIAS
-					</div>
-				</Link>
-			</div>
-			<div className={styles.menuSection}></div>
-		</aside>
+		<nav className={styles.menu}>
+			{menuSections.map((section) => (
+				<div key={section.section} className={styles.menuSection}>
+					<div className={styles.menuTitle}>{section.section}</div>
+					{section.items.map((item) => {
+						const Icon = item.icon;
+						const active = activeView === item.id;
+						return (
+							<div
+								key={item.id}
+								className={styles.menuItemLink}
+								onClick={() => onViewChange(item.id)}>
+								<div
+									className={`${styles.menuItem} ${
+										active ? styles.active : ""
+									}`}>
+									<Icon className={styles.icon} />
+									<span>{item.label}</span>
+								</div>
+							</div>
+						);
+					})}
+				</div>
+			))}
+		</nav>
 	);
 };
 

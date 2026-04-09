@@ -1,9 +1,7 @@
 import { create } from "zustand";
 import type { Tipo } from "../types/Tipo";
 import {
-	activateTipo,
 	createTipo,
-	deactivateTipo,
 	getCategoriasByTipo,
 	getTipoById,
 	getTiposActivos,
@@ -107,7 +105,7 @@ export const tipoStore = create<TipoState>((set, get) => ({
 	activarTipo: async (id) => {
 		set({ cargando: true, error: null });
 		try {
-			await activateTipo(id);
+			await updateTipoStatus(id);
 			await get().obtenerTiposActivos();
 		} catch (error: unknown) {
 			if (error instanceof Error) {
@@ -121,10 +119,8 @@ export const tipoStore = create<TipoState>((set, get) => ({
 	desactivarTipo: async (id) => {
 		set({ cargando: true, error: null });
 		try {
-			await deactivateTipo(id);
-			set((state) => ({
-				tipos: state.tipos.filter((t) => t.id !== id),
-			}));
+			await updateTipoStatus(id);
+			await get().obtenerTiposActivos();
 		} catch (error) {
 			if (error instanceof Error) {
 				set({ error: error.message || "Error al desactivar tipo" });

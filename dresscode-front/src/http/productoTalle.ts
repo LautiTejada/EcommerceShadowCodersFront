@@ -27,6 +27,7 @@ export async function createProductoTalle(
 			`${baseUrl}/producto-talles/crear/${productoId}/talle/${talleId}`,
 			{
 				method: "POST",
+				auth: true,
 				body: JSON.stringify({ cantidad }),
 			},
 		);
@@ -49,6 +50,7 @@ export async function updateProductoTalleCantidad(
 			`${baseUrl}/producto-talles/${idProductoTalle}/cantidad`,
 			{
 				method: "PUT",
+				auth: true,
 				body: JSON.stringify({ cantidad }),
 			},
 		);
@@ -69,6 +71,7 @@ export async function updateProductoTalle(
 	try {
 		return await apiFetch(`${baseUrl}/producto-talles/${id}`, {
 			method: "PUT",
+			auth: true,
 			body: JSON.stringify(productoTalle),
 		});
 	} catch (error) {

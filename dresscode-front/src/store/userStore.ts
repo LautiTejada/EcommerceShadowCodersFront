@@ -17,8 +17,6 @@ interface UsuarioState {
 	crearUsuario: (usuario: Usuario) => Promise<void>;
 	actualizarUsuario: (id: number, datos: Usuario) => Promise<void>;
 	cambiarEstadoUsuario: (id: number) => Promise<void>;
-	activarUsuario: (id: number) => Promise<void>;
-	desactivarUsuario: (id: number) => Promise<void>;
 	crearDireccionUsuario: (
 		usuarioId: number,
 		direccion: Direccion,
@@ -39,10 +37,20 @@ interface UsuarioState {
 	limpiarError: () => void;
 }
 
+// Hydrate synchronously at module load so PrivateRoute never sees null on first render
+const _syncUsuario = (() => {
+	const userId = localStorage.getItem("usuario");
+	const token = localStorage.getItem("token");
+	if (!userId || !token) return null;
+	const username = localStorage.getItem("username") ?? "";
+	const rol = localStorage.getItem("rol") ?? "USER";
+	return { id: Number(userId), username, rol } as any;
+})();
+
 export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 	usuarios: [],
 	direccionesUsuario: [],
-	usuarioActual: null,
+	usuarioActual: _syncUsuario,
 	cargando: false,
 	error: null,
 
@@ -74,7 +82,10 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 		set({ cargando: true, error: null });
 		try {
 			const usuario = await usuarioAPI.getUsuarioPorId(id);
-
+			// Guardar el rol en localStorage
+			if (usuario.rol) {
+				localStorage.setItem("rol", usuario.rol);
+			}
 			set({ usuarioActual: usuario, cargando: false });
 		} catch (error) {
 			if (error instanceof Error) {
@@ -117,36 +128,6 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 		set({ cargando: true, error: null });
 		try {
 			const actualizado = await usuarioAPI.cambiarStateUsuario(id);
-			set((state) => ({
-				usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
-				cargando: false,
-			}));
-		} catch (error) {
-			if (error instanceof Error) {
-				set({ error: error.message, cargando: false });
-			}
-		}
-	},
-
-	activarUsuario: async (id) => {
-		set({ cargando: true, error: null });
-		try {
-			const actualizado = await usuarioAPI.activateUsuario(id);
-			set((state) => ({
-				usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
-				cargando: false,
-			}));
-		} catch (error) {
-			if (error instanceof Error) {
-				set({ error: error.message, cargando: false });
-			}
-		}
-	},
-
-	desactivarUsuario: async (id) => {
-		set({ cargando: true, error: null });
-		try {
-			const actualizado = await usuarioAPI.desactivateUsuario(id);
 			set((state) => ({
 				usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
 				cargando: false,
@@ -201,16 +182,28 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 	},
 
 	inicializarUsuario: async () => {
-		set({ cargando: true });
+		const userId = localStorage.getItem("usuario");
+		const token = localStorage.getItem("token");
+
+		if (!userId || !token) {
+			set({ usuarioActual: null, cargando: false });
+			return;
+		}
+
+		// Hydrate instantly from localStorage so routes render without waiting for the API
+		const username = localStorage.getItem("username") ?? "";
+		const rol = localStorage.getItem("rol") ?? "USER";
+		set({
+			usuarioActual: { id: Number(userId), username, rol } as any,
+			cargando: false,
+		});
+
+		// Silently refresh the full user object from the API in the background
 		try {
-			const userId = localStorage.getItem("usuario");
-			if (userId) {
-				await get().obtenerUsuarioPorId(Number(userId));
-			} else {
-				set({ usuarioActual: null });
-			}
-		} finally {
-			set({ cargando: false });
+			const usuario = await usuarioAPI.getUsuarioPorId(Number(userId));
+			set({ usuarioActual: usuario });
+		} catch {
+			// Keep the cached version; token may have expired — clear on 401 if needed
 		}
 	},
 

@@ -5,7 +5,7 @@ const baseUrl = import.meta.env.VITE_API_URL;
 
 export const getOrdenesDeCompra = async () => {
 	try {
-		return await apiFetch(`${baseUrl}/ordenes-de-compra`);
+		return await apiFetch(`${baseUrl}/ordenes`, { auth: true });
 	} catch (error) {
 		console.error("Error fetching ordenes de compra:", error);
 		throw error;
@@ -14,7 +14,7 @@ export const getOrdenesDeCompra = async () => {
 
 export const getOrdenDeCompra = async (id: number) => {
 	try {
-		return await apiFetch(`${baseUrl}/ordenes-de-compra/${id}`);
+		return await apiFetch(`${baseUrl}/ordenes/${id}`, { auth: true });
 	} catch (error) {
 		console.error("Error fetching orden de compra:", error);
 		throw error;
@@ -23,7 +23,7 @@ export const getOrdenDeCompra = async (id: number) => {
 
 export const getOrdenesPorUsuario = async (usuarioId: number) => {
 	try {
-		return await apiFetch(`${baseUrl}/ordenes-de-compra/usuario/${usuarioId}`, {
+		return await apiFetch(`${baseUrl}/ordenes/usuario/${usuarioId}`, {
 			auth: true,
 		});
 	} catch (error) {
@@ -33,51 +33,27 @@ export const getOrdenesPorUsuario = async (usuarioId: number) => {
 };
 
 export const actualizarEstadoOrdenDeCompra = async (
-	detalleId: number,
+	ordenId: number,
 	estado: EstadoOrden,
 ) => {
 	try {
-		const response = await fetch(
-			`${baseUrl}/ordenes-de-compra/detalle/${detalleId}`,
-			{
-				method: "PUT",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ estado: estado }),
-			},
+		return await apiFetch(
+			`${baseUrl}/ordenes/${ordenId}/estado?estado=${estado}`,
+			{ method: "PATCH", auth: true },
 		);
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
 	} catch (error) {
-		console.error("Error updating detalle orden:", error);
+		console.error("Error updating estado orden:", error);
 		throw error;
 	}
 };
 
 export const crearOrdenDeCompra = async (ordenDeCompra: OrdenDeCompra) => {
 	try {
-		const token = localStorage.getItem("token");
-
-		if (!token) {
-			throw new Error("Token de autenticación no encontrado");
-		}
-
-		const response = await fetch(`${baseUrl}/ordenes-de-compra`, {
+		return await apiFetch(`${baseUrl}/ordenes/crear`, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				Authorization: `Bearer ${token}`,
-			},
+			auth: true,
 			body: JSON.stringify(ordenDeCompra),
 		});
-
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-		return await response.json();
 	} catch (error) {
 		console.error("Error creating orden de compra:", error);
 		throw error;

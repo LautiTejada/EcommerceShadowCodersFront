@@ -5,7 +5,6 @@ import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddLocationIcon from "@mui/icons-material/AddLocation";
 import { useAuth } from "../../hooks/useAuth";
-import LogoutIcon from "@mui/icons-material/Logout";
 import type { Usuario } from "../../types/Usuario";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { provincias, type Provincia } from "../../types/enums/Provincias";
@@ -13,6 +12,7 @@ import { desactivarDireccionDeUsuario } from "../../http/usuario";
 import Loader from "../../components/ui/Loader/Loader";
 import { sileo } from "sileo";
 import { useUsuarioStore } from "../../store/userStore";
+import AdminPanel from "./AdminPanel/AdminPanel";
 
 const Profile = () => {
 	const {
@@ -24,7 +24,10 @@ const Profile = () => {
 		crearDireccionUsuario,
 		actualizarDireccionUsuario,
 	} = useUsuarioStore();
+	const isAdmin =
+		usuarioActual?.rol === "ADMIN" || localStorage.getItem("rol") === "ADMIN";
 	const [activeSection, setActiveSection] = useState("accountInfo");
+	const [adminActiveView, setAdminActiveView] = useState("home"); // home, products, discounts, etc
 	const { logout } = useAuth();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedUser, setEditedUser] = useState<Partial<Usuario>>({
@@ -45,6 +48,13 @@ const Profile = () => {
 			});
 		}
 	}, [usuarioActual]);
+
+	// Cargar datos del usuario al montar el componente
+	useEffect(() => {
+		if (userId && !usuarioActual) {
+			obtenerUsuarioPorId(userId);
+		}
+	}, [userId, usuarioActual, obtenerUsuarioPorId]);
 
 	const handleEdit = () => {
 		setIsEditing(true);
@@ -174,12 +184,7 @@ const Profile = () => {
 										</span>
 									</button>
 								</>
-							) : (
-								<button className={styles.logoutButton} onClick={logout}>
-									<LogoutIcon />
-									<span>CERRAR SESIÓN</span>
-								</button>
-							)}
+							) : null}
 						</div>
 					</div>
 				);
@@ -432,6 +437,13 @@ const Profile = () => {
 				);
 			case "orderHistory":
 				return <div className={styles.orderHistorySection}></div>;
+			case "adminPanel":
+				return (
+					<AdminPanel
+						activeView={adminActiveView}
+						onViewChange={setAdminActiveView}
+					/>
+				);
 			default:
 				return null;
 		}
@@ -443,6 +455,7 @@ const Profile = () => {
 	return (
 		<div className={styles.profileContainer}>
 			<aside className={styles.sidebar}>
+				{isAdmin && <div className={styles.sidebarRole}>ADMINISTRADOR</div>}
 				<div
 					className={`${styles.sidebarItem} ${
 						activeSection === "accountInfo" ? styles.active : ""
@@ -450,26 +463,39 @@ const Profile = () => {
 					onClick={() => setActiveSection("accountInfo")}>
 					INFORMACIÓN DE LA CUENTA
 				</div>
-				<div
-					className={`${styles.sidebarItem} ${
-						activeSection === "addresses" ? styles.active : ""
-					}`}
-					onClick={() => setActiveSection("addresses")}>
-					DIRECCIONES
-				</div>
-				<div
-					className={`${styles.sidebarItem} ${
-						activeSection === "orderHistory" ? styles.active : ""
-					}`}
-					onClick={() => setActiveSection("orderHistory")}>
-					HISTORIAL DE PEDIDOS
-				</div>
+				{isAdmin ? (
+					<div
+						className={`${styles.sidebarItem} ${
+							activeSection === "adminPanel" ? styles.active : ""
+						}`}
+						onClick={() => setActiveSection("adminPanel")}>
+						PANEL DE ADMINISTRACIÓN
+					</div>
+				) : (
+					<>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "addresses" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("addresses")}>
+							DIRECCIONES
+						</div>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "orderHistory" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("orderHistory")}>
+							HISTORIAL DE PEDIDOS
+						</div>
+					</>
+				)}
 			</aside>
 			<main className={styles.mainContent}>
 				<h2 className={styles.mainTitle}>
-					{activeSection === "accountInfo" && "DATOS"}
+					{activeSection === "accountInfo" && (isAdmin ? "MI CUENTA" : "DATOS")}
 					{activeSection === "addresses" && "DIRECCIONES"}
 					{activeSection === "orderHistory" && "HISTORIAL DE PEDIDOS"}
+					{activeSection === "adminPanel" && "PANEL DE ADMINISTRACIÓN"}
 				</h2>
 				{renderContent()}
 			</main>

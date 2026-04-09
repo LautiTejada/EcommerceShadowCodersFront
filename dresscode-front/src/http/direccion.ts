@@ -36,32 +36,11 @@ export async function changeDireccionStatus(id: number) {
 	if (!id || typeof id !== "number") throw new Error("ID inválido");
 	try {
 		return await apiFetch(`${baseUrl}/direcciones/${id}/status`, {
-			method: "PUT",
+			method: "PATCH",
+			auth: true,
 		});
 	} catch (error) {
 		handleApiError(error, `cambiar estado de dirección ${id}`);
-	}
-}
-
-export async function activateDireccion(id: number) {
-	if (!id || typeof id !== "number") throw new Error("ID inválido");
-	try {
-		return await apiFetch(`${baseUrl}/direcciones/${id}/activate`, {
-			method: "PUT",
-		});
-	} catch (error) {
-		handleApiError(error, `activar dirección ${id}`);
-	}
-}
-
-export async function deactivateDireccion(id: number) {
-	if (!id || typeof id !== "number") throw new Error("ID inválido");
-	try {
-		return await apiFetch(`${baseUrl}/direcciones/${id}/deactivate`, {
-			method: "PUT",
-		});
-	} catch (error) {
-		handleApiError(error, `desactivar dirección ${id}`);
 	}
 }
 
