@@ -32,6 +32,16 @@ export async function apiFetch<T = any>(
 		clearTimeout(timeoutId);
 
 		if (!response.ok) {
+			if (response.status === 401) {
+				localStorage.removeItem("token");
+				localStorage.removeItem("usuario");
+				localStorage.removeItem("username");
+				localStorage.removeItem("rol");
+				window.location.href = "/login";
+				throw new Error(
+					"Sesión expirada. Por favor, iniciá sesión nuevamente.",
+				);
+			}
 			let errorMsg = `HTTP error! status: ${response.status}`;
 			try {
 				const data = await response.json();

@@ -40,6 +40,11 @@ const ListaTiposCategorias = lazy(() =>
 		(m) => ({ default: m.ListaTiposCategorias }),
 	),
 );
+const ListaOrdenes = lazy(() =>
+	import("../../../pages/admin/Ordenes/ListaOrdenes").then((m) => ({
+		default: m.ListaOrdenes,
+	})),
+);
 
 interface AdminPanelProps {
 	activeView: string;
@@ -98,6 +103,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 				return (
 					<Suspense fallback={<Loader />}>
 						<ListaTiposCategorias />
+					</Suspense>
+				);
+			case "list-orders":
+				return (
+					<Suspense fallback={<Loader />}>
+						<ListaOrdenes />
 					</Suspense>
 				);
 			default:
