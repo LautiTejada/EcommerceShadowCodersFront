@@ -8,7 +8,7 @@ import {
 } from "react-router-dom";
 import ErrorBoundary from "./components/layouts/ErrorBoundary/ErrorBoundary";
 
-// Wrapper interno al Router: remonta ErrorBoundary en cada cambio de ruta,
+// Wraprno al Router: remonta ErrorBoundary en cada cambio de ruta,
 // reiniciando hasError y evitando que la pantalla quede en blanco.
 function RouteErrorBoundary({ children }: { children: React.ReactNode }) {
 	const location = useLocation();
