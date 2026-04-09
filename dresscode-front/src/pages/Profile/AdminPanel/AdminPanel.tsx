@@ -40,6 +40,11 @@ const ListaTiposCategorias = lazy(() =>
 		(m) => ({ default: m.ListaTiposCategorias }),
 	),
 );
+const ListaOrdenes = lazy(() =>
+	import("../../../pages/admin/Ordenes/ListaOrdenes").then((m) => ({
+		default: m.ListaOrdenes,
+	})),
+);
 
 interface AdminPanelProps {
 	activeView: string;

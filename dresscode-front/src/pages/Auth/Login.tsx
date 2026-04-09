@@ -7,7 +7,7 @@ import { useAuth } from "../../hooks/useAuth";
 import { useUsuarioStore } from "../../store/userStore";
 
 function Login() {
-	const [email, setEmail] = useState("");
+	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const { login, loading } = useAuth();
@@ -24,7 +24,7 @@ function Login() {
 		e.preventDefault();
 		setLocalError(null);
 		try {
-			await login({ email, password });
+			await login({ username, password });
 		} catch (err) {
 			setLocalError(
 				err instanceof Error ? err.message : "Error al iniciar sesión",

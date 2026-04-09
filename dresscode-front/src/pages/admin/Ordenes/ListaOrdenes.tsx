@@ -7,7 +7,12 @@ import Swal from "sweetalert2";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 
-const ESTADOS: EstadoOrden[] = ["PEDIDO", "EN_PROCESO", "EN_CAMINO", "ENTREGADO"];
+const ESTADOS: EstadoOrden[] = [
+	"PEDIDO",
+	"EN_PROCESO",
+	"EN_CAMINO",
+	"ENTREGADO",
+];
 
 const ESTADO_LABEL: Record<EstadoOrden, string> = {
 	PEDIDO: "Pedido",
@@ -16,19 +21,22 @@ const ESTADO_LABEL: Record<EstadoOrden, string> = {
 	ENTREGADO: "Entregado",
 };
 
-const ESTADO_COLOR: Record<EstadoOrden, { bg: string; color: string }> = {
-	PEDIDO: { bg: "rgba(129,0,0,0.08)", color: "#810000" },
-	EN_PROCESO: { bg: "rgba(230,126,34,0.1)", color: "#c0710a" },
-	EN_CAMINO: { bg: "rgba(41,128,185,0.1)", color: "#1a6da3" },
-	ENTREGADO: { bg: "rgba(30,126,52,0.1)", color: "#1e7e34" },
-};
+const ESTADO_COLOR: Record<EstadoOrden, { background: string; color: string }> =
+	{
+		PEDIDO: { background: "rgba(129,0,0,0.08)", color: "#810000" },
+		EN_PROCESO: { background: "rgba(230,126,34,0.1)", color: "#c0710a" },
+		EN_CAMINO: { background: "rgba(41,128,185,0.1)", color: "#1a6da3" },
+		ENTREGADO: { background: "rgba(30,126,52,0.1)", color: "#1e7e34" },
+	};
 
 export const ListaOrdenes: React.FC = () => {
 	const { ordenesCompra, fetchOrdenesDeCompra, updateEstadoOrdenDeCompra } =
 		useOrdenCompraStore();
 
 	const [loading, setLoading] = useState(true);
-	const [filtroEstado, setFiltroEstado] = useState<EstadoOrden | "TODOS">("TODOS");
+	const [filtroEstado, setFiltroEstado] = useState<EstadoOrden | "TODOS">(
+		"TODOS",
+	);
 	const [expandedId, setExpandedId] = useState<number | null>(null);
 	const [updatingId, setUpdatingId] = useState<number | null>(null);
 
@@ -41,7 +49,10 @@ export const ListaOrdenes: React.FC = () => {
 			? ordenesCompra
 			: ordenesCompra.filter((o) => o.estadoOrden === filtroEstado);
 
-	const handleCambiarEstado = (orden: OrdenDeCompra, nuevoEstado: EstadoOrden) => {
+	const handleCambiarEstado = (
+		orden: OrdenDeCompra,
+		nuevoEstado: EstadoOrden,
+	) => {
 		if (orden.estadoOrden === nuevoEstado) return;
 		Swal.fire({
 			title: "¿Cambiar estado?",
@@ -123,38 +134,56 @@ export const ListaOrdenes: React.FC = () => {
 					</p>
 				) : ordenesFiltradas.length === 0 ? (
 					<p style={{ padding: 24, color: "#888", fontSize: "0.875rem" }}>
-						No hay órdenes {filtroEstado !== "TODOS" ? `con estado "${ESTADO_LABEL[filtroEstado as EstadoOrden]}"` : ""}.
+						No hay órdenes{" "}
+						{filtroEstado !== "TODOS"
+							? `con estado "${ESTADO_LABEL[filtroEstado as EstadoOrden]}"`
+							: ""}
+						.
 					</p>
 				) : (
-					<table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
+					<table
+						style={{
+							width: "100%",
+							borderCollapse: "collapse",
+							fontSize: "0.875rem",
+						}}>
 						<thead>
 							<tr style={{ borderBottom: "2px solid #810000" }}>
-								{["#", "Fecha", "Cliente", "Total", "Pago", "Estado", "Acciones", ""].map(
-									(h) => (
-										<th
-											key={h}
-											style={{
-												padding: "10px 14px",
-												textAlign: "left",
-												fontSize: "0.72rem",
-												fontWeight: 700,
-												color: "#555",
-												textTransform: "uppercase",
-												letterSpacing: "0.05em",
-												whiteSpace: "nowrap",
-											}}>
-											{h}
-										</th>
-									),
-								)}
+								{[
+									"#",
+									"Fecha",
+									"Cliente",
+									"Total",
+									"Pago",
+									"Estado",
+									"Acciones",
+									"",
+								].map((h) => (
+									<th
+										key={h}
+										style={{
+											padding: "10px 14px",
+											textAlign: "left",
+											fontSize: "0.72rem",
+											fontWeight: 700,
+											color: "#555",
+											textTransform: "uppercase",
+											letterSpacing: "0.05em",
+											whiteSpace: "nowrap",
+										}}>
+										{h}
+									</th>
+								))}
 							</tr>
 						</thead>
 						<tbody>
 							{ordenesFiltradas.map((orden) => {
 								const isExpanded = expandedId === orden.id;
 								const isUpdating = updatingId === orden.id;
-								const estadoStyle = ESTADO_COLOR[orden.estadoOrden as EstadoOrden] ?? {
-									bg: "#eee",
+								const estadoStyle = ESTADO_COLOR[
+									orden.estadoOrden as EstadoOrden
+								] ?? {
+									background: "#eee",
 									color: "#555",
 								};
 								return (
@@ -162,24 +191,43 @@ export const ListaOrdenes: React.FC = () => {
 										<tr
 											style={{
 												borderBottom: "1px solid #f0eef6",
-												background: isExpanded ? "rgba(129,0,0,0.02)" : "transparent",
+												background: isExpanded
+													? "rgba(129,0,0,0.02)"
+													: "transparent",
 											}}>
-											<td style={{ padding: "12px 14px", color: "#810000", fontWeight: 700 }}>
+											<td
+												style={{
+													padding: "12px 14px",
+													color: "#810000",
+													fontWeight: 700,
+												}}>
 												#{orden.id}
 											</td>
 											<td style={{ padding: "12px 14px", color: "#555" }}>
 												{formatFecha(orden.fecha)}
 											</td>
 											<td style={{ padding: "12px 14px", color: "#1a1a1a" }}>
-												<div style={{ fontWeight: 600 }}>{orden.usuario?.username ?? "—"}</div>
+												<div style={{ fontWeight: 600 }}>
+													{orden.usuario?.username ?? "—"}
+												</div>
 												<div style={{ fontSize: "0.75rem", color: "#888" }}>
 													{orden.usuario?.email ?? ""}
 												</div>
 											</td>
-											<td style={{ padding: "12px 14px", color: "#1a1a1a", fontWeight: 600 }}>
+											<td
+												style={{
+													padding: "12px 14px",
+													color: "#1a1a1a",
+													fontWeight: 600,
+												}}>
 												${orden.precioTotal?.toLocaleString("es-AR")}
 											</td>
-											<td style={{ padding: "12px 14px", color: "#555", fontSize: "0.8rem" }}>
+											<td
+												style={{
+													padding: "12px 14px",
+													color: "#555",
+													fontSize: "0.8rem",
+												}}>
 												{orden.metodoPago?.replace("_", " ") ?? "—"}
 											</td>
 											<td style={{ padding: "12px 14px" }}>
@@ -191,17 +239,24 @@ export const ListaOrdenes: React.FC = () => {
 														fontSize: "0.75rem",
 														fontWeight: 700,
 													}}>
-													{ESTADO_LABEL[orden.estadoOrden as EstadoOrden] ?? orden.estadoOrden}
+													{ESTADO_LABEL[orden.estadoOrden as EstadoOrden] ??
+														orden.estadoOrden}
 												</span>
 											</td>
 											<td style={{ padding: "12px 14px" }}>
 												<select
 													className={styles.select}
-													style={{ fontSize: "0.78rem", padding: "5px 28px 5px 8px" }}
+													style={{
+														fontSize: "0.78rem",
+														padding: "5px 28px 5px 8px",
+													}}
 													value={orden.estadoOrden}
 													disabled={isUpdating}
 													onChange={(e) =>
-														handleCambiarEstado(orden, e.target.value as EstadoOrden)
+														handleCambiarEstado(
+															orden,
+															e.target.value as EstadoOrden,
+														)
 													}>
 													{ESTADOS.map((est) => (
 														<option key={est} value={est}>
@@ -264,20 +319,43 @@ export const ListaOrdenes: React.FC = () => {
 															</p>
 															{orden.direccion ? (
 																<>
-																	<p style={{ fontSize: "0.82rem", color: "#1a1a1a", margin: "2px 0" }}>
-																		{orden.direccion.calle} {orden.direccion.numero}
+																	<p
+																		style={{
+																			fontSize: "0.82rem",
+																			color: "#1a1a1a",
+																			margin: "2px 0",
+																		}}>
+																		{orden.direccion.calle}{" "}
+																		{orden.direccion.numero}
 																	</p>
-																	<p style={{ fontSize: "0.82rem", color: "#555", margin: "2px 0" }}>
-																		{orden.direccion.localidad}, {orden.direccion.provincia}
+																	<p
+																		style={{
+																			fontSize: "0.82rem",
+																			color: "#555",
+																			margin: "2px 0",
+																		}}>
+																		{orden.direccion.localidad},{" "}
+																		{orden.direccion.provincia}
 																	</p>
 																	{orden.direccion.codigoPostal && (
-																		<p style={{ fontSize: "0.82rem", color: "#555", margin: "2px 0" }}>
+																		<p
+																			style={{
+																				fontSize: "0.82rem",
+																				color: "#555",
+																				margin: "2px 0",
+																			}}>
 																			CP: {orden.direccion.codigoPostal}
 																		</p>
 																	)}
 																</>
 															) : (
-																<p style={{ fontSize: "0.82rem", color: "#888" }}>Sin dirección</p>
+																<p
+																	style={{
+																		fontSize: "0.82rem",
+																		color: "#888",
+																	}}>
+																	Sin dirección
+																</p>
 															)}
 														</div>
 
@@ -300,7 +378,12 @@ export const ListaOrdenes: React.FC = () => {
 																Productos
 															</p>
 															{orden.detalles && orden.detalles.length > 0 ? (
-																<ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+																<ul
+																	style={{
+																		listStyle: "none",
+																		padding: 0,
+																		margin: 0,
+																	}}>
 																	{orden.detalles.map((det) => (
 																		<li
 																			key={det.id}
@@ -313,16 +396,28 @@ export const ListaOrdenes: React.FC = () => {
 																				borderBottom: "1px solid #f0eef6",
 																			}}>
 																			<span>
-																				Talle {det.productoTalle?.talle?.tipoTalle ?? "?"} × {det.cantidad}
+																				Talle{" "}
+																				{det.productoTalle?.talle?.tipoTalle ??
+																					"?"}{" "}
+																				× {det.cantidad}
 																			</span>
 																			<span style={{ fontWeight: 600 }}>
-																				${det.precioUnitario?.toLocaleString("es-AR")}
+																				$
+																				{det.precioUnitario?.toLocaleString(
+																					"es-AR",
+																				)}
 																			</span>
 																		</li>
 																	))}
 																</ul>
 															) : (
-																<p style={{ fontSize: "0.82rem", color: "#888" }}>Sin detalles</p>
+																<p
+																	style={{
+																		fontSize: "0.82rem",
+																		color: "#888",
+																	}}>
+																	Sin detalles
+																</p>
 															)}
 														</div>
 													</div>

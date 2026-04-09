@@ -9,7 +9,7 @@ interface AuthResponse {
 }
 
 interface UserCredentials {
-	email: string;
+	username: string;
 	password: string;
 }
 
@@ -132,12 +132,12 @@ export const useAuth = () => {
 			}
 
 			if (responseData.token) {
-				const userId = responseData.userId;
-				const email = responseData.email;
+				const userId = responseData.id ?? responseData.userId;
+				const username = responseData.username ?? responseData.email;
 				const rol = responseData.rol;
 
 				localStorage.setItem("token", responseData.token);
-				if (email) localStorage.setItem("username", email);
+				if (username) localStorage.setItem("username", username);
 				if (userId) localStorage.setItem("usuario", String(userId));
 				if (rol) localStorage.setItem("rol", rol);
 
