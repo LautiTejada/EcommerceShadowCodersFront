@@ -42,7 +42,15 @@ export async function apiFetch<T = any>(
 
 		if (response.status === 204) return null as T;
 
-		return response.json();
+		// Handle empty responses (e.g., DELETE without body)
+		const text = await response.text();
+		if (!text) return null as T;
+
+		try {
+			return JSON.parse(text);
+		} catch {
+			return null as T;
+		}
 	} catch (error) {
 		clearTimeout(timeoutId);
 		throw error;

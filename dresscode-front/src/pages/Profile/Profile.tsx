@@ -17,6 +17,8 @@ import { useUsuarioStore } from "../../store/userStore";
 import { useOrdenCompraStore } from "../../store/ordenCompraStore";
 import type { EstadoOrden } from "../../types/enums/EstadoOrden";
 import AdminPanel from "./AdminPanel/AdminPanel";
+import { useFavoritoStore } from "../../store/favoritoStore";
+import ProductCard from "../../components/ui/ProductCard/ProductCard";
 
 const Profile = () => {
 	const {
@@ -29,6 +31,7 @@ const Profile = () => {
 		actualizarDireccionUsuario,
 	} = useUsuarioStore();
 	const { ordenesCompra, fetchOrdenesPorUsuario } = useOrdenCompraStore();
+	const { favoritos, fetchMisFavoritos } = useFavoritoStore();
 	const isAdmin =
 		usuarioActual?.rol === "ADMIN" || localStorage.getItem("rol") === "ADMIN";
 	const [activeSection, setActiveSection] = useState("accountInfo");
@@ -83,11 +86,15 @@ const Profile = () => {
 		if (activeSection === "orderHistory" && userId) {
 			fetchOrdenesPorUsuario(userId);
 		}
+		if (activeSection === "favorites") {
+			fetchMisFavoritos();
+		}
 	}, [
 		activeSection,
 		userId,
 		obtenerDireccionesUsuario,
 		fetchOrdenesPorUsuario,
+		fetchMisFavoritos,
 	]);
 
 	const handleSave = async () => {
@@ -701,6 +708,22 @@ const Profile = () => {
 						onViewChange={setAdminActiveView}
 					/>
 				);
+			case "favorites":
+				return (
+					<div className={styles.favoritesSection}>
+						{favoritos.length === 0 ? (
+							<p style={{ color: "#888", fontSize: "0.9rem" }}>
+								No tenés productos en favoritos.
+							</p>
+						) : (
+							<div className={styles.favoritesGrid}>
+								{favoritos.map((fav) => (
+									<ProductCard key={fav.producto.id} product={fav.producto} />
+								))}
+							</div>
+						)}
+					</div>
+				);
 			default:
 				return null;
 		}
@@ -744,6 +767,13 @@ const Profile = () => {
 							onClick={() => setActiveSection("orderHistory")}>
 							HISTORIAL DE PEDIDOS
 						</div>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "favorites" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("favorites")}>
+							MIS FAVORITOS
+						</div>
 					</>
 				)}
 			</aside>
@@ -752,6 +782,7 @@ const Profile = () => {
 					{activeSection === "accountInfo" && (isAdmin ? "MI CUENTA" : "DATOS")}
 					{activeSection === "addresses" && "DIRECCIONES"}
 					{activeSection === "orderHistory" && "HISTORIAL DE PEDIDOS"}
+					{activeSection === "favorites" && "MIS FAVORITOS"}
 					{activeSection === "adminPanel" && "PANEL DE ADMINISTRACIÓN"}
 				</h2>
 				{renderContent()}
