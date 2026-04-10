@@ -1,12 +1,18 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styles from "./ProductCard.module.css";
 import type { Producto } from "../../../types/Producto";
+import { useFavoritoStore } from "../../../store/favoritoStore";
+import { sileo } from "sileo";
 
 interface ProductCardProps {
 	product: Producto;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+	const navigate = useNavigate();
+	const { esFavorito, agregarFavorito, eliminarFavorito } = useFavoritoStore();
+	const isFavorite = esFavorito(product.id);
+
 	const descuentoActivo = product.descuentos?.find(
 		(d) => d && d.activo && d.descuento && d.descuento.activo,
 	);
@@ -20,6 +26,29 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
 	const nombreMarca = (product.marca as any)?.nombreMarca ?? "";
 	const nombreCategoria = product.categoria?.nombreCategoria ?? "";
+
+	const handleFavoriteClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+		e.preventDefault();
+		e.stopPropagation();
+
+		// Verificar si está autenticado
+		const token = localStorage.getItem("token");
+		if (!token) {
+			sileo.info({
+				title: "Inicia sesión",
+				description: "Debes estar conectado para agregar a favoritos",
+				type: "info",
+			});
+			navigate("/login");
+			return;
+		}
+
+		if (isFavorite) {
+			eliminarFavorito(product.id);
+		} else {
+			agregarFavorito(product.id);
+		}
+	};
 
 	const imgSrc = (() => {
 		const u = product.imagenes?.[0]?.urlImagen;
@@ -38,6 +67,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 							-{descuentoActivo.descuento.porcentajeDescuento}%
 						</span>
 					)}
+					<button
+						className={`${styles.favoriteBtn} ${isFavorite ? styles.favorited : ""}`}
+						onClick={handleFavoriteClick}
+						aria-label={
+							isFavorite ? "Remove from favorites" : "Add to favorites"
+						}
+						type="button">
+						<span className={styles.heartIcon}>♥</span>
+					</button>
 					{imgSrc ? (
 						<img
 							src={imgSrc}

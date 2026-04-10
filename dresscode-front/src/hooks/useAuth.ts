@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUsuarioStore } from "../store/userStore";
+import { useFavoritoStore } from "../store/favoritoStore";
 
 interface AuthResponse {
 	success: boolean;
@@ -175,13 +176,16 @@ export const useAuth = () => {
 	};
 
 	const logout = () => {
-		// Limpiar todo el store primero
+		// Limpiar los stores
 		useUsuarioStore.getState().setUsuarioActual(null);
+		useFavoritoStore.getState().limpiarFavoritos();
+
 		// Luego limpiar localStorage
 		localStorage.removeItem("token");
 		localStorage.removeItem("username");
 		localStorage.removeItem("usuario");
 		localStorage.removeItem("rol");
+
 		// Finalmente navegar a login
 		navigate("/login");
 	};

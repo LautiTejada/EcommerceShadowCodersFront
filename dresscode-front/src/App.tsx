@@ -31,16 +31,26 @@ import Loader from "./components/ui/Loader/Loader";
 import { useEffect } from "react";
 import { Toaster } from "sileo";
 import { useUsuarioStore } from "./store/userStore";
+import { useFavoritoStore } from "./store/favoritoStore";
 import PrivateRoute from "./components/layouts/PrivateRoute/PrivateRoute";
 import { HelmetContextProvider } from "./components/layouts/HelmetContextProvider";
 // NotFound eliminado: la ruta * ahora redirige a Home con ErrorBoundary
 
 function App() {
 	const inicializarUsuario = useUsuarioStore((s: any) => s.inicializarUsuario);
+	const usuarioActual = useUsuarioStore((s: any) => s.usuarioActual);
+	const fetchMisFavoritos = useFavoritoStore((s: any) => s.fetchMisFavoritos);
 
 	useEffect(() => {
 		inicializarUsuario();
 	}, []);
+
+	// Initialize favoritos cuando el usuario se autentica
+	useEffect(() => {
+		if (usuarioActual?.id) {
+			fetchMisFavoritos();
+		}
+	}, [usuarioActual?.id, fetchMisFavoritos]);
 
 	return (
 		<HelmetContextProvider>
