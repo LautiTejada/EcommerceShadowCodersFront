@@ -33,6 +33,7 @@ interface UsuarioState {
 	) => Promise<void>;
 	inicializarUsuario: () => Promise<void>;
 	setUsuarioActual: (categoria: Usuario | null) => void;
+	setDireccionesUsuario: (direcciones: Direccion[]) => void;
 
 	limpiarError: () => void;
 }
@@ -141,43 +142,95 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 
 	obtenerDireccionesUsuario: async (usuarioId) => {
 		try {
-			const direcciones = await usuarioAPI.getDireccionesDeUsuario(usuarioId);
-
-			const direccionesValidas = Array.isArray(direcciones)
-				? direcciones.filter(
-						(d) =>
-							typeof d === "object" &&
-							d !== null &&
-							"calle" in d &&
-							"numero" in d,
-					)
+			const raw = await usuarioAPI.getDireccionesDeUsuario(usuarioId);
+			const lista = Array.isArray(raw)
+				? raw
+				: Array.isArray(raw?.content)
+					? raw.content
+					: Array.isArray(raw?.data)
+						? raw.data
+						: [];
+			const validas = lista.filter(
+				(d: any) =>
+					typeof d === "object" && d !== null && "calle" in d && "numero" in d,
+			);
+			set((state) => ({
+				direccionesUsuario: validas,
+				usuarioActual: state.usuarioActual
+					? { ...state.usuarioActual, direcciones: validas }
+					: null,
+			}));
+		} catch {
+			// 403/error: usar las direcciones que ya están en usuarioActual como fallback
+			const actual = get().usuarioActual as any;
+			const fallback = Array.isArray(actual?.direcciones)
+				? actual.direcciones
 				: [];
-			set({ direccionesUsuario: direccionesValidas });
-		} catch (error) {}
+			set({ direccionesUsuario: fallback });
+		}
 	},
 
 	crearDireccionUsuario: async (usuarioId, direccion) => {
 		try {
-			await usuarioAPI.createDireccionDeUsuario(usuarioId, direccion);
-			await get().obtenerDireccionesUsuario(usuarioId);
+			const nueva = await usuarioAPI.createDireccionDeUsuario(
+				usuarioId,
+				direccion,
+			);
+			const nuevaDir =
+				nueva && typeof nueva === "object" && "calle" in nueva
+					? nueva
+					: { ...direccion, id: Date.now(), activo: true };
+			set((state) => {
+				const lista = [...state.direccionesUsuario, nuevaDir];
+				return {
+					direccionesUsuario: lista,
+					usuarioActual: state.usuarioActual
+						? { ...state.usuarioActual, direcciones: lista }
+						: null,
+				};
+			});
 		} catch (error) {}
 	},
 
 	actualizarDireccionUsuario: async (usuarioId, direccionId, direccion) => {
 		try {
-			await usuarioAPI.updateDireccionDeUsuario(
+			const actualizada = await usuarioAPI.updateDireccionDeUsuario(
 				usuarioId,
 				direccionId,
 				direccion,
 			);
-			await get().obtenerDireccionesUsuario(usuarioId);
+			set((state) => {
+				const lista = state.direccionesUsuario.map((d: any) =>
+					d.id === direccionId
+						? actualizada && "calle" in actualizada
+							? actualizada
+							: { ...d, ...direccion }
+						: d,
+				);
+				return {
+					direccionesUsuario: lista,
+					usuarioActual: state.usuarioActual
+						? { ...state.usuarioActual, direcciones: lista }
+						: null,
+				};
+			});
 		} catch (error) {}
 	},
 
 	desactivarDireccionUsuario: async (usuarioId, direccionId) => {
 		try {
 			await usuarioAPI.desactivarDireccionDeUsuario(usuarioId, direccionId);
-			await get().obtenerDireccionesUsuario(usuarioId);
+			set((state) => {
+				const lista = state.direccionesUsuario.map((d: any) =>
+					d.id === direccionId ? { ...d, activo: false } : d,
+				);
+				return {
+					direccionesUsuario: lista,
+					usuarioActual: state.usuarioActual
+						? { ...state.usuarioActual, direcciones: lista }
+						: null,
+				};
+			});
 		} catch (error) {}
 	},
 
@@ -210,4 +263,7 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 	limpiarError: () => set({ error: null }),
 
 	setUsuarioActual: (usuario) => set({ usuarioActual: usuario }),
+
+	setDireccionesUsuario: (direcciones) =>
+		set({ direccionesUsuario: direcciones }),
 }));

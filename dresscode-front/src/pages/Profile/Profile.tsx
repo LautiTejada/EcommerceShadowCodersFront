@@ -239,7 +239,7 @@ const Profile = () => {
 													: "Dirección incompleta"
 											}
 											readOnly
-											className={styles.inputGroup}
+											className={styles.inputField}
 										/>
 										<span
 											className={styles.addressesEditIcon}
@@ -247,46 +247,49 @@ const Profile = () => {
 												setDireccionEdit(direccion);
 												setIsEditingDireccion(true);
 												setIsAddingDireccion(false);
-											}}>
+											}}
+											title="Editar dirección">
 											<EditIcon />
 										</span>
-									</div>
-									<span
-										className={styles.addressesDeleteIcon}
-										onClick={async () => {
-											if (direccion.id && userId) {
-												if (
-													window.confirm(
-														"¿Seguro que deseas eliminar esta dirección?",
-													)
-												) {
-													setLoading(true);
-													try {
-														await desactivarDireccionDeUsuario(
-															userId,
-															direccion.id,
-														);
-														await obtenerDireccionesUsuario(userId);
-														sileo.success({
-															title: "Dirección eliminada",
-															description:
-																"La dirección ha sido eliminada correctamente.",
-															type: "success",
-														});
-													} catch {
-														sileo.error({
-															title: "Error",
-															description: "No se pudo eliminar la dirección.",
-															type: "error",
-														});
-													} finally {
-														setLoading(false);
+										<span
+											className={styles.addressesDeleteIcon}
+											onClick={async () => {
+												if (direccion.id && userId) {
+													if (
+														window.confirm(
+															"¿Seguro que deseas eliminar esta dirección?",
+														)
+													) {
+														setLoading(true);
+														try {
+															await desactivarDireccionDeUsuario(
+																userId,
+																direccion.id,
+															);
+															await obtenerDireccionesUsuario(userId);
+															sileo.success({
+																title: "Dirección eliminada",
+																description:
+																	"La dirección ha sido eliminada correctamente.",
+																type: "success",
+															});
+														} catch {
+															sileo.error({
+																title: "Error",
+																description:
+																	"No se pudo eliminar la dirección.",
+																type: "error",
+															});
+														} finally {
+															setLoading(false);
+														}
 													}
 												}
-											}
-										}}>
-										<DeleteIcon />
-									</span>
+											}}
+											title="Eliminar dirección">
+											<DeleteIcon />
+										</span>
+									</div>
 								</div>
 							))}
 						{(isAddingDireccion || isEditingDireccion) && direccionEdit && (
@@ -333,7 +336,9 @@ const Profile = () => {
 									<label htmlFor="calle">Calle</label>
 									<input
 										className={styles.inputField}
+										id="calle"
 										name="calle"
+										placeholder="Ej: Avenida Libertador"
 										value={direccionEdit.calle || ""}
 										onChange={(e) =>
 											setDireccionEdit((prev: any) => ({
@@ -348,7 +353,10 @@ const Profile = () => {
 									<label htmlFor="numero">Número</label>
 									<input
 										className={styles.inputField}
+										id="numero"
 										name="numero"
+										placeholder="Ej: 1234"
+										type="number"
 										value={direccionEdit.numero || ""}
 										onChange={(e) =>
 											setDireccionEdit((prev: any) => ({
@@ -363,7 +371,9 @@ const Profile = () => {
 									<label htmlFor="codigoPostal">Código Postal</label>
 									<input
 										className={styles.inputField}
+										id="codigoPostal"
 										name="codigoPostal"
+										placeholder="Ej: 1425"
 										maxLength={4}
 										pattern="\d{4}"
 										value={direccionEdit.codigoPostal || ""}
@@ -380,7 +390,9 @@ const Profile = () => {
 									<label htmlFor="localidad">Localidad</label>
 									<input
 										className={styles.inputField}
+										id="localidad"
 										name="localidad"
+										placeholder="Ej: Buenos Aires"
 										value={direccionEdit.localidad || ""}
 										onChange={(e) =>
 											setDireccionEdit((prev: any) => ({
@@ -395,6 +407,7 @@ const Profile = () => {
 									<label htmlFor="provincia">Provincia</label>
 									<select
 										className={styles.inputField}
+										id="provincia"
 										name="provincia"
 										value={direccionEdit.provincia || ""}
 										onChange={(e) =>
@@ -413,8 +426,12 @@ const Profile = () => {
 									</select>
 								</div>
 								<div className={styles.addressFormButtons}>
-									<button className={styles.saveButton} type="submit">
-										Guardar
+									<button
+										className={styles.saveButton}
+										type="submit"
+										style={{ flex: 1 }}>
+										<span style={{ fontSize: "1.1rem" }}>✓</span>
+										GUARDAR DIRECCIÓN
 									</button>
 									<button
 										type="button"
@@ -423,8 +440,10 @@ const Profile = () => {
 											setDireccionEdit(null);
 											setIsAddingDireccion(false);
 											setIsEditingDireccion(false);
-										}}>
-										Cancelar
+										}}
+										style={{ flex: 1 }}>
+										<span style={{ fontSize: "1.1rem" }}>✕</span>
+										CANCELAR
 									</button>
 								</div>
 							</form>

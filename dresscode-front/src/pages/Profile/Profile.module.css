@@ -108,26 +108,28 @@
 	padding: 14px 16px;
 	background-color: #fff;
 	border: 1.5px solid #ddd9e8;
-	border-radius: 6px;
+	border-radius: 2px;
 	font-size: 0.95rem;
 	color: #222;
 	font-weight: 400;
 	font-family: inherit;
 	line-height: 1.5;
-	transition: all 0.25s ease;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
 }
 
 .inputField:hover {
 	border-color: #810000;
 	background-color: #fff5f5;
+	box-shadow: 0 2px 6px rgba(129, 0, 0, 0.08);
 }
 
 .inputField:focus {
 	outline: none;
 	border-color: #810000;
 	box-shadow:
-		0 0 0 4px rgba(129, 0, 0, 0.08),
-		inset 0 0 0 1px rgba(129, 0, 0, 0.02);
+		0 0 0 4px rgba(129, 0, 0, 0.1),
+		inset 0 0 0 1px rgba(129, 0, 0, 0.04);
 	background-color: #fff;
 }
 
@@ -157,33 +159,37 @@
 	gap: 8px;
 	padding: 12px 28px;
 	border: none;
-	border-radius: 6px;
+	border-radius: 2px;
 	font-size: 0.8rem;
 	font-weight: 600;
 	cursor: pointer;
-	transition: all 0.25s ease;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	font-family: inherit;
 	letter-spacing: 0.5px;
 	text-transform: uppercase;
 	user-select: none;
+	position: relative;
+	overflow: hidden;
 }
 
 .editButton,
 .saveButton {
 	background-color: #810000;
 	color: #fff;
+	box-shadow: 0 4px 12px rgba(129, 0, 0, 0.2);
 }
 
 .editButton:hover,
 .saveButton:hover {
-	background-color: #680000;
-	transform: translateY(-2px);
-	box-shadow: 0 6px 16px rgba(129, 0, 0, 0.15);
+	background-color: #660000;
+	transform: translateY(-3px);
+	box-shadow: 0 8px 24px rgba(129, 0, 0, 0.3);
 }
 
 .editButton:active,
 .saveButton:active {
-	transform: translateY(0);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(129, 0, 0, 0.2);
 }
 
 .logoutButton {
@@ -192,19 +198,24 @@
 }
 
 .logoutButton:hover {
-	background-color: #680000;
-	transform: translateY(-2px);
-	box-shadow: 0 6px 16px rgba(129, 0, 0, 0.15);
+	background-color: #660000;
+	transform: translateY(-3px);
+	box-shadow: 0 8px 24px rgba(129, 0, 0, 0.3);
 }
 
 .cancelButton {
-	background-color: #e8e6f0;
+	background-color: transparent;
 	color: #666;
+	border: 1.5px solid #ddd9e8;
+	box-shadow: none;
 }
 
 .cancelButton:hover {
-	background-color: #ddd9e8;
+	background-color: #f7f6f9;
 	color: #333;
+	border-color: #999;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .lockIcon {
@@ -223,84 +234,228 @@
 /* ===== ADDRESS SECTION ===== */
 .addressEntry {
 	display: flex;
-	align-items: flex-end;
-	gap: 12px;
-	padding: 20px;
-	background-color: #fff;
-	border: 1.5px solid #ddd9e8;
-	border-radius: 6px;
-	margin-bottom: 16px;
-	transition: all 0.25s ease;
-	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+	flex-direction: column;
+	gap: 16px;
+	padding: 24px;
+	background: linear-gradient(135deg, #fff 0%, #fafbfc 100%);
+	border: 1.5px solid #e8e6f0;
+	border-radius: 2px;
+	margin-bottom: 20px;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+	position: relative;
+	overflow: hidden;
+}
+
+.addressEntry::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 2px;
+	background: linear-gradient(90deg, #810000, transparent);
+	opacity: 0;
+	transition: opacity 0.3s ease;
 }
 
 .addressEntry:hover {
 	border-color: #810000;
-	box-shadow: 0 3px 8px rgba(129, 0, 0, 0.15);
+	box-shadow: 0 8px 24px rgba(129, 0, 0, 0.12);
+	background: linear-gradient(135deg, #fff 0%, #fff5f5 100%);
+}
+
+.addressEntry:hover::before {
+	opacity: 1;
 }
 
 .addressInputFieldContainer {
-	flex-grow: 1;
-	display: flex;
-	flex-direction: column;
-	gap: 8px;
+	display: grid;
+	grid-template-columns: 0.8fr auto auto;
+	grid-template-rows: auto auto;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
 }
 
 .addressEntry label {
-	font-size: 0.75rem;
-	font-weight: 600;
-	letter-spacing: 0.1em;
-	color: #999;
+	font-size: 0.7rem;
+	font-weight: 700;
+	letter-spacing: 0.08em;
+	color: #666;
 	text-transform: uppercase;
+	grid-column: 1 / 4;
+	margin-bottom: 4px;
 }
 
 .addressEntry .inputField {
+	grid-column: 1;
+	grid-row: 2;
 	width: 100%;
-	padding: 12px 14px;
+	padding: 12px 0;
 	max-width: none;
+	background-color: transparent;
+	border: none;
+	font-size: 1rem;
+	font-weight: 500;
+	color: #222;
+	border-radius: 0;
+	padding-bottom: 8px;
+	border-bottom: 1px solid transparent;
+	transition: border-color 0.2s ease;
+}
+
+.addressEntry .inputField:hover {
+	border-bottom-color: #e8e6f0;
+}
+
+.addressEntry .inputField:focus {
+	outline: none;
+	box-shadow: none;
+	border: none;
+	background-color: transparent;
+	border-bottom-color: #810000;
+}
+
+.addressEntry .inputField:read-only {
+	background-color: transparent;
+	border: none;
+	cursor: default;
+	padding: 12px 0 8px 0;
 }
 
 .addressesEditIcon,
 .addressesDeleteIcon {
 	cursor: pointer;
-	transition: all 0.25s ease;
+	transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 38px;
-	height: 38px;
-	border-radius: 6px;
-	color: #666;
+	width: 40px;
+	height: 40px;
+	border-radius: 2px;
+	color: #999;
 	font-size: 1.1rem;
 	background-color: transparent;
 	font-weight: 600;
+	border: 1px solid transparent;
+	padding: 0;
+	grid-row: 2;
+}
+
+.addressesEditIcon {
+	grid-column: 2;
+}
+
+.addressesDeleteIcon {
+	grid-column: 3;
 }
 
 .addressesEditIcon:hover {
-	background-color: #f9f8fc;
+	background-color: rgba(129, 0, 0, 0.08);
 	color: #810000;
+	border-color: #810000;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(129, 0, 0, 0.15);
 }
 
 .addressesDeleteIcon:hover {
-	background-color: #f9f8fc;
-	color: #810000;
+	background-color: rgba(200, 0, 0, 0.08);
+	color: #c00;
+	border-color: #c00;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(200, 0, 0, 0.15);
 }
 
 /* ===== FORM STYLING ===== */
 .addressForm {
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
-	gap: 24px;
-	padding: 35px;
-	background-color: #fafbfc;
-	border: 1px solid #ddd9e8;
-	border-radius: 8px;
-	margin-bottom: 35px;
-	margin-top: 10px;
+	gap: 28px;
+	padding: 48px;
+	background: linear-gradient(135deg, #fff 0%, #fafbfc 100%);
+	border: 2px solid #810000;
+	border-radius: 0;
+	margin-bottom: 40px;
+	margin-top: 32px;
+	box-shadow: 0 8px 32px rgba(129, 0, 0, 0.1);
+	position: relative;
+	overflow: hidden;
+}
+
+.addressForm::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 4px;
+	background: linear-gradient(90deg, #810000 0%, #ff6b6b 100%);
+}
+
+.addressForm::after {
+	content: "";
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 4px;
+	height: 100%;
+	background: linear-gradient(180deg, #810000 0%, #ff6b6b 100%);
 }
 
 .addressForm .inputGroup {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 	grid-column: span 1;
+}
+
+.addressForm .inputGroup label {
+	font-size: 0.72rem;
+	font-weight: 700;
+	letter-spacing: 0.1em;
+	color: #810000;
+	text-transform: uppercase;
+	margin-bottom: 2px;
+}
+
+.addressForm .inputField,
+.addressForm select {
+	background-color: #fff;
+	border: 1.5px solid #e8e6f0;
+	padding: 14px 16px;
+	font-size: 0.95rem;
+	color: #222;
+	border-radius: 2px;
+	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.addressForm .inputField:hover,
+.addressForm select:hover {
+	border-color: #810000;
+	box-shadow: 0 4px 12px rgba(129, 0, 0, 0.12);
+	background-color: #fafbfc;
+}
+
+.addressForm .inputField:focus,
+.addressForm select:focus {
+	outline: none;
+	border-color: #810000;
+	background-color: #fff;
+	box-shadow:
+		0 0 0 5px rgba(129, 0, 0, 0.12),
+		inset 0 0 0 1px rgba(129, 0, 0, 0.08);
+}
+
+.addressForm select {
+	cursor: pointer;
+	apparance: none;
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23810000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+	background-repeat: no-repeat;
+	background-position: right 10px center;
+	background-size: 20px;
+	padding-right: 40px;
 }
 
 .addressForm .inputGroup:nth-child(3),
@@ -312,13 +467,17 @@
 	grid-column: span 2;
 }
 
-.addressForm .inputField {
-	max-width: none;
+.addressFormButtons {
+	grid-column: span 2;
+	display: flex;
+	gap: 16px;
+	margin-top: 12px;
 }
 
 @media (max-width: 700px) {
 	.addressForm {
 		grid-template-columns: 1fr;
+		padding: 32px 24px;
 	}
 
 	.addressForm .inputGroup {
@@ -326,6 +485,10 @@
 	}
 
 	.addressForm .inputGroup:nth-child(5) {
+		grid-column: span 1;
+	}
+
+	.addressFormButtons {
 		grid-column: span 1;
 	}
 }

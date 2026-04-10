@@ -149,7 +149,17 @@ export const useAuth = () => {
 					rol,
 					email: responseData.email ?? "",
 					activo: true,
+					direcciones: responseData.direcciones ?? [],
 				} as any);
+				// También poblar direccionesUsuario en el store
+				if (
+					Array.isArray(responseData.direcciones) &&
+					responseData.direcciones.length > 0
+				) {
+					useUsuarioStore
+						.getState()
+						.setDireccionesUsuario(responseData.direcciones);
+				}
 			}
 
 			navigate("/");
