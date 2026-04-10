@@ -1,4 +1,5 @@
 import { sileo } from "sileo";
+import { useState, useEffect } from "react";
 import type { EstadoOrden } from "../../types/enums/EstadoOrden";
 import styles from "./Cart.module.css";
 import { useCartStore } from "../../store/cartStore";
@@ -9,7 +10,24 @@ import type { MetodoPago } from "../../types/enums/MetodoPago";
 const Cart = () => {
 	const { cart, updateQuantity, removeFromCart, clearCart } = useCartStore();
 	const { createOrdenDeCompra } = useOrdenCompraStore();
-	const { usuarioActual } = useUsuarioStore();
+	const { usuarioActual, obtenerDireccionesUsuario, direccionesUsuario } =
+		useUsuarioStore();
+
+	const userId = usuarioActual?.id ? Number(usuarioActual.id) : null;
+	const direccionesActivas = direccionesUsuario.filter((d: any) => d.activo);
+	const [direccionSeleccionadaId, setDireccionSeleccionadaId] = useState<
+		number | null
+	>(null);
+
+	useEffect(() => {
+		if (userId) obtenerDireccionesUsuario(userId);
+	}, [userId]);
+
+	useEffect(() => {
+		if (direccionesActivas.length > 0 && direccionSeleccionadaId === null) {
+			setDireccionSeleccionadaId(direccionesActivas[0].id ?? null);
+		}
+	}, [direccionesActivas.length]);
 
 	const getPrecioFinal = (item: any) => {
 		const descuentoActivo =
@@ -40,12 +58,14 @@ const Cart = () => {
 			});
 			return;
 		}
-		const direccionSeleccionada = usuarioActual.direcciones?.[0];
+		const direccionSeleccionada = direccionesActivas.find(
+			(d: any) => d.id === direccionSeleccionadaId,
+		);
 		if (!direccionSeleccionada) {
 			sileo.error({
 				title: "Falta dirección",
 				description:
-					"Debes tener al menos una dirección cargada para finalizar la compra.",
+					"Debés seleccionar una dirección de entrega para finalizar la compra.",
 				type: "error",
 			});
 			return;
@@ -77,7 +97,7 @@ const Cart = () => {
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({
 						usuarioId: usuarioActual.id,
-						direccionId: usuarioActual.direcciones?.[0]?.id,
+						direccionId: direccionSeleccionada.id,
 						metodoPago: "MERCADO_PAGO",
 						estadoOrden: "PEDIDO",
 						detalles: cart.map((item) => ({
@@ -198,6 +218,48 @@ const Cart = () => {
 				{/* Resumen de compra */}
 				<div className={styles.summaryBox}>
 					<div className={styles.summaryHeader}>RESUMEN DE COMPRA</div>
+					{/* Selector de dirección */}
+					{direccionesActivas.length > 0 ? (
+						<div className={styles.direccionContainer}>
+							<span className={styles.direccionesLabel}>
+								Dirección de entrega
+							</span>
+							{direccionesActivas.map((d: any) => (
+								<label
+									key={d.id}
+									className={`${styles.direccionCard} ${
+										direccionSeleccionadaId === d.id
+											? styles.direccionCardSelected
+											: ""
+									}`}>
+									<input
+										type="radio"
+										name="direccion"
+										value={d.id}
+										checked={direccionSeleccionadaId === d.id}
+										onChange={() => setDireccionSeleccionadaId(d.id)}
+									/>
+									<div className={styles.direccionInfo}>
+										<div className={styles.direccionCalle}>
+											{d.calle} {d.numero}
+										</div>
+										<div className={styles.direccionLocalidad}>
+											{d.localidad}, {d.provincia?.replace(/_/g, " ")}
+										</div>
+										{d.codigoPostal && (
+											<div className={styles.direccionCodigoPostal}>
+												CP: {d.codigoPostal}
+											</div>
+										)}
+									</div>
+								</label>
+							))}
+						</div>
+					) : (
+						<div className={styles.noDirectionesMsg}>
+							No tenés direcciones cargadas. Agregá una desde tu perfil.
+						</div>
+					)}
 					<div className={styles.summaryRow}>
 						<span>Subtotal</span>
 						<span>${subtotal.toLocaleString("es-AR")}</span>
