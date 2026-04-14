@@ -3,7 +3,6 @@ import { apiFetch } from "./apiFetch";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 function handleApiError(error: unknown, context: string) {
-	console.error(`Error en ${context}:`, error);
 	throw new Error(`No se pudo completar la operación: ${context}`);
 }
 

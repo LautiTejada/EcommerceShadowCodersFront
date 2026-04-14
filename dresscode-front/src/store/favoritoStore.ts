@@ -4,7 +4,6 @@ import {
 	obtenerMisFavoritos,
 	agregarAFavoritos,
 	eliminarDeFavoritos,
-	verificarFavorito,
 } from "../http/favorito";
 
 interface FavoritoStore {
@@ -30,13 +29,16 @@ export const useFavoritoStore = create<FavoritoStore>((set, get) => ({
 		try {
 			set({ cargando: true });
 			const favoritos = await obtenerMisFavoritos();
-			const ids = new Set(favoritos.map((f) => f.producto.id));
+			const ids = new Set(
+				favoritos
+					.map((f) => f.producto.id)
+					.filter((id): id is number => id !== undefined),
+			);
 			set({
 				favoritos,
 				favoritoProductoIds: ids,
 			});
 		} catch (error) {
-			console.error("Error al obtener favoritos:", error);
 			set({ favoritos: [], favoritoProductoIds: new Set() });
 		} finally {
 			set({ cargando: false });
@@ -60,22 +62,21 @@ export const useFavoritoStore = create<FavoritoStore>((set, get) => ({
 				error?.message?.includes("duplicate") ||
 				error?.message?.includes("already exists")
 			) {
-				console.warn(
-					"El producto ya estaba en favoritos. Sincronizando estado...",
-				);
 				// Sincronizar favoritos desde el backend
 				try {
 					const favoritos = await obtenerMisFavoritos();
-					const ids = new Set(favoritos.map((f) => f.producto.id));
+					const ids = new Set(
+						favoritos
+							.map((f) => f.producto.id)
+							.filter((id): id is number => id !== undefined),
+					);
 					set({
 						favoritos,
 						favoritoProductoIds: ids,
 					});
 				} catch (syncError) {
-					console.error("Error al sincronizar favoritos:", syncError);
 				}
 			} else {
-				console.error("Error al agregar a favoritos:", error);
 				throw error;
 			}
 		}
@@ -98,11 +99,12 @@ export const useFavoritoStore = create<FavoritoStore>((set, get) => ({
 			await eliminarDeFavoritos(productoId);
 		} catch (error) {
 			// Si falla, restaurar el estado anterior
-			console.error("Error al eliminar de favoritos:", error);
 			set({
 				favoritos: previousFavoritos,
 				favoritoProductoIds: new Set(
-					previousFavoritos.map((f) => f.producto.id),
+					previousFavoritos
+						.map((f) => f.producto.id)
+						.filter((id): id is number => id !== undefined),
 				),
 			});
 			throw error;

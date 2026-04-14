@@ -6,7 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddLocationIcon from "@mui/icons-material/AddLocation";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import { useAuth } from "../../hooks/useAuth";
+
 import type { Usuario } from "../../types/Usuario";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { provincias, type Provincia } from "../../types/enums/Provincias";
@@ -19,6 +19,7 @@ import type { EstadoOrden } from "../../types/enums/EstadoOrden";
 import AdminPanel from "./AdminPanel/AdminPanel";
 import { useFavoritoStore } from "../../store/favoritoStore";
 import ProductCard from "../../components/ui/ProductCard/ProductCard";
+import { BannerAdminPanel } from "../../components/admin/BannerAdminPanel/BannerAdminPanel";
 
 const Profile = () => {
 	const {
@@ -32,17 +33,18 @@ const Profile = () => {
 	} = useUsuarioStore();
 	const { ordenesCompra, fetchOrdenesPorUsuario } = useOrdenCompraStore();
 	const { favoritos, fetchMisFavoritos } = useFavoritoStore();
-	const isAdmin =
-		usuarioActual?.rol === "ADMIN" || localStorage.getItem("rol") === "ADMIN";
 	const [activeSection, setActiveSection] = useState("accountInfo");
 	const [adminActiveView, setAdminActiveView] = useState("home");
 	const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
-	const { logout } = useAuth();
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedUser, setEditedUser] = useState<Partial<Usuario>>({
 		password: "",
 	});
 	const [loading, setLoading] = useState(false);
+
+	// Recalcular isAdmin cada vez que usuarioActual cambia
+	const isAdmin =
+		usuarioActual?.rol === "ADMIN" || localStorage.getItem("rol") === "ADMIN";
 
 	const userId = Number(localStorage.getItem("usuario"));
 	const [isAddingDireccion, setIsAddingDireccion] = useState(false);
@@ -57,13 +59,6 @@ const Profile = () => {
 			});
 		}
 	}, [usuarioActual]);
-
-	// Cargar datos del usuario al montar el componente
-	useEffect(() => {
-		if (userId && !usuarioActual) {
-			obtenerUsuarioPorId(userId);
-		}
-	}, [userId, usuarioActual, obtenerUsuarioPorId]);
 
 	const handleEdit = () => {
 		setIsEditing(true);
@@ -92,9 +87,6 @@ const Profile = () => {
 	}, [
 		activeSection,
 		userId,
-		obtenerDireccionesUsuario,
-		fetchOrdenesPorUsuario,
-		fetchMisFavoritos,
 	]);
 
 	const handleSave = async () => {
@@ -116,7 +108,6 @@ const Profile = () => {
 				await obtenerUsuarioPorId(userId);
 				setEditedUser((prev) => ({ ...prev, password: "" }));
 			} catch (error) {
-				console.error("Error al actualizar usuario:", error);
 			}
 		}
 	};
@@ -708,6 +699,8 @@ const Profile = () => {
 						onViewChange={setAdminActiveView}
 					/>
 				);
+			case "banners":
+				return <BannerAdminPanel />;
 			case "favorites":
 				return (
 					<div className={styles.favoritesSection}>
@@ -744,13 +737,22 @@ const Profile = () => {
 					INFORMACIÓN DE LA CUENTA
 				</div>
 				{isAdmin ? (
-					<div
-						className={`${styles.sidebarItem} ${
-							activeSection === "adminPanel" ? styles.active : ""
-						}`}
-						onClick={() => setActiveSection("adminPanel")}>
-						PANEL DE ADMINISTRACIÓN
-					</div>
+					<>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "adminPanel" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("adminPanel")}>
+							PANEL DE ADMINISTRACIÓN
+						</div>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "banners" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("banners")}>
+							GESTIONAR BANNERS
+						</div>
+					</>
 				) : (
 					<>
 						<div
@@ -784,6 +786,7 @@ const Profile = () => {
 					{activeSection === "orderHistory" && "HISTORIAL DE PEDIDOS"}
 					{activeSection === "favorites" && "MIS FAVORITOS"}
 					{activeSection === "adminPanel" && "PANEL DE ADMINISTRACIÓN"}
+					{activeSection === "banners" && "GESTIONAR BANNERS"}
 				</h2>
 				{renderContent()}
 			</main>

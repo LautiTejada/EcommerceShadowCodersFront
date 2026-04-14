@@ -12,7 +12,6 @@ import Loader from "../../ui/Loader/Loader";
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
 	const usuarioActual = useUsuarioStore((s: any) => s.usuarioActual);
 	const cargando = useUsuarioStore((s: any) => s.cargando);
-	const error = useUsuarioStore((s: any) => s.error);
 	const obtenerUsuarioPorId = useUsuarioStore(
 		(s: any) => s.obtenerUsuarioPorId,
 	);
@@ -32,7 +31,6 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
 		) {
 			setLoadAttempted(true);
 			obtenerUsuarioPorId(Number(usuarioId)).catch((err: any) => {
-				console.error("Error cargando usuario en PrivateRoute:", err);
 			});
 		}
 	}, [

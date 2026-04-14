@@ -62,7 +62,6 @@ export const useAuth = () => {
 			try {
 				responseData = await response.json();
 			} catch (e) {
-				console.error("Error al parsear JSON:", e);
 				throw new Error("Error al procesar la respuesta del servidor");
 			}
 
@@ -78,7 +77,9 @@ export const useAuth = () => {
 					responseData.username ?? usuarioData?.username ?? userData.username;
 				const userId =
 					responseData.id ?? responseData.userId ?? usuarioData?.id;
-				const rol = usuarioData?.rol ?? responseData.rol ?? "USER";
+				// Normalizar el rol a mayúsculas
+				const rolRaw = usuarioData?.rol ?? responseData.rol ?? "USER";
+				const rol = rolRaw.toUpperCase();
 				if (username) localStorage.setItem("username", username);
 				if (userId) localStorage.setItem("usuario", String(userId));
 				if (rol) localStorage.setItem("rol", rol);
@@ -95,7 +96,6 @@ export const useAuth = () => {
 		} catch (err) {
 			const errorMessage =
 				err instanceof Error ? err.message : "Error en el registro";
-			console.error("Error completo:", err);
 			setError(errorMessage);
 			throw err;
 		} finally {
@@ -135,7 +135,9 @@ export const useAuth = () => {
 			if (responseData.token) {
 				const userId = responseData.id ?? responseData.userId;
 				const username = responseData.username ?? responseData.email;
-				const rol = responseData.rol ?? "USER";
+				// Normalizar el rol a mayúsculas
+				const rolRaw = responseData.rol ?? "USER";
+				const rol = rolRaw.toUpperCase();
 
 				localStorage.setItem("token", responseData.token);
 				if (username) localStorage.setItem("username", username);

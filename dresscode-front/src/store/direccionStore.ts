@@ -27,7 +27,6 @@ export const useDireccionStore = create<DireccionState>((set, get) => ({
 			const direccionesFromApi = await getDirecciones();
 			set({ direcciones: direccionesFromApi });
 		} catch (error) {
-			console.error("Error cargando direcciones:", error);
 		}
 	},
 
@@ -36,7 +35,6 @@ export const useDireccionStore = create<DireccionState>((set, get) => ({
 			const activas = await getDireccionesActivas();
 			set({ direccionesActivas: activas });
 		} catch (error) {
-			console.error("Error cargando direcciones activas:", error);
 		}
 	},
 
@@ -44,7 +42,6 @@ export const useDireccionStore = create<DireccionState>((set, get) => ({
 		try {
 			return await getDireccionById(id);
 		} catch (error) {
-			console.error(`Error cargando dirección con id ${id}:`, error);
 			return null;
 		}
 	},
@@ -54,7 +51,6 @@ export const useDireccionStore = create<DireccionState>((set, get) => ({
 			await changeDireccionStatus(id);
 			await get().fetchDirecciones();
 		} catch (error) {
-			console.error(`Error cambiando estado de dirección con id ${id}:`, error);
 		}
 	},
 
@@ -63,7 +59,6 @@ export const useDireccionStore = create<DireccionState>((set, get) => ({
 			await changeDireccionStatus(id);
 			await get().fetchDirecciones();
 		} catch (error) {
-			console.error(`Error activando dirección con id ${id}:`, error);
 		}
 	},
 
@@ -72,7 +67,6 @@ export const useDireccionStore = create<DireccionState>((set, get) => ({
 			await changeDireccionStatus(id);
 			await get().fetchDirecciones();
 		} catch (error) {
-			console.error(`Error desactivando dirección con id ${id}:`, error);
 		}
 	},
 }));

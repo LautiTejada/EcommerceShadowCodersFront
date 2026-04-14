@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { CategoryBar } from "../../components/ui/CategoryBar/CategoryBar";
+import { BannerCarousel } from "../../components/ui/BannerCarousel/BannerCarousel";
 import ImageCarousel from "../../components/ui/ImageCarousel/ImageCarousel";
 import React, { Suspense } from "react";
 const OffersSection = React.lazy(
@@ -103,6 +103,7 @@ const Home = () => {
 					content="/public/assets/ImagesCarousel/og-default.jpg"
 				/>
 			</Helmet>
+			<BannerCarousel />
 			<ImageCarousel />
 			<Suspense fallback={<Loader />}>
 				<OffersSection />

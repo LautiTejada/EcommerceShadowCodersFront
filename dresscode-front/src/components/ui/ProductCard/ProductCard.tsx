@@ -11,7 +11,7 @@ interface ProductCardProps {
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 	const navigate = useNavigate();
 	const { esFavorito, agregarFavorito, eliminarFavorito } = useFavoritoStore();
-	const isFavorite = esFavorito(product.id);
+	const isFavorite = product.id ? esFavorito(product.id) : false;
 
 	const descuentoActivo = product.descuentos?.find(
 		(d) => d && d.activo && d.descuento && d.descuento.activo,
@@ -44,9 +44,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 		}
 
 		if (isFavorite) {
-			eliminarFavorito(product.id);
+			if (product.id) eliminarFavorito(product.id);
 		} else {
-			agregarFavorito(product.id);
+			if (product.id) agregarFavorito(product.id);
 		}
 	};
 

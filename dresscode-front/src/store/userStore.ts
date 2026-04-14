@@ -44,7 +44,9 @@ const _syncUsuario = (() => {
 	const token = localStorage.getItem("token");
 	if (!userId || !token) return null;
 	const username = localStorage.getItem("username") ?? "";
-	const rol = localStorage.getItem("rol") ?? "USER";
+	const rolRaw = localStorage.getItem("rol") ?? "USER";
+	// Normalizar el rol a mayúsculas
+	const rol = rolRaw.toUpperCase();
 	return { id: Number(userId), username, rol } as any;
 })();
 
@@ -83,9 +85,12 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 		set({ cargando: true, error: null });
 		try {
 			const usuario = await usuarioAPI.getUsuarioPorId(id);
-			// Guardar el rol en localStorage
+			// Guardar el rol en localStorage y normalizar a mayúsculas
 			if (usuario.rol) {
-				localStorage.setItem("rol", usuario.rol);
+				const rolNormalizado = usuario.rol.toUpperCase();
+				localStorage.setItem("rol", rolNormalizado);
+				// Actualizar el rol en el usuario para asegurar consistencia
+				usuario.rol = rolNormalizado as any;
 			}
 			set({ usuarioActual: usuario, cargando: false });
 		} catch (error) {

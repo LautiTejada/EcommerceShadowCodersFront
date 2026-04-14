@@ -6,7 +6,6 @@ export const getCategorias = async () => {
 	try {
 		return await apiFetch(`${baseUrl}/categorias`);
 	} catch (error) {
-		console.error("Error fetching categorias:", error);
 		throw error;
 	}
 };
@@ -15,7 +14,6 @@ export const getCategoriasActivas = async () => {
 	try {
 		return await apiFetch(`${baseUrl}/categorias/active`);
 	} catch (error) {
-		console.error("Error fetching categorias activas:", error);
 		throw error;
 	}
 };
@@ -24,7 +22,6 @@ export const getCategoriaById = async (id: number) => {
 	try {
 		return await apiFetch(`${baseUrl}/categorias/${id}`);
 	} catch (error) {
-		console.error(`Error fetching categoria with id ${id}:`, error);
 		throw error;
 	}
 };
@@ -36,7 +33,6 @@ export const crearCategoria = async (categoria: Categoria, tipoId: number) => {
 			body: JSON.stringify(categoria),
 		});
 	} catch (error) {
-		console.error("Error creating categoria:", error);
 		throw error;
 	}
 };
@@ -55,7 +51,6 @@ export const actualizarCategoria = async (
 			},
 		);
 	} catch (error) {
-		console.error("Error updating categoria:", error);
 		throw error;
 	}
 };
@@ -67,7 +62,6 @@ export const cambiarEstadoCategoria = async (id: number) => {
 			auth: true,
 		});
 	} catch (error) {
-		console.error("Error changing categoria status:", error);
 		throw error;
 	}
 };

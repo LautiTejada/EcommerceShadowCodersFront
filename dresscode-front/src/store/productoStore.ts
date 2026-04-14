@@ -74,7 +74,6 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 				size: paged.size,
 			});
 		} catch (error) {
-			console.error("Error cargando productos paginados:", error);
 		}
 	},
 	fetchProductos: async () => {
@@ -82,7 +81,6 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			const productosFromApi = await getProductos();
 			set({ productos: productosFromApi });
 		} catch (error) {
-			console.error("Error cargando productos:", error);
 		}
 	},
 	fetchProductosActivos: async () => {
@@ -90,7 +88,6 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			const productos = await getProductosActivos();
 			set({ productosActivos: productos });
 		} catch (error) {
-			console.error("Error cargando productos activos:", error);
 		}
 	},
 	agregarProductoConCategoria: async (producto, categoriaId) => {
@@ -102,7 +99,6 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			get().fetchProductos();
 			return nuevoProducto;
 		} catch (error) {
-			console.error("Error agregando producto con categoría:", error);
 			throw error;
 		}
 	},
@@ -112,7 +108,6 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			set({ productoActual: producto });
 			return producto;
 		} catch (error) {
-			console.error(`Error fetching producto by ID ${id}:`, error);
 			set({ productoActual: null });
 			return null;
 		}
@@ -123,7 +118,6 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			await get().fetchProductos();
 			await get().fetchProductosActivos();
 		} catch (error) {
-			console.error(`Error editing producto with ID ${id}:`, error);
 		}
 	},
 	activarProducto: async (id) => {
@@ -132,7 +126,6 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			await get().fetchProductos();
 			await get().fetchProductosActivos();
 		} catch (error) {
-			console.error(`Error activating producto with ID ${id}:`, error);
 		}
 	},
 	desactivarProducto: async (id) => {
@@ -141,7 +134,6 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			await get().fetchProductos();
 			await get().fetchProductosActivos();
 		} catch (error) {
-			console.error(`Error deactivating producto with ID ${id}:`, error);
 		}
 	},
 	fetchProductosPorCategoria: async (categoria) => {
@@ -149,10 +141,6 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			const productos = await getProductosPorCategoria(categoria);
 			set({ productos });
 		} catch (error) {
-			console.error(
-				`Error fetching productos for category ${categoria.id}:`,
-				error,
-			);
 		}
 	},
 	fetchProductosFiltrados: async (filtros) => {
@@ -160,7 +148,6 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			const productos = await getProductosFiltrados(filtros);
 			set({ productosActivos: productos });
 		} catch (error) {
-			console.error("Error al filtrar productos:", error);
 		}
 	},
 	setProductoActual: (producto) => set({ productoActual: producto }),
