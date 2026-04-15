@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { sileo } from "sileo";
 import styles from "./ProductDetails.module.css";
-import { CategoryBar } from "../CategoryBar/CategoryBar";
 import { useParams } from "react-router-dom";
 import { useProductoStore } from "../../../store/productoStore";
 

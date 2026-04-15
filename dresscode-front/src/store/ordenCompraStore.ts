@@ -29,7 +29,6 @@ export const useOrdenCompraStore = create<ordenCompraState>((set, get) => ({
 			const ordenes = await getOrdenesDeCompra();
 			set({ ordenesCompra: ordenes });
 		} catch (error) {
-			console.error("Error fetching ordenes de compra:", error);
 			throw error;
 		}
 	},
@@ -38,7 +37,6 @@ export const useOrdenCompraStore = create<ordenCompraState>((set, get) => ({
 		try {
 			return await getOrdenDeCompra(id);
 		} catch (error) {
-			console.error("Error fetching orden de compra:", error);
 			throw error;
 		}
 	},
@@ -48,7 +46,6 @@ export const useOrdenCompraStore = create<ordenCompraState>((set, get) => ({
 			const ordenes = await getOrdenesPorUsuario(usuarioId);
 			set({ ordenesCompra: ordenes });
 		} catch (error) {
-			console.error("Error fetching ordenes de compra por usuario:", error);
 			throw error;
 		}
 	},
@@ -58,7 +55,6 @@ export const useOrdenCompraStore = create<ordenCompraState>((set, get) => ({
 			await actualizarEstadoOrdenDeCompra(detalleId, estado);
 			get().fetchOrdenesDeCompra();
 		} catch (error) {
-			console.error("Error updating estado orden de compra:", error);
 			throw error;
 		}
 	},
@@ -68,7 +64,6 @@ export const useOrdenCompraStore = create<ordenCompraState>((set, get) => ({
 			const ordenCreada = await crearOrdenDeCompra(orden);
 			return ordenCreada;
 		} catch (error) {
-			console.error("Error creating orden de compra:", error);
 			throw error;
 		}
 	},

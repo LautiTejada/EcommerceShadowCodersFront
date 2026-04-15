@@ -28,7 +28,6 @@ export const useDetalleOrdenStore = create<DetalleOrdenState>((set, get) => ({
 		try {
 			return await getDetalleOrdenById(id);
 		} catch (error) {
-			console.error("Error cargando detalle de orden:", error);
 			throw error;
 		}
 	},
@@ -38,7 +37,6 @@ export const useDetalleOrdenStore = create<DetalleOrdenState>((set, get) => ({
 			const detallesFromApi = await getDetallesOrden();
 			set({ detallesOrden: detallesFromApi });
 		} catch (error) {
-			console.error("Error cargando detalles de orden:", error);
 		}
 	},
 
@@ -47,7 +45,6 @@ export const useDetalleOrdenStore = create<DetalleOrdenState>((set, get) => ({
 			const detallesActivosFromApi = await getDetallesOrdenActivos();
 			set({ detallesOrdenActivos: detallesActivosFromApi });
 		} catch (error) {
-			console.error("Error cargando detalles de orden activos:", error);
 		}
 	},
 
@@ -56,7 +53,6 @@ export const useDetalleOrdenStore = create<DetalleOrdenState>((set, get) => ({
 			await createDetalleOrden(detalle);
 			await get().fetchDetallesOrden();
 		} catch (error) {
-			console.error("Error creando detalle de orden:", error);
 		}
 	},
 
@@ -65,7 +61,6 @@ export const useDetalleOrdenStore = create<DetalleOrdenState>((set, get) => ({
 			await updateDetalleOrden(id, nuevaCantidad);
 			await get().fetchDetallesOrden();
 		} catch (error) {
-			console.error("Error actualizando detalle de orden:", error);
 		}
 	},
 
@@ -74,7 +69,6 @@ export const useDetalleOrdenStore = create<DetalleOrdenState>((set, get) => ({
 			const detalles = await getDetallesOrdenByOrdenId(ordenId);
 			return detalles;
 		} catch (error) {
-			console.error("Error cargando detalles de orden por ID de orden:", error);
 			throw error;
 		}
 	},

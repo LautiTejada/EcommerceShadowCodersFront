@@ -8,7 +8,6 @@ export const getProductos = async () => {
 	try {
 		return await apiFetch(`${baseUrl}/productos`);
 	} catch (error) {
-		console.error("Error fetching productos:", error);
 		throw error;
 	}
 };
@@ -17,7 +16,6 @@ export const getProductosActivos = async () => {
 	try {
 		return await apiFetch(`${baseUrl}/productos/active`);
 	} catch (error) {
-		console.error("Error fetching active productos:", error);
 		throw error;
 	}
 };
@@ -33,7 +31,6 @@ export const addProductoConCategoria = async (
 			body: JSON.stringify(producto),
 		});
 	} catch (error) {
-		console.error("Error creating producto with category:", error);
 		throw error;
 	}
 };
@@ -42,7 +39,6 @@ export const getProductoById = async (id: number) => {
 	try {
 		return await apiFetch(`${baseUrl}/productos/${id}`);
 	} catch (error) {
-		console.error("Error fetching producto:", error);
 		throw error;
 	}
 };
@@ -55,7 +51,6 @@ export const updateProducto = async (id: number, producto: Producto) => {
 			body: JSON.stringify(producto),
 		});
 	} catch (error) {
-		console.error("Error updating producto:", error);
 		throw error;
 	}
 };
@@ -67,7 +62,6 @@ export const cambiarEstadoProducto = async (id: number) => {
 			auth: true,
 		});
 	} catch (error) {
-		console.error("Error changing producto status:", error);
 		throw error;
 	}
 };
@@ -76,7 +70,6 @@ export const getProductosPorCategoria = async (categoria: Categoria) => {
 	try {
 		return await apiFetch(`${baseUrl}/productos/categoria/${categoria.id}`);
 	} catch (error) {
-		console.error("Error fetching productos by category:", error);
 		throw error;
 	}
 };

@@ -61,6 +61,45 @@
 	border-radius: 2px;
 }
 
+/* ─── Favorite Button ─────────────────────────────────────── */
+.favoriteBtn {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+	width: 40px;
+	height: 40px;
+	border: none;
+	background: rgba(255, 255, 255, 0.85);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 3;
+	border-radius: 50%;
+	transition: all 0.3s ease;
+	backdrop-filter: blur(4px);
+	padding: 0;
+}
+
+.favoriteBtn:hover {
+	background: rgba(255, 255, 255, 1);
+	transform: scale(1.1);
+}
+
+.heartIcon {
+	font-size: 20px;
+	color: #999;
+	transition: color 0.3s ease;
+}
+
+.favoriteBtn.favorited .heartIcon {
+	color: #810000;
+}
+
+.favoriteBtn.favorited:hover .heartIcon {
+	color: #c00;
+}
+
 /* ─── Info ───────────────────────────────────────────────── */
 .info {
 	padding: 10px 4px 14px;

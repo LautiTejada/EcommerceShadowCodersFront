@@ -1,11 +1,10 @@
-﻿import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./HomeAdmin.module.css";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import ProductionQuantityLimitsIcon from "@mui/icons-material/ProductionQuantityLimits";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import PeopleIcon from "@mui/icons-material/People";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+
 import { useProductoStore } from "../../../store/productoStore";
 import { useOrdenCompraStore } from "../../../store/ordenCompraStore";
 import Loader from "../../../components/ui/Loader/Loader";
@@ -39,8 +38,7 @@ const HomeAdmin: React.FC = () => {
 				]);
 				setDashboardData(estadisticas);
 			} catch (err) {
-				console.error("Error cargando datos del dashboard:", err);
-				setError("No se pudieron cargar las estadÃ­sticas");
+				setError("No se pudieron cargar las estadísticas");
 			} finally {
 				setLoading(false);
 			}
@@ -67,7 +65,7 @@ const HomeAdmin: React.FC = () => {
 			{/* Header */}
 			<div className={styles.header}>
 				<h1>Dashboard</h1>
-				<p>Bienvenido al panel de administraciÃ³n</p>
+				<p>Bienvenido al panel de administración</p>
 			</div>
 
 			{error && <p className={styles.errorMsg}>{error}</p>}
@@ -94,7 +92,7 @@ const HomeAdmin: React.FC = () => {
 						<ShoppingCartIcon />
 					</div>
 					<div className={styles.cardContent}>
-						<p className={styles.cardTitle}>Ã“rdenes</p>
+						<p className={styles.cardTitle}>Órdenes</p>
 						<p className={styles.cardValue}>
 							{dashboardData?.totalOrdenes ?? 0}
 						</p>
@@ -136,9 +134,9 @@ const HomeAdmin: React.FC = () => {
 
 			{/* Content Grid */}
 			<div className={styles.contentGrid}>
-				{/* Ãšltimos Productos */}
+				{/* Últimos Productos */}
 				<div className={styles.section}>
-					<h2 className={styles.sectionTitle}>Ãšltimos Productos</h2>
+					<h2 className={styles.sectionTitle}>Últimos Productos</h2>
 					<div className={styles.listContainer}>
 						{lastProducts.length === 0 ? (
 							<p className={styles.emptyMessage}>No hay productos</p>
@@ -163,12 +161,12 @@ const HomeAdmin: React.FC = () => {
 					</div>
 				</div>
 
-				{/* Ãšltimas Ã“rdenes */}
+				{/* Últimas Órdenes */}
 				<div className={styles.section}>
-					<h2 className={styles.sectionTitle}>Ãšltimas Ã“rdenes</h2>
+					<h2 className={styles.sectionTitle}>Últimas Órdenes</h2>
 					<div className={styles.listContainer}>
 						{lastOrders.length === 0 ? (
-							<p className={styles.emptyMessage}>No hay Ã³rdenes</p>
+							<p className={styles.emptyMessage}>No hay órdenes</p>
 						) : (
 							<div className={styles.orderList}>
 								{lastOrders.map((order: any) => (

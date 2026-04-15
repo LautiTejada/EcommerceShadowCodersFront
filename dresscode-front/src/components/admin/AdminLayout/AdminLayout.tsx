@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import type { ReactNode } from "react";
 import styles from "./AdminLayout.module.css";
 import { Sidebar } from "./Sidebar";
 import { TopBar } from "./TopBar";

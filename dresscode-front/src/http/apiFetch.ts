@@ -34,15 +34,43 @@ export async function apiFetch<T = any>(
 		if (!response.ok) {
 			let errorMsg = `HTTP error! status: ${response.status}`;
 			try {
-				const data = await response.json();
-				errorMsg = data.message || errorMsg;
-			} catch {}
+				// Leer el body una sola vez
+				const text = await response.text();
+
+				// Intentar parsear como JSON
+				try {
+					const data = JSON.parse(text);
+					// If message is an object (validation errors), format it nicely
+					if (typeof data.message === "object" && data.message !== null) {
+						const validationErrors = Object.entries(data.message)
+							.map(([field, error]) => `${field}: ${error}`)
+							.join(", ");
+						errorMsg = validationErrors || errorMsg;
+					} else {
+						errorMsg =
+							data.message || data.error || JSON.stringify(data) || errorMsg;
+					}
+				} catch {
+					// Si no es JSON válido, usar el texto directo
+					errorMsg = text || errorMsg;
+				}
+			} catch (readError) {
+				errorMsg = `HTTP error! status: ${response.status}`;
+			}
 			throw new Error(errorMsg);
 		}
 
 		if (response.status === 204) return null as T;
 
-		return response.json();
+		// Handle empty responses (e.g., DELETE without body)
+		const text = await response.text();
+		if (!text) return null as T;
+
+		try {
+			return JSON.parse(text);
+		} catch {
+			return null as T;
+		}
 	} catch (error) {
 		clearTimeout(timeoutId);
 		throw error;

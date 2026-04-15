@@ -55,7 +55,6 @@ export async function getImagenesProductoByProductoId(productoId: number) {
 			`${baseUrl}/imagenes-producto/producto/${productoId}`,
 		);
 	} catch (error) {
-		console.error("Error fetching imagenes producto by productoId:", error);
 		throw error;
 	}
 }

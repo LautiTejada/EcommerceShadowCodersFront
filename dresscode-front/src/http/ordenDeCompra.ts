@@ -7,7 +7,6 @@ export const getOrdenesDeCompra = async () => {
 	try {
 		return await apiFetch(`${baseUrl}/ordenes`, { auth: true });
 	} catch (error) {
-		console.error("Error fetching ordenes de compra:", error);
 		throw error;
 	}
 };
@@ -16,7 +15,6 @@ export const getOrdenDeCompra = async (id: number) => {
 	try {
 		return await apiFetch(`${baseUrl}/ordenes/${id}`, { auth: true });
 	} catch (error) {
-		console.error("Error fetching orden de compra:", error);
 		throw error;
 	}
 };
@@ -27,7 +25,6 @@ export const getOrdenesPorUsuario = async (usuarioId: number) => {
 			auth: true,
 		});
 	} catch (error) {
-		console.error("Error fetching orden de compra por usuario:", error);
 		throw error;
 	}
 };
@@ -42,7 +39,6 @@ export const actualizarEstadoOrdenDeCompra = async (
 			{ method: "PATCH", auth: true },
 		);
 	} catch (error) {
-		console.error("Error updating estado orden:", error);
 		throw error;
 	}
 };
@@ -55,7 +51,6 @@ export const crearOrdenDeCompra = async (ordenDeCompra: OrdenDeCompra) => {
 			body: JSON.stringify(ordenDeCompra),
 		});
 	} catch (error) {
-		console.error("Error creating orden de compra:", error);
 		throw error;
 	}
 };
