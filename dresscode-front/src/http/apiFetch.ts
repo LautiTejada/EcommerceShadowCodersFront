@@ -7,9 +7,10 @@ export async function apiFetch<T = any>(
 	options: ApiFetchOptions = {},
 ): Promise<T> {
 	const { auth, headers, ...rest } = options;
+	const hasBody = rest.body !== undefined && rest.body !== null;
 	const finalHeaders: Record<string, string> = {
 		...((headers as Record<string, string>) || {}),
-		"Content-Type": "application/json",
+		...(hasBody ? { "Content-Type": "application/json" } : {}),
 	};
 
 	if (auth) {

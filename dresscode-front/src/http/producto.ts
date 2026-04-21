@@ -14,7 +14,7 @@ export const getProductos = async () => {
 
 export const getProductosActivos = async () => {
 	try {
-		return await apiFetch(`${baseUrl}/productos/active`);
+		return await apiFetch(`${baseUrl}/productos/activos`);
 	} catch (error) {
 		throw error;
 	}
@@ -92,18 +92,21 @@ export const getProductosFiltrados = async (filtros: any) => {
 export const getProductosPaged = async ({
 	page = 0,
 	size = 12,
-	sort = "",
+	sortBy = "id",
+	sortDir = "asc",
 	filtros = {},
 }: {
 	page?: number;
 	size?: number;
-	sort?: string;
+	sortBy?: string;
+	sortDir?: string;
 	filtros?: any;
 }): Promise<PagedResponse<Producto>> => {
 	const params = new URLSearchParams();
 	params.append("page", String(page));
 	params.append("size", String(size));
-	if (sort) params.append("sort", sort);
+	params.append("sortBy", sortBy);
+	params.append("sortDir", sortDir);
 	if (filtros.tipos?.length)
 		filtros.tipos.forEach((id: string) => params.append("tipoIds", id));
 	if (filtros.categorias?.length)

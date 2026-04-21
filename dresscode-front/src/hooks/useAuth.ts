@@ -135,9 +135,21 @@ export const useAuth = () => {
 			if (responseData.token) {
 				const userId = responseData.id ?? responseData.userId;
 				const username = responseData.username ?? responseData.email;
-				// Normalizar el rol a mayúsculas
-				const rolRaw = responseData.rol ?? "USER";
-				const rol = rolRaw.toUpperCase();
+				// Normalizar el rol: manejar string, array y prefijo ROLE_ de Spring Security
+				const rolRaw: string =
+					(typeof responseData.rol === "string"
+						? responseData.rol
+						: Array.isArray(responseData.roles) && responseData.roles.length > 0
+							? typeof responseData.roles[0] === "string"
+								? responseData.roles[0]
+								: (responseData.roles[0]?.authority ?? "USER")
+							: Array.isArray(responseData.authorities) &&
+								  responseData.authorities.length > 0
+								? typeof responseData.authorities[0] === "string"
+									? responseData.authorities[0]
+									: (responseData.authorities[0]?.authority ?? "USER")
+								: "USER") || "USER";
+				const rol = rolRaw.toUpperCase().replace(/^ROLE_/, "");
 
 				localStorage.setItem("token", responseData.token);
 				if (username) localStorage.setItem("username", username);
