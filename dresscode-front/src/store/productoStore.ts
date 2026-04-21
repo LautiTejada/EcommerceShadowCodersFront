@@ -40,7 +40,8 @@ interface ProductoState {
 	fetchProductosPaged: (args: {
 		page?: number;
 		size?: number;
-		sort?: string;
+		sortBy?: string;
+		sortDir?: string;
 		filtros?: any;
 	}) => Promise<void>;
 }
@@ -56,38 +57,49 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 	fetchProductosPaged: async ({
 		page = 0,
 		size = 12,
-		sort = "",
+		sortBy = "id",
+		sortDir = "asc",
 		filtros = {},
 	}) => {
-		try {
-			const paged: PagedResponse<Producto> = await getProductosPaged({
-				page,
-				size,
-				sort,
-				filtros,
-			});
-			set({
-				pagedProductos: paged.content,
-				totalPages: paged.totalPages,
-				totalElements: paged.totalElements,
-				page: paged.number,
-				size: paged.size,
-			});
-		} catch (error) {
-		}
+		const paged: PagedResponse<Producto> = await getProductosPaged({
+			page,
+			size,
+			sortBy,
+			sortDir,
+			filtros,
+		});
+		const rawContent = Array.isArray(paged?.content)
+			? paged.content
+			: Array.isArray(paged as any)
+				? (paged as any)
+				: [];
+		// Filtrar items que son solo IDs (number) y normalizar descuentosProducto → descuentos
+		const content = rawContent
+			.filter((p: any) => p && typeof p === "object" && p.id !== undefined)
+			.map((p: any) => ({
+				...p,
+				descuentos: p.descuentos ?? p.descuentosProducto ?? [],
+			}));
+		set({
+			pagedProductos: content,
+			totalPages: paged?.totalPages ?? 0,
+			totalElements: paged?.totalElements ?? content.length,
+			page: paged?.number ?? 0,
+			size: paged?.size ?? size,
+		});
 	},
 	fetchProductos: async () => {
 		try {
 			const productosFromApi = await getProductos();
 			set({ productos: productosFromApi });
-		} catch (error) {
-		}
+		} catch (error) {}
 	},
 	fetchProductosActivos: async () => {
 		try {
 			const productos = await getProductosActivos();
 			set({ productosActivos: productos });
 		} catch (error) {
+			throw error;
 		}
 	},
 	agregarProductoConCategoria: async (producto, categoriaId) => {
@@ -117,38 +129,33 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			await updateProducto(id, producto);
 			await get().fetchProductos();
 			await get().fetchProductosActivos();
-		} catch (error) {
-		}
+		} catch (error) {}
 	},
 	activarProducto: async (id) => {
 		try {
 			await cambiarEstadoProducto(id);
 			await get().fetchProductos();
 			await get().fetchProductosActivos();
-		} catch (error) {
-		}
+		} catch (error) {}
 	},
 	desactivarProducto: async (id) => {
 		try {
 			await cambiarEstadoProducto(id);
 			await get().fetchProductos();
 			await get().fetchProductosActivos();
-		} catch (error) {
-		}
+		} catch (error) {}
 	},
 	fetchProductosPorCategoria: async (categoria) => {
 		try {
 			const productos = await getProductosPorCategoria(categoria);
 			set({ productos });
-		} catch (error) {
-		}
+		} catch (error) {}
 	},
 	fetchProductosFiltrados: async (filtros) => {
 		try {
 			const productos = await getProductosFiltrados(filtros);
 			set({ productosActivos: productos });
-		} catch (error) {
-		}
+		} catch (error) {}
 	},
 	setProductoActual: (producto) => set({ productoActual: producto }),
 }));

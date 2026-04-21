@@ -1,21 +1,44 @@
-﻿import { Swiper, SwiperSlide } from "swiper/react";
+﻿import { useEffect, useState } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import { Link } from "react-router-dom";
 import ProductCard from "../ProductCard/ProductCard";
-import { useProductoStore } from "../../../store/productoStore";
 import { Helmet } from "react-helmet-async";
 import styles from "../ProductCarouselSection/ProductCarouselSection.module.css";
 
-const OffersSection = () => {
-	const { productosActivos } = useProductoStore();
+const API_URL = import.meta.env.VITE_API_URL;
 
-	const productosConDescuento = productosActivos.filter(
-		(producto) =>
-			producto.descuentos &&
-			producto.descuentos.some((d) => d.activo && d.descuento?.activo),
+const tieneDescuentoActivo = (p: any) => {
+	const descuentos = p.descuentos ?? p.descuentosProducto ?? [];
+	return (
+		Array.isArray(descuentos) &&
+		descuentos.some(
+			(d: any) => d && d.activo && d.descuento && d.descuento.activo,
+		)
 	);
+};
+
+const OffersSection = () => {
+	const [productos, setProductos] = useState<any[]>([]);
+
+	useEffect(() => {
+		fetch(`${API_URL}/productos/paged?page=0&size=50&sortBy=id&sortDir=asc`)
+			.then((r) => r.json())
+			.then((data) => {
+				const items = (data?.content ?? [])
+					.filter((p: any) => p && typeof p === "object" && p.id)
+					.map((p: any) => ({
+						...p,
+						descuentos: p.descuentos ?? p.descuentosProducto ?? [],
+					}));
+				setProductos(items.filter(tieneDescuentoActivo));
+			})
+			.catch(() => {});
+	}, []);
+
+	if (productos.length === 0) return null;
 
 	return (
 		<>
@@ -34,7 +57,7 @@ const OffersSection = () => {
 			<section className={styles.section}>
 				<div className={styles.sectionHeader}>
 					<h2 className={styles.sectionTitle}>OFERTAS</h2>
-					<Link to="/catalog" className={styles.seeAll}>
+					<Link to="/catalog/ofertas" className={styles.seeAll}>
 						VER TODO &#8594;
 					</Link>
 				</div>
@@ -49,7 +72,7 @@ const OffersSection = () => {
 						900: { slidesPerView: 3.2, spaceBetween: 16 },
 						1200: { slidesPerView: 4, spaceBetween: 18 },
 					}}>
-					{productosConDescuento.map((producto) => (
+					{productos.map((producto) => (
 						<SwiperSlide key={producto.id}>
 							<ProductCard product={producto} />
 						</SwiperSlide>

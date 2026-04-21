@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { BannerCarousel } from "../../components/ui/BannerCarousel/BannerCarousel";
-import ImageCarousel from "../../components/ui/ImageCarousel/ImageCarousel";
 import React, { Suspense } from "react";
 const OffersSection = React.lazy(
 	() => import("../../components/ui/OffersSection/OffersSection"),
@@ -15,50 +14,81 @@ import { useCategoriaStore } from "../../store/categoriaStore";
 import styles from "./Home.module.css";
 import { useProductoStore } from "../../store/productoStore";
 import Loader from "../../components/ui/Loader/Loader";
-import { sileo } from "sileo";
 
 const Home = () => {
-	const { fetchCategoriasActivas } = useCategoriaStore();
-	const { productosActivos, fetchProductosActivos } = useProductoStore();
+	const { fetchCategoriasActivas, categoriasActivas } = useCategoriaStore();
+	const { fetchProductosActivos, fetchProductosPaged } = useProductoStore();
 	const [loading, setLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [zapatillas, setZapatillas] = useState<any[]>([]);
+	const [remeras, setRemeras] = useState<any[]>([]);
+	const [allItems, setAllItems] = useState<any[]>([]);
 
 	useEffect(() => {
 		setLoading(true);
-		setError(null);
-		Promise.all([fetchCategoriasActivas(), fetchProductosActivos()])
-			.then(() => setLoading(false))
-			.catch(() => {
-				setError("Error al cargar los datos");
-				setLoading(false);
-				sileo.error({
-					title: "Error",
-					description: "No se pudieron cargar los productos o categorías.",
-					type: "error",
-				});
-			});
+		fetchCategoriasActivas().catch(() => {});
+		const API_URL = import.meta.env.VITE_API_URL;
+		fetch(`${API_URL}/productos/paged?page=0&size=50&sortBy=id&sortDir=asc`)
+			.then((r) => r.json())
+			.then((data) => {
+				const items = (data?.content ?? []).filter(
+					(p: any) => p && typeof p === "object" && p.id,
+				);
+				setAllItems(items);
+			})
+			.catch(() => {})
+			.finally(() => setLoading(false));
+
+		// También actualizar el store para Catalog
+		fetchProductosActivos().catch(() =>
+			fetchProductosPaged({ page: 0, size: 50 }).catch(() => {}),
+		);
 	}, []);
 
-	const zapatillas = productosActivos.filter(
-		(producto) =>
-			producto.categoria?.nombreCategoria?.toUpperCase() === "ZAPATILLAS" &&
-			!(
-				producto.descuentos &&
-				producto.descuentos.some(
-					(d) => d.activo && d.descuento && d.descuento.activo,
-				)
+	// Re-filtrar cuando lleguen las categorías del store (resuelven IDs numéricos)
+	useEffect(() => {
+		if (allItems.length === 0) return;
+		const catMap = new Map<number, string>(
+			categoriasActivas.map((c) => [
+				c.id as number,
+				c.nombreCategoria.toUpperCase(),
+			]),
+		);
+		const tieneDescuento = (p: any) => {
+			const ds = p.descuentos ?? p.descuentosProducto ?? [];
+			return (
+				Array.isArray(ds) &&
+				ds.some((d: any) => d?.activo && d?.descuento?.activo)
+			);
+		};
+		const cat = (p: any) => {
+			if (typeof p.categoria === "object" && p.categoria !== null) {
+				return p.categoria.nombreCategoria?.toUpperCase() ?? "";
+			}
+			if (typeof p.categoria === "number") {
+				return catMap.get(p.categoria) ?? "";
+			}
+			return "";
+		};
+		setZapatillas(
+			allItems.filter(
+				(p) =>
+					(cat(p) === "ZAPATILLAS" ||
+						cat(p) === "CALZADO" ||
+						cat(p) === "CALZADOS") &&
+					!tieneDescuento(p),
 			),
-	);
-	const remeras = productosActivos.filter(
-		(producto) =>
-			producto.categoria?.nombreCategoria?.toUpperCase() === "REMERAS" &&
-			!(
-				producto.descuentos &&
-				producto.descuentos.some(
-					(d) => d.activo && d.descuento && d.descuento.activo,
-				)
+		);
+		setRemeras(
+			allItems.filter(
+				(p) =>
+					(cat(p) === "REMERAS" ||
+						cat(p) === "REMERA" ||
+						cat(p) === "INDUMENTARIA") &&
+					!tieneDescuento(p),
 			),
-	);
+		);
+	}, [allItems, categoriasActivas]);
 
 	if (loading) {
 		return <Loader />;
@@ -104,7 +134,6 @@ const Home = () => {
 				/>
 			</Helmet>
 			<BannerCarousel />
-			<ImageCarousel />
 			<Suspense fallback={<Loader />}>
 				<OffersSection />
 			</Suspense>

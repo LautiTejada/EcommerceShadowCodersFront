@@ -85,11 +85,12 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 		set({ cargando: true, error: null });
 		try {
 			const usuario = await usuarioAPI.getUsuarioPorId(id);
-			// Guardar el rol en localStorage y normalizar a mayúsculas
+			// Guardar el rol en localStorage y normalizar a mayúsculas, quitando prefijo ROLE_
 			if (usuario.rol) {
-				const rolNormalizado = usuario.rol.toUpperCase();
+				const rolNormalizado = (usuario.rol as string)
+					.toUpperCase()
+					.replace(/^ROLE_/, "");
 				localStorage.setItem("rol", rolNormalizado);
-				// Actualizar el rol en el usuario para asegurar consistencia
 				usuario.rol = rolNormalizado as any;
 			}
 			set({ usuarioActual: usuario, cargando: false });
@@ -259,6 +260,12 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 		// Silently refresh the full user object from the API in the background
 		try {
 			const usuario = await usuarioAPI.getUsuarioPorId(Number(userId));
+			// Normalizar el rol quitando prefijo ROLE_ de Spring Security
+			if (usuario.rol) {
+				usuario.rol = (usuario.rol as string)
+					.toUpperCase()
+					.replace(/^ROLE_/, "") as any;
+			}
 			set({ usuarioActual: usuario });
 		} catch {
 			// Keep the cached version if the endpoint is unavailable or user lacks permission

@@ -106,9 +106,7 @@ function App() {
 						</Suspense>
 					</RouteErrorBoundary>
 				</main>
-				<footer role="contentinfo">
-					<Footer />
-				</footer>
+				<Footer />
 			</Router>
 		</HelmetContextProvider>
 	);
