@@ -5,6 +5,7 @@ import { useProductoStore } from "../../../../store/productoStore";
 import { useProductoTalleStore } from "../../../../store/talleProductoStore";
 import { useCategoriaStore } from "../../../../store/categoriaStore";
 import { StockModal } from "../../../../components/admin/StockModal/StockModal";
+import { getProductoById } from "../../../../http/producto";
 import styles from "../AdminProductos.module.css";
 
 export const StockProducto = () => {
@@ -62,6 +63,19 @@ export const StockProducto = () => {
 				categoriaFiltro === "" || String(p?.categoria?.id) === categoriaFiltro;
 			return matchNombre && matchCat;
 		});
+
+	// Refrescar productos y el producto seleccionado tras crear un talle
+	const handleRefresh = async () => {
+		await fetchProductosPaged({ page: 0, size: 100 }).catch(() => {});
+		if (selectedProduct && selectedProduct.id) {
+			try {
+				const actualizado = await getProductoById(selectedProduct.id);
+				setSelectedProduct(actualizado);
+				setSuccessMessage("Talle creado correctamente");
+				setTimeout(() => setSuccessMessage(""), 2000);
+			} catch {}
+		}
+	};
 
 	return (
 		<div className={styles.pageWrapper}>
@@ -178,6 +192,7 @@ export const StockProducto = () => {
 					setSelectedProduct(null);
 				}}
 				onSave={handleSaveStock}
+				onRefresh={handleRefresh}
 			/>
 		</div>
 	);
