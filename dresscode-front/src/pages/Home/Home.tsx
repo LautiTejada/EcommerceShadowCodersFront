@@ -51,7 +51,7 @@ const Home = () => {
 		const catMap = new Map<number, string>(
 			categoriasActivas.map((c) => [
 				c.id as number,
-				c.nombreCategoria.toUpperCase(),
+				(c.nombreCategoria ?? "").toUpperCase(),
 			]),
 		);
 		const tieneDescuento = (p: any) => {
@@ -63,7 +63,7 @@ const Home = () => {
 		};
 		const cat = (p: any) => {
 			if (typeof p.categoria === "object" && p.categoria !== null) {
-				return p.categoria.nombreCategoria?.toUpperCase() ?? "";
+				return (p.categoria?.nombreCategoria ?? "").toUpperCase();
 			}
 			if (typeof p.categoria === "number") {
 				return catMap.get(p.categoria) ?? "";
