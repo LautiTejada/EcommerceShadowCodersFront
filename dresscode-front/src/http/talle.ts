@@ -49,7 +49,8 @@ export async function assignTalleToProducto(
 	productoId: number,
 	talleId: number,
 ) {
-	return apiFetch(`${baseUrl}/${talleId}/productos/${productoId}`, {
+	// Corrección: la ruta debe ser /talles/{talleId}/productos/{productoId}
+	return apiFetch(`${baseUrl}/talles/${talleId}/productos/${productoId}`, {
 		method: "POST",
 	});
 }
