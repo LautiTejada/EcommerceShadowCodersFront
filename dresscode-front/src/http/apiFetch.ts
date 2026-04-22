@@ -37,6 +37,13 @@ export async function apiFetch<T = any>(
 			try {
 				// Leer el body una sola vez
 				const text = await response.text();
+				console.error(
+					"[apiFetch] Error",
+					response.status,
+					response.url,
+					"body:",
+					text,
+				);
 
 				// Intentar parsear como JSON
 				try {
