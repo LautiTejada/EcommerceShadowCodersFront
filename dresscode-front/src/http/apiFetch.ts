@@ -37,6 +37,20 @@ export async function apiFetch<T = any>(
 			try {
 				// Leer el body una sola vez
 				const text = await response.text();
+				console.error(
+					"[apiFetch] Error",
+					response.status,
+					response.url,
+					"body:",
+					text,
+				);
+
+				// Manejo especial para 403
+				if (response.status === 403) {
+					throw new Error(
+						"Sesión expirada o acceso denegado. Por favor, vuelve a iniciar sesión.",
+					);
+				}
 
 				// Intentar parsear como JSON
 				try {

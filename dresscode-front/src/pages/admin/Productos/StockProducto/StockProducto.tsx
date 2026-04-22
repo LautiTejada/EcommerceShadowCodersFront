@@ -1,264 +1,199 @@
-import React, { useEffect, useRef, useState } from "react";
-import styles from "../../AgregarProducto/AgregarProducto.module.css";
+import { useState, useEffect } from "react";
 import type { Producto } from "../../../../types/Producto";
+import type { ProductoTalle } from "../../../../types/ProductoTalle";
 import { useProductoStore } from "../../../../store/productoStore";
 import { useProductoTalleStore } from "../../../../store/talleProductoStore";
-import type { ProductoTalle } from "../../../../types/ProductoTalle";
-import Swal from "sweetalert2";
-import { ModalAgregarTalleProduct } from "../../../../components/admin/ModalAgregarTalleProduct/ModalAgregarTalleProduct";
-
-const getColorLabel = (color: unknown): string => {
-	if (!color) return "";
-	if (typeof color === "string") return color;
-	if (typeof color === "object" && color !== null && "nombreColor" in color)
-		return (color as { nombreColor: string }).nombreColor;
-	return "";
-};
+import { useCategoriaStore } from "../../../../store/categoriaStore";
+import { StockModal } from "../../../../components/admin/StockModal/StockModal";
+import { getProductoById } from "../../../../http/producto";
+import styles from "../AdminProductos.module.css";
 
 export const StockProducto = () => {
+	const { pagedProductos, fetchProductosPaged } = useProductoStore();
+	const { categoriasActivas, fetchCategoriasActivas } = useCategoriaStore();
 	const { updateCantidadProductoTalle } = useProductoTalleStore();
-	const {
-		productosActivos,
-		fetchProductosActivos,
-		setProductoActual,
-		desactivarProducto,
-	} = useProductoStore();
 
-	const [product, setProduct] = useState<Producto | null>(null);
-	const [talleActual, setTalleActual] = useState<ProductoTalle | null>(null);
 	const [busqueda, setBusqueda] = useState("");
-	const [showProductos, setShowProductos] = useState(false);
-	const [cantidad, setCantidad] = useState<number | string>("");
-	const [productoAgregarTalle, setProductoAgregarTalle] =
-		useState<Producto | null>(null);
-	const [loading, setLoading] = useState(false);
-	const dropdownRef = useRef<HTMLDivElement>(null);
+	const [categoriaFiltro, setCategoriaFiltro] = useState("");
+	const [selectedProduct, setSelectedProduct] = useState<Producto | null>(null);
+	const [showModal, setShowModal] = useState(false);
+	const [successMessage, setSuccessMessage] = useState("");
 
 	useEffect(() => {
-		fetchProductosActivos();
-	}, [fetchProductosActivos]);
+		fetchCategoriasActivas().catch(() => {});
+		fetchProductosPaged({ page: 0, size: 100 }).catch(() => {});
+	}, [fetchCategoriasActivas, fetchProductosPaged]);
 
-	const handleSelectProducto = (prod: Producto) => {
-		setProduct(prod);
-		setProductoActual(prod);
-		setBusqueda(prod.nombre);
-		setShowProductos(false);
-		setTalleActual(null);
-		setCantidad("");
+	const handleOpenModal = (producto: Producto) => {
+		setSelectedProduct(producto);
+		setShowModal(true);
 	};
 
-	const handleTalleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-		const id = Number(e.target.value);
-		const talle = product?.talles?.find((t) => t.id === id) ?? null;
-		setTalleActual(talle);
-		setCantidad(talle?.cantidad ?? "");
+	const handleCloseModal = () => {
+		setShowModal(false);
+		setSelectedProduct(null);
 	};
 
-	const handleCantidadProductoTalle = async (e: React.FormEvent) => {
-		e.preventDefault();
-		if (!product?.id || !talleActual?.id) return;
-		const cant = Number(cantidad);
-		if (!cant || cant < 0) {
-			Swal.fire("Cantidad inválida", "Ingresá una cantidad válida.", "warning");
-			return;
+	const handleSaveStock = async (talle: ProductoTalle, cantidad: number) => {
+		if (typeof talle.id === "number") {
+			await updateCantidadProductoTalle(talle.id, cantidad);
 		}
-		setLoading(true);
-		try {
-			await updateCantidadProductoTalle(talleActual.id, cant);
-			Swal.fire("Guardado", "Stock actualizado correctamente.", "success");
-			setTalleActual(null);
-			setCantidad("");
-			setBusqueda("");
-			setProduct(null);
-			fetchProductosActivos();
-		} finally {
-			setLoading(false);
-		}
+		await fetchProductosPaged({ page: 0, size: 100 }).catch(() => {});
+		setSuccessMessage("Stock actualizado correctamente");
+		setTimeout(() => setSuccessMessage(""), 2000);
 	};
 
-	const handleEliminarProducto = async () => {
-		if (!product?.id) return;
-		const result = await Swal.fire({
-			title: "¿Desactivar producto?",
-			text: `"${product.nombre}" será desactivado.`,
-			icon: "warning",
-			showCancelButton: true,
-			confirmButtonColor: "#810000",
-			cancelButtonColor: "#666",
-			confirmButtonText: "Sí, desactivar",
-			cancelButtonText: "Cancelar",
+	// Normalizar productos y categorías igual que en Modificar
+	const listaProductos = pagedProductos;
+	const productosFiltrados = listaProductos
+		.filter((p) => typeof p === "object" && p !== null && p.id)
+		.map((p) => {
+			let categoriaObj = p.categoria;
+			if (typeof categoriaObj === "number") {
+				categoriaObj =
+					categoriasActivas.find((cat) => cat.id === categoriaObj) || null;
+			}
+			return { ...p, categoria: categoriaObj };
+		})
+		.filter((p) => {
+			const matchNombre = p?.nombre
+				?.toLowerCase()
+				?.includes(busqueda.toLowerCase());
+			const matchCat =
+				categoriaFiltro === "" || String(p?.categoria?.id) === categoriaFiltro;
+			return matchNombre && matchCat;
 		});
-		if (result.isConfirmed) {
-			await desactivarProducto(product.id);
-			Swal.fire("Desactivado", "El producto fue desactivado.", "success");
-			setProduct(null);
-			setProductoActual(null);
-			setBusqueda("");
-			setTalleActual(null);
-			setCantidad("");
-			fetchProductosActivos();
+
+	// Refrescar productos y el producto seleccionado tras crear un talle
+	const handleRefresh = async () => {
+		await fetchProductosPaged({ page: 0, size: 100 }).catch(() => {});
+		if (selectedProduct && selectedProduct.id) {
+			try {
+				const actualizado = await getProductoById(selectedProduct.id);
+				setSelectedProduct(actualizado);
+				setSuccessMessage("Talle creado correctamente");
+				setTimeout(() => setSuccessMessage(""), 2000);
+			} catch {}
 		}
 	};
-
-	const productosFiltrados = productosActivos.filter((p) =>
-		p.nombre.toLowerCase().includes(busqueda.toLowerCase()),
-	);
 
 	return (
-		<div className={styles.container}>
-			<div className={styles.header}>
-				<h1>Stock de Productos</h1>
-				<p>Buscá un producto, elegí el talle y actualizá el stock</p>
-			</div>
-
-			<form
-				className={styles.form}
-				onSubmit={handleCantidadProductoTalle}
-				noValidate>
-				{/* Búsqueda de producto */}
-				<div
-					className={`${styles.fieldGroup} ${styles.fullWidth}`}
-					style={{ position: "relative" }}>
-					<label className={styles.label}>
-						Buscar producto <span className={styles.required}>*</span>
-					</label>
+		<div className={styles.pageWrapper}>
+			{/* Toolbar igual a Modificar */}
+			<div className={styles.toolbar}>
+				<div className={`${styles.searchWrapper} ${styles.toolbarSearch}`}>
+					<span className={styles.searchIcon}>
+						<svg
+							viewBox="0 0 20 20"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1.8"
+							width="14"
+							height="14">
+							<circle cx="8.5" cy="8.5" r="5.5" />
+							<path strokeLinecap="round" d="M13 13l3 3" />
+						</svg>
+					</span>
 					<input
-						className={styles.input}
+						className={styles.searchInput}
 						value={busqueda}
-						onChange={(e) => {
-							setBusqueda(e.target.value);
-							setShowProductos(true);
-							setProduct(null);
-							setTalleActual(null);
-							setCantidad("");
-						}}
-						onFocus={() => setShowProductos(true)}
-						onBlur={() => setTimeout(() => setShowProductos(false), 150)}
-						placeholder="Escribí el nombre del producto..."
+						onChange={(e) => setBusqueda(e.target.value)}
+						placeholder="Buscar por nombre..."
 					/>
-					{showProductos && busqueda && productosFiltrados.length > 0 && (
-						<div
-							ref={dropdownRef}
-							style={{
-								position: "absolute",
-								top: "100%",
-								left: 0,
-								right: 0,
-								background: "#fff",
-								border: "1.5px solid #810000",
-								borderTop: "none",
-								borderRadius: "0 0 4px 4px",
-								zIndex: 10,
-								maxHeight: 200,
-								overflowY: "auto",
-								boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-							}}>
-							{productosFiltrados.map((prod) => (
-								<div
-									key={prod.id}
-									style={{
-										padding: "9px 12px",
-										cursor: "pointer",
-										fontSize: "0.875rem",
-										color: "#1a1a1a",
-										borderBottom: "1px solid #f0eef6",
-									}}
-									onMouseDown={() => handleSelectProducto(prod)}
-									onMouseEnter={(e) =>
-										(e.currentTarget.style.background = "rgba(129,0,0,0.07)")
-									}
-									onMouseLeave={(e) => (e.currentTarget.style.background = "")}>
-									{prod.nombre}
-								</div>
-							))}
-						</div>
+					{busqueda && (
+						<button
+							type="button"
+							className={styles.searchClear}
+							onClick={() => setBusqueda("")}
+							aria-label="Limpiar">
+							✕
+						</button>
 					)}
 				</div>
+				<select
+					className={styles.filterSelect}
+					value={categoriaFiltro}
+					onChange={(e) => setCategoriaFiltro(e.target.value)}>
+					<option value="">Todas las categorías</option>
+					{categoriasActivas.map((cat) => (
+						<option key={cat.id} value={String(cat.id)}>
+							{cat.nombreCategoria}
+						</option>
+					))}
+				</select>
+				<span className={styles.countBadge}>
+					{productosFiltrados.length} de {listaProductos.length} productos
+				</span>
+			</div>
 
-				{/* Detalles del producto seleccionado */}
-				{product && (
-					<>
-						<div
-							style={{
-								display: "flex",
-								justifyContent: "space-between",
-								alignItems: "center",
-								padding: "10px 0 14px",
-								borderBottom: "1px solid #f0eef6",
-							}}>
-							<span
-								style={{
-									fontWeight: 700,
-									fontSize: "0.95rem",
-									color: "#1a1a1a",
-								}}>
-								{product.nombre}
-								{getColorLabel(product.color)
-									? ` — ${getColorLabel(product.color)}`
-									: ""}
-							</span>
-							<button
-								type="button"
-								className={styles.btnSecondary}
-								onClick={() => setProductoAgregarTalle(product)}>
-								+ Agregar talle
-							</button>
-						</div>
-
-						<div className={styles.formGrid}>
-							<div className={styles.fieldGroup}>
-								<label className={styles.label}>Talle</label>
-								<select
-									className={styles.select}
-									value={talleActual?.id ?? ""}
-									onChange={handleTalleChange}>
-									<option value="">Seleccioná un talle</option>
-									{product.talles?.map((t) => (
-										<option key={t.id} value={t.id}>
-											{t.talle.tipoTalle} — stock: {t.cantidad}
-										</option>
-									))}
-								</select>
-							</div>
-
-							<div className={styles.fieldGroup}>
-								<label className={styles.label}>Nueva cantidad</label>
-								<input
-									className={styles.input}
-									type="number"
-									min="0"
-									value={cantidad}
-									onChange={(e) => setCantidad(e.target.value)}
-									placeholder="0"
-									disabled={!talleActual}
-								/>
-							</div>
-						</div>
-
-						<div className={styles.actions}>
-							<button
-								type="button"
-								className={styles.btnSecondary}
-								onClick={handleEliminarProducto}>
-								Desactivar producto
-							</button>
-							<button
-								type="submit"
-								className={styles.btnPrimary}
-								disabled={loading || !talleActual}>
-								{loading ? "Guardando..." : "Guardar stock"}
-							</button>
-						</div>
-					</>
-				)}
-			</form>
-
-			{productoAgregarTalle && (
-				<ModalAgregarTalleProduct
-					producto={productoAgregarTalle}
-					onClose={() => setProductoAgregarTalle(null)}
-				/>
+			{/* Mensaje de éxito */}
+			{successMessage && (
+				<div className={styles.successMessage}>{successMessage}</div>
 			)}
+
+			{/* Tabla igual a Modificar */}
+			{listaProductos.length === 0 ? (
+				<div className={styles.listEmpty}>
+					<span className={styles.listEmptyIcon}>📦</span>
+					Cargando productos...
+				</div>
+			) : productosFiltrados.length === 0 ? (
+				<div className={styles.listEmpty}>
+					<span className={styles.listEmptyIcon}>🔍</span>
+					Sin resultados para esa búsqueda
+				</div>
+			) : (
+				<table className={styles.productTable}>
+					<thead>
+						<tr>
+							<th>Nombre</th>
+							<th>Categoría</th>
+							<th>Talles</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						{productosFiltrados.map((prod: Producto) => (
+							<tr key={prod.id}>
+								<td className={styles.productTableName}>{prod.nombre}</td>
+								<td>
+									{prod.categoria?.nombreCategoria ? (
+										<span className={styles.badge}>
+											{prod.categoria.nombreCategoria}
+										</span>
+									) : (
+										<span style={{ color: "#ccc" }}>—</span>
+									)}
+								</td>
+								<td>{prod.talles?.length ?? 0}</td>
+								<td>
+									<button
+										type="button"
+										className={styles.productTableBtn}
+										onClick={() => {
+											setSelectedProduct(prod);
+											setShowModal(true);
+										}}>
+										<span style={{ fontSize: "1rem", lineHeight: 1 }}>✏</span>{" "}
+										Editar stock
+									</button>
+								</td>
+							</tr>
+						))}
+					</tbody>
+				</table>
+			)}
+
+			<StockModal
+				isOpen={showModal}
+				producto={selectedProduct}
+				onClose={() => {
+					setShowModal(false);
+					setSelectedProduct(null);
+				}}
+				onSave={handleSaveStock}
+				onRefresh={handleRefresh}
+			/>
 		</div>
 	);
 };
