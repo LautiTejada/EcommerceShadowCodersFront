@@ -24,15 +24,7 @@ export const StockProducto = () => {
 		fetchProductosPaged({ page: 0, size: 100 }).catch(() => {});
 	}, [fetchCategoriasActivas, fetchProductosPaged]);
 
-	const handleOpenModal = (producto: Producto) => {
-		setSelectedProduct(producto);
-		setShowModal(true);
-	};
-
-	const handleCloseModal = () => {
-		setShowModal(false);
-		setSelectedProduct(null);
-	};
+	// Eliminadas funciones no utilizadas handleOpenModal y handleCloseModal
 
 	const handleSaveStock = async (talle: ProductoTalle, cantidad: number) => {
 		if (typeof talle.id === "number") {
@@ -51,7 +43,7 @@ export const StockProducto = () => {
 			let categoriaObj = p.categoria;
 			if (typeof categoriaObj === "number") {
 				categoriaObj =
-					categoriasActivas.find((cat) => cat.id === categoriaObj) || null;
+					categoriasActivas.find((cat) => cat.id === categoriaObj) || undefined;
 			}
 			return { ...p, categoria: categoriaObj };
 		})
@@ -146,6 +138,7 @@ export const StockProducto = () => {
 				<table className={styles.productTable}>
 					<thead>
 						<tr>
+							<th>Imagen</th>
 							<th>Nombre</th>
 							<th>Categoría</th>
 							<th>Talles</th>
@@ -153,33 +146,71 @@ export const StockProducto = () => {
 						</tr>
 					</thead>
 					<tbody>
-						{productosFiltrados.map((prod: Producto) => (
-							<tr key={prod.id}>
-								<td className={styles.productTableName}>{prod.nombre}</td>
-								<td>
-									{prod.categoria?.nombreCategoria ? (
-										<span className={styles.badge}>
-											{prod.categoria.nombreCategoria}
-										</span>
-									) : (
-										<span style={{ color: "#ccc" }}>—</span>
-									)}
-								</td>
-								<td>{prod.talles?.length ?? 0}</td>
-								<td>
-									<button
-										type="button"
-										className={styles.productTableBtn}
-										onClick={() => {
-											setSelectedProduct(prod);
-											setShowModal(true);
-										}}>
-										<span style={{ fontSize: "1rem", lineHeight: 1 }}>✏</span>{" "}
-										Editar stock
-									</button>
-								</td>
-							</tr>
-						))}
+						{productosFiltrados.map((prod: Producto) => {
+							const imgSrc = (() => {
+								const u = prod.imagenes?.[0]?.urlImagen;
+								if (!u) return null;
+								if (u.startsWith("http")) return u;
+								return `http://localhost:8080${encodeURI(u)}`;
+							})();
+							return (
+								<tr key={prod.id}>
+									<td style={{ width: 70, padding: 4 }}>
+										{imgSrc ? (
+											<img
+												src={imgSrc}
+												alt={prod.nombre}
+												style={{
+													width: 56,
+													height: 56,
+													objectFit: "contain",
+													borderRadius: 4,
+													background: "#222",
+												}}
+											/>
+										) : (
+											<div
+												style={{
+													width: 56,
+													height: 56,
+													display: "flex",
+													alignItems: "center",
+													justifyContent: "center",
+													background: "#222",
+													borderRadius: 4,
+													color: "#888",
+													fontSize: 12,
+												}}>
+												Sin imagen
+											</div>
+										)}
+									</td>
+									<td className={styles.productTableName}>{prod.nombre}</td>
+									<td>
+										{prod.categoria?.nombreCategoria ? (
+											<span className={styles.badge}>
+												{prod.categoria.nombreCategoria}
+											</span>
+										) : (
+											<span style={{ color: "#ccc" }}>—</span>
+										)}
+									</td>
+									<td>{prod.talles?.length ?? 0}</td>
+									<td>
+										<button
+											type="button"
+											className={styles.productTableBtn}
+											onClick={() => {
+												setSelectedProduct(prod);
+												setShowModal(true);
+											}}>
+											<span style={{ fontSize: "1rem", lineHeight: 1 }}>✏</span>{" "}
+											Editar stock
+										</button>
+									</td>
+								</tr>
+							);
+						})}
 					</tbody>
 				</table>
 			)}
