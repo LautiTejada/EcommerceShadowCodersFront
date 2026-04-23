@@ -142,8 +142,8 @@ const HomeAdmin: React.FC = () => {
 							<p className={styles.emptyMessage}>No hay productos</p>
 						) : (
 							<div className={styles.productList}>
-								{lastProducts.map((product: any) => (
-									<div key={product.id} className={styles.productItem}>
+								{lastProducts.map((product: any, idx: number) => (
+									<div key={product.id ?? idx} className={styles.productItem}>
 										<div className={styles.productInfo}>
 											<p className={styles.productName}>{product.nombre}</p>
 											<p className={styles.productDetail}>
@@ -169,8 +169,8 @@ const HomeAdmin: React.FC = () => {
 							<p className={styles.emptyMessage}>No hay órdenes</p>
 						) : (
 							<div className={styles.orderList}>
-								{lastOrders.map((order: any) => (
-									<div key={order.id} className={styles.orderItem}>
+								{lastOrders.map((order: any, idx: number) => (
+									<div key={order.id ?? idx} className={styles.orderItem}>
 										<div className={styles.orderInfo}>
 											<p className={styles.orderNumber}>Orden #{order.id}</p>
 											<p className={styles.orderDate}>

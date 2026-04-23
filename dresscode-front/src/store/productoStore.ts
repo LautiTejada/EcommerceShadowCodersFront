@@ -98,8 +98,8 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 		try {
 			const productos = await getProductosActivos();
 			set({ productosActivos: productos });
-		} catch (error) {
-			throw error;
+		} catch {
+			// /activos puede fallar (ej: bug Hibernate en backend); se ignora silenciosamente
 		}
 	},
 	agregarProductoConCategoria: async (producto, categoriaId) => {
@@ -125,11 +125,9 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 		}
 	},
 	editarProducto: async (id, producto) => {
-		try {
-			await updateProducto(id, producto);
-			await get().fetchProductos();
-			await get().fetchProductosActivos();
-		} catch (error) {}
+		await updateProducto(id, producto);
+		await get().fetchProductos();
+		await get().fetchProductosActivos();
 	},
 	activarProducto: async (id) => {
 		try {

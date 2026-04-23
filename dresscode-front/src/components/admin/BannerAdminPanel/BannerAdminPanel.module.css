@@ -204,50 +204,56 @@
 	color: #721c24;
 }
 .actionsCell {
-	text-align: center;
 	display: flex;
-	gap: 8px;
-	justify-content: center;
-}
-.btnAction {
-	width: 32px;
-	height: 32px;
-	border: 1px solid var(--cb);
-	background-color: var(--cw);
-	border-radius: var(--rs);
-	cursor: pointer;
-	font-size: 16px;
-	transition: var(--tr);
-	display: flex;
+	gap: 6px;
 	align-items: center;
-	justify-content: center;
-	padding: 0;
 }
-.btnAction:hover {
-	background-color: var(--cbgl);
-	border-color: var(--ctm);
-	transform: scale(1.1);
+.btnEdit,
+.btnToggleOn,
+.btnToggleOff,
+.btnDeleteRow {
+	padding: 5px 11px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.15s;
+	font-family: inherit;
+	white-space: nowrap;
 }
-.toggleActive {
-	color: var(--ctg);
+.btnEdit {
+	background: transparent;
+	color: #333;
+	border: 1.5px solid #ddd;
 }
-.toggleActive:hover {
-	background-color: #e8f5e9;
-	border-color: var(--ctg);
+.btnEdit:hover {
+	border-color: #810000;
+	color: #810000;
+	background: rgba(129, 0, 0, 0.04);
 }
-.toggleInactive {
-	color: var(--cgr);
+.btnToggleOn {
+	background: transparent;
+	color: #b45309;
+	border: 1.5px solid #f5d69c;
 }
-.toggleInactive:hover {
-	background-color: #ffebee;
-	border-color: var(--cgr);
+.btnToggleOn:hover {
+	background: #fff8e1;
 }
-.btnDelete {
-	color: var(--cgr);
+.btnToggleOff {
+	background: transparent;
+	color: #1a7a3c;
+	border: 1.5px solid #b2dfc0;
 }
-.btnDelete:hover:not(:disabled) {
-	background-color: #ffe6e6;
-	border-color: var(--cgr);
+.btnToggleOff:hover {
+	background: #f0fff4;
+}
+.btnDeleteRow {
+	background: transparent;
+	color: #c00;
+	border: 1.5px solid #f5c5c5;
+}
+.btnDeleteRow:hover {
+	background: #fff0f0;
 }
 .modal {
 	position: fixed;

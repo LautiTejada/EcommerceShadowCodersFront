@@ -45,7 +45,7 @@ export const getProductoById = async (id: number) => {
 
 export const updateProducto = async (id: number, producto: Producto) => {
 	try {
-		return await apiFetch(`${baseUrl}/productos/${id}`, {
+		return await apiFetch(`${baseUrl}/productos/${id}/editar`, {
 			method: "PUT",
 			auth: true,
 			body: JSON.stringify(producto),

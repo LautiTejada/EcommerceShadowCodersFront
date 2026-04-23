@@ -169,26 +169,21 @@ export const BannerAdminPanel = () => {
 									</td>
 									<td className={styles.actionsCell}>
 										<button
-											className={styles.btnAction}
-											onClick={() => handleOpenEditModal(banner)}
-											title="Editar">
-											✏️
+											className={styles.btnEdit}
+											onClick={() => handleOpenEditModal(banner)}>
+											Editar
 										</button>
 										<button
-											className={`${styles.btnAction} ${
-												banner.activo
-													? styles.toggleActive
-													: styles.toggleInactive
-											}`}
-											onClick={() => handleToggle(banner.id)}
-											title={`${banner.activo ? "Desactivar" : "Activar"}`}>
-											{banner.activo ? "👁️" : "🚫"}
+											className={
+												banner.activo ? styles.btnToggleOn : styles.btnToggleOff
+											}
+											onClick={() => handleToggle(banner.id)}>
+											{banner.activo ? "Desactivar" : "Activar"}
 										</button>
 										<button
-											className={`${styles.btnAction} ${styles.btnDelete}`}
-											onClick={() => setDeleteConfirm(banner.id)}
-											title="Eliminar">
-											🗑️
+											className={styles.btnDeleteRow}
+											onClick={() => setDeleteConfirm(banner.id)}>
+											Eliminar
 										</button>
 									</td>
 								</tr>
