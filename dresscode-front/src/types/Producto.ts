@@ -15,4 +15,5 @@ export interface Producto {
 	descuentos?: DescuentoProducto[];
 	talles?: ProductoTalle[];
 	imagenes?: ImagenProducto[];
+	activo?: boolean;
 }

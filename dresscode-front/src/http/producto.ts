@@ -55,12 +55,19 @@ export const updateProducto = async (id: number, producto: Producto) => {
 	}
 };
 
-export const cambiarEstadoProducto = async (id: number) => {
+// Cambia el estado activo de un producto (activar/desactivar)
+export const cambiarEstadoProducto = async (
+	id: number,
+	nuevoEstado: boolean,
+) => {
 	try {
-		return await apiFetch(`${baseUrl}/productos/${id}/status`, {
-			method: "PATCH",
-			auth: true,
-		});
+		return await apiFetch(
+			`${baseUrl}/productos/${id}/cambiar-etado?nuevoEstado=${nuevoEstado}`,
+			{
+				method: "PUT",
+				auth: true,
+			},
+		);
 	} catch (error) {
 		throw error;
 	}

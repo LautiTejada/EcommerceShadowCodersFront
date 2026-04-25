@@ -131,16 +131,14 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 	},
 	activarProducto: async (id) => {
 		try {
-			await cambiarEstadoProducto(id);
-			await get().fetchProductos();
-			await get().fetchProductosActivos();
+			await cambiarEstadoProducto(id, true);
+			await get().fetchProductosPaged({ page: 0, size: 100 });
 		} catch (error) {}
 	},
 	desactivarProducto: async (id) => {
 		try {
-			await cambiarEstadoProducto(id);
-			await get().fetchProductos();
-			await get().fetchProductosActivos();
+			await cambiarEstadoProducto(id, false);
+			await get().fetchProductosPaged({ page: 0, size: 100 });
 		} catch (error) {}
 	},
 	fetchProductosPorCategoria: async (categoria) => {

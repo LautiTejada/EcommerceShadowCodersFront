@@ -142,6 +142,7 @@ export const StockProducto = () => {
 							<th>Nombre</th>
 							<th>Categoría</th>
 							<th>Talles</th>
+							<th>Activo</th>
 							<th></th>
 						</tr>
 					</thead>
@@ -196,6 +197,17 @@ export const StockProducto = () => {
 										)}
 									</td>
 									<td>{prod.talles?.length ?? 0}</td>
+									<td>
+										{prod.activo ? (
+											<span style={{ color: "#00c853", fontWeight: 600 }}>
+												Activo
+											</span>
+										) : (
+											<span style={{ color: "#b00", fontWeight: 600 }}>
+												Inactivo
+											</span>
+										)}
+									</td>
 									<td>
 										<button
 											type="button"
