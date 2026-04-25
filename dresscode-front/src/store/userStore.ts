@@ -17,8 +17,6 @@ interface UsuarioState {
 	crearUsuario: (usuario: Usuario) => Promise<void>;
 	actualizarUsuario: (id: number, datos: Usuario) => Promise<void>;
 	cambiarEstadoUsuario: (id: number) => Promise<void>;
-	activarUsuario: (id: number) => Promise<void>;
-	desactivarUsuario: (id: number) => Promise<void>;
 	crearDireccionUsuario: (
 		usuarioId: number,
 		direccion: Direccion,
@@ -35,14 +33,27 @@ interface UsuarioState {
 	) => Promise<void>;
 	inicializarUsuario: () => Promise<void>;
 	setUsuarioActual: (categoria: Usuario | null) => void;
+	setDireccionesUsuario: (direcciones: Direccion[]) => void;
 
 	limpiarError: () => void;
 }
 
+// Hydrate synchronously at module load so PrivateRoute never sees null on first render
+const _syncUsuario = (() => {
+	const userId = localStorage.getItem("usuario");
+	const token = localStorage.getItem("token");
+	if (!userId || !token) return null;
+	const username = localStorage.getItem("username") ?? "";
+	const rolRaw = localStorage.getItem("rol") ?? "USER";
+	// Normalizar el rol a mayúsculas
+	const rol = rolRaw.toUpperCase();
+	return { id: Number(userId), username, rol } as any;
+})();
+
 export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 	usuarios: [],
 	direccionesUsuario: [],
-	usuarioActual: null,
+	usuarioActual: _syncUsuario,
 	cargando: false,
 	error: null,
 
@@ -74,7 +85,14 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 		set({ cargando: true, error: null });
 		try {
 			const usuario = await usuarioAPI.getUsuarioPorId(id);
-
+			// Guardar el rol en localStorage y normalizar a mayúsculas, quitando prefijo ROLE_
+			if (usuario.rol) {
+				const rolNormalizado = (usuario.rol as string)
+					.toUpperCase()
+					.replace(/^ROLE_/, "");
+				localStorage.setItem("rol", rolNormalizado);
+				usuario.rol = rolNormalizado as any;
+			}
 			set({ usuarioActual: usuario, cargando: false });
 		} catch (error) {
 			if (error instanceof Error) {
@@ -128,93 +146,136 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 		}
 	},
 
-	activarUsuario: async (id) => {
-		set({ cargando: true, error: null });
-		try {
-			const actualizado = await usuarioAPI.activateUsuario(id);
-			set((state) => ({
-				usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
-				cargando: false,
-			}));
-		} catch (error) {
-			if (error instanceof Error) {
-				set({ error: error.message, cargando: false });
-			}
-		}
-	},
-
-	desactivarUsuario: async (id) => {
-		set({ cargando: true, error: null });
-		try {
-			const actualizado = await usuarioAPI.desactivateUsuario(id);
-			set((state) => ({
-				usuarios: state.usuarios.map((u) => (u.id === id ? actualizado : u)),
-				cargando: false,
-			}));
-		} catch (error) {
-			if (error instanceof Error) {
-				set({ error: error.message, cargando: false });
-			}
-		}
-	},
-
 	obtenerDireccionesUsuario: async (usuarioId) => {
 		try {
-			const direcciones = await usuarioAPI.getDireccionesDeUsuario(usuarioId);
-
-			const direccionesValidas = Array.isArray(direcciones)
-				? direcciones.filter(
-						(d) =>
-							typeof d === "object" &&
-							d !== null &&
-							"calle" in d &&
-							"numero" in d,
-					)
+			const raw = await usuarioAPI.getDireccionesDeUsuario(usuarioId);
+			const lista = Array.isArray(raw)
+				? raw
+				: Array.isArray(raw?.content)
+					? raw.content
+					: Array.isArray(raw?.data)
+						? raw.data
+						: [];
+			const validas = lista.filter(
+				(d: any) =>
+					typeof d === "object" && d !== null && "calle" in d && "numero" in d,
+			);
+			set((state) => ({
+				direccionesUsuario: validas,
+				usuarioActual: state.usuarioActual
+					? { ...state.usuarioActual, direcciones: validas }
+					: null,
+			}));
+		} catch {
+			// 403/error: usar las direcciones que ya están en usuarioActual como fallback
+			const actual = get().usuarioActual as any;
+			const fallback = Array.isArray(actual?.direcciones)
+				? actual.direcciones
 				: [];
-			set({ direccionesUsuario: direccionesValidas });
-		} catch (error) {}
+			set({ direccionesUsuario: fallback });
+		}
 	},
 
 	crearDireccionUsuario: async (usuarioId, direccion) => {
 		try {
-			await usuarioAPI.createDireccionDeUsuario(usuarioId, direccion);
-			await get().obtenerDireccionesUsuario(usuarioId);
+			const nueva = await usuarioAPI.createDireccionDeUsuario(
+				usuarioId,
+				direccion,
+			);
+			const nuevaDir =
+				nueva && typeof nueva === "object" && "calle" in nueva
+					? nueva
+					: { ...direccion, id: Date.now(), activo: true };
+			set((state) => {
+				const lista = [...state.direccionesUsuario, nuevaDir];
+				return {
+					direccionesUsuario: lista,
+					usuarioActual: state.usuarioActual
+						? { ...state.usuarioActual, direcciones: lista }
+						: null,
+				};
+			});
 		} catch (error) {}
 	},
 
 	actualizarDireccionUsuario: async (usuarioId, direccionId, direccion) => {
 		try {
-			await usuarioAPI.updateDireccionDeUsuario(
+			const actualizada = await usuarioAPI.updateDireccionDeUsuario(
 				usuarioId,
 				direccionId,
 				direccion,
 			);
-			await get().obtenerDireccionesUsuario(usuarioId);
+			set((state) => {
+				const lista = state.direccionesUsuario.map((d: any) =>
+					d.id === direccionId
+						? actualizada && "calle" in actualizada
+							? actualizada
+							: { ...d, ...direccion }
+						: d,
+				);
+				return {
+					direccionesUsuario: lista,
+					usuarioActual: state.usuarioActual
+						? { ...state.usuarioActual, direcciones: lista }
+						: null,
+				};
+			});
 		} catch (error) {}
 	},
 
 	desactivarDireccionUsuario: async (usuarioId, direccionId) => {
 		try {
 			await usuarioAPI.desactivarDireccionDeUsuario(usuarioId, direccionId);
-			await get().obtenerDireccionesUsuario(usuarioId);
+			set((state) => {
+				const lista = state.direccionesUsuario.map((d: any) =>
+					d.id === direccionId ? { ...d, activo: false } : d,
+				);
+				return {
+					direccionesUsuario: lista,
+					usuarioActual: state.usuarioActual
+						? { ...state.usuarioActual, direcciones: lista }
+						: null,
+				};
+			});
 		} catch (error) {}
 	},
 
 	inicializarUsuario: async () => {
-		set({ cargando: true });
+		const userId = localStorage.getItem("usuario");
+		const token = localStorage.getItem("token");
+
+		if (!userId || !token) {
+			set({ usuarioActual: null, cargando: false });
+			return;
+		}
+
+		// Hydrate instantly from localStorage so routes render without waiting for the API
+		const username = localStorage.getItem("username") ?? "";
+		const rol = localStorage.getItem("rol") ?? "USER";
+		set({
+			usuarioActual: { id: Number(userId), username, rol } as any,
+			cargando: false,
+		});
+
+		// Silently refresh the full user object from the API in the background
 		try {
-			const userId = localStorage.getItem("usuario");
-			if (userId) {
-				await get().obtenerUsuarioPorId(Number(userId));
-			} else {
-				set({ usuarioActual: null });
+			const usuario = await usuarioAPI.getUsuarioPorId(Number(userId));
+			// Normalizar el rol quitando prefijo ROLE_ de Spring Security
+			if (usuario.rol) {
+				usuario.rol = (usuario.rol as string)
+					.toUpperCase()
+					.replace(/^ROLE_/, "") as any;
 			}
-		} finally {
-			set({ cargando: false });
+			set({ usuarioActual: usuario });
+		} catch {
+			// Keep the cached version if the endpoint is unavailable or user lacks permission
 		}
 	},
 
 	limpiarError: () => set({ error: null }),
 
 	setUsuarioActual: (usuario) => set({ usuarioActual: usuario }),
+
+	setDireccionesUsuario: (direcciones) =>
+		set({ direccionesUsuario: direcciones }),
 }));

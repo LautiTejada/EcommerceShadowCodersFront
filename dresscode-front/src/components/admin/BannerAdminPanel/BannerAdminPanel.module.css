@@ -1,0 +1,538 @@
+:root {
+	--c: #000;
+	--ct: #333;
+	--cts: #666;
+	--ctm: #999;
+	--cb: #ddd;
+	--cbl: #eee;
+	--cbg: #f9f9f9;
+	--cbgl: #f0f0f0;
+	--cbgll: #fafafa;
+	--cw: #fff;
+	--cl: #0066cc;
+	--ctg: #28a745;
+	--cgr: #dc3545;
+	--cg: #c82333;
+	--ce: #c33;
+	--ceb: #fee;
+	--cs: #3c3;
+	--csb: #efe;
+	--rs: 4px;
+	--rm: 8px;
+	--rf: 12px;
+	--sh: 0 2px 4px rgba(0, 0, 0, 0.05);
+	--shm: 0 10px 40px rgba(0, 0, 0, 0.2);
+	--shl: 0 2px 8px rgba(0, 0, 0, 0.1);
+	--tr: all 0.2s ease;
+}
+.panelContainer {
+	padding: 20px;
+	background-color: var(--cbg);
+	border-radius: var(--rm);
+	min-height: 400px;
+}
+.header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+.header h2 {
+	margin: 0;
+	font-size: 24px;
+	color: var(--ct);
+}
+.btnCreate,
+.btnSave,
+.btnCancel {
+	padding: 10px 20px;
+	border: none;
+	border-radius: var(--rs);
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: var(--tr);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+.btnCreate,
+.btnSave {
+	background-color: var(--c);
+	color: var(--cw);
+}
+.btnCreate:hover:not(:disabled),
+.btnSave:hover:not(:disabled) {
+	background-color: var(--ct);
+	transform: translateY(-2px);
+	box-shadow: var(--shm);
+}
+.btnCancel {
+	background-color: var(--cbgl);
+	color: var(--ct);
+	border: 1px solid var(--cb);
+}
+.btnCancel:hover:not(:disabled) {
+	background-color: #e0e0e0;
+	border-color: var(--ctm);
+}
+.btnCreate:disabled,
+.btnSave:disabled,
+.btnCancel:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+.errorMessage,
+.successMessage {
+	padding: 12px 16px;
+	border-left: 4px solid;
+	border-radius: var(--rs);
+	margin-bottom: 16px;
+	font-size: 14px;
+	animation: slideDown 0.3s ease-out;
+}
+.errorMessage {
+	background-color: var(--ceb);
+	color: var(--ce);
+	border-color: var(--ce);
+}
+.successMessage {
+	background-color: var(--csb);
+	color: var(--cs);
+	border-color: var(--cs);
+}
+@keyframes slideDown {
+	from {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes slideUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+.loading,
+.empty {
+	text-align: center;
+	padding: 60px 20px;
+	color: var(--cts);
+	font-size: 16px;
+}
+.empty p {
+	margin-bottom: 20px;
+	color: var(--ctm);
+}
+.tableContainer {
+	overflow-x: auto;
+	background: var(--cw);
+	border-radius: var(--rs);
+	box-shadow: var(--sh);
+}
+.table {
+	width: 100%;
+	border-collapse: collapse;
+	font-size: 14px;
+}
+.table thead {
+	background-color: var(--cbgl);
+	border-bottom: 2px solid var(--cb);
+}
+.table th {
+	padding: 12px 16px;
+	text-align: left;
+	font-weight: 600;
+	color: var(--ct);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	font-size: 12px;
+}
+.table tbody tr {
+	border-bottom: 1px solid var(--cbl);
+	transition: var(--tr);
+}
+.table tbody tr:hover {
+	background-color: var(--cbg);
+}
+.table td {
+	padding: 12px 16px;
+	color: var(--cts);
+}
+.titleCell,
+.marcaCell {
+	font-weight: 500;
+	max-width: 250px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.marcaCell {
+	color: var(--cl);
+}
+.ordenCell,
+.activoCell {
+	text-align: center;
+}
+.ordenCell {
+	font-weight: 600;
+	color: var(--ct);
+}
+.activeBadge,
+.inactiveBadge {
+	display: inline-block;
+	padding: 4px 12px;
+	border-radius: var(--rf);
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+.activeBadge {
+	background-color: #d4edda;
+	color: #155724;
+}
+.inactiveBadge {
+	background-color: var(--ceb);
+	color: #721c24;
+}
+.actionsCell {
+	display: flex;
+	gap: 6px;
+	align-items: center;
+}
+.btnEdit,
+.btnToggleOn,
+.btnToggleOff,
+.btnDeleteRow {
+	padding: 5px 11px;
+	border-radius: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.15s;
+	font-family: inherit;
+	white-space: nowrap;
+}
+.btnEdit {
+	background: transparent;
+	color: #333;
+	border: 1.5px solid #ddd;
+}
+.btnEdit:hover {
+	border-color: #810000;
+	color: #810000;
+	background: rgba(129, 0, 0, 0.04);
+}
+.btnToggleOn {
+	background: transparent;
+	color: #b45309;
+	border: 1.5px solid #f5d69c;
+}
+.btnToggleOn:hover {
+	background: #fff8e1;
+}
+.btnToggleOff {
+	background: transparent;
+	color: #1a7a3c;
+	border: 1.5px solid #b2dfc0;
+}
+.btnToggleOff:hover {
+	background: #f0fff4;
+}
+.btnDeleteRow {
+	background: transparent;
+	color: #c00;
+	border: 1.5px solid #f5c5c5;
+}
+.btnDeleteRow:hover {
+	background: #fff0f0;
+}
+.modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	padding: 20px;
+}
+.modalContent,
+.confirmDialog {
+	background: var(--cw);
+	border-radius: var(--rm);
+	padding: 24px;
+	width: 100%;
+	box-shadow: var(--shm);
+	animation: slideUp 0.3s ease-out;
+}
+.modalContent {
+	max-width: 500px;
+	max-height: 90vh;
+	overflow-y: auto;
+}
+.confirmDialog {
+	max-width: 400px;
+}
+.modalHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+	border-bottom: 1px solid var(--cbl);
+	padding-bottom: 12px;
+}
+.modalHeader h3 {
+	margin: 0;
+	font-size: 18px;
+	color: var(--ct);
+}
+.closeButton {
+	background: 0;
+	border: 0;
+	font-size: 24px;
+	color: var(--ctm);
+	cursor: pointer;
+	padding: 0;
+	transition: var(--tr);
+}
+.closeButton:hover {
+	color: var(--ct);
+}
+.formContent {
+	max-height: 60vh;
+	overflow-y: auto;
+	padding-right: 8px;
+}
+.formContent::-webkit-scrollbar {
+	width: 6px;
+}
+.formContent::-webkit-scrollbar-track {
+	background: var(--cbgl);
+	border-radius: 10px;
+}
+.formContent::-webkit-scrollbar-thumb {
+	background: #888;
+	border-radius: 10px;
+}
+.formContent::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+.formGroup {
+	margin-bottom: 16px;
+}
+.formGroup label {
+	display: block;
+	margin-bottom: 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: var(--ct);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+.formGroup input[type="text"],
+.formGroup input[type="url"],
+.formGroup input[type="number"],
+.formGroup textarea,
+.formGroup select,
+.fileInput {
+	width: 100%;
+	padding: 10px 12px;
+	border: 1px solid var(--cb);
+	border-radius: var(--rs);
+	font-size: 14px;
+	font-family: inherit;
+	transition: var(--tr);
+	box-sizing: border-box;
+}
+.formGroup input:focus,
+.formGroup textarea:focus,
+.formGroup select:focus,
+.fileInput:focus {
+	outline: 0;
+	border-color: var(--ct);
+	box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+.formGroup textarea {
+	resize: vertical;
+	min-height: 80px;
+}
+.formGroup input[type="checkbox"] {
+	margin-right: 8px;
+	width: 18px;
+	height: 18px;
+	cursor: pointer;
+	accent-color: var(--c);
+}
+.formGroup input[type="checkbox"] + label {
+	display: inline;
+	margin: 0;
+	text-transform: none;
+	letter-spacing: normal;
+	font-size: 14px;
+	cursor: pointer;
+}
+.formGroup select {
+	background-color: var(--cw);
+	cursor: pointer;
+}
+.formGroup select:disabled {
+	background-color: var(--cbgl);
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+.formRow {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 12px;
+}
+.modalActions,
+.confirmActions {
+	display: flex;
+	gap: 12px;
+	justify-content: flex-end;
+	margin-top: 24px;
+	padding-top: 16px;
+	border-top: 1px solid var(--cbl);
+}
+.confirmDialog h3 {
+	margin: 0 0 8px 0;
+	font-size: 18px;
+	color: var(--ct);
+}
+.confirmDialog p {
+	margin: 0 0 20px 0;
+	color: var(--cts);
+	font-size: 14px;
+}
+.confirmActions .btnDelete {
+	padding: 10px 20px;
+	background-color: var(--cgr);
+	color: var(--cw);
+	border: 0;
+	border-radius: var(--rs);
+	font-size: 14px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: var(--tr);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	display: inline-block;
+	width: auto;
+	height: auto;
+}
+.confirmActions .btnDelete:hover:not(:disabled) {
+	background-color: var(--cg);
+}
+.fileInput {
+	border: 2px dashed var(--cb);
+	background-color: var(--cbgll);
+	cursor: pointer;
+	transition: var(--tr);
+	display: block;
+}
+.fileInput:hover {
+	border-color: var(--ct);
+	background-color: #f5f5f5;
+}
+.fileInput:disabled {
+	background-color: var(--cbgl);
+	cursor: not-allowed;
+	opacity: 0.6;
+}
+.imageUploadContainer {
+	border: 1px solid var(--cbl);
+	padding: 12px;
+	border-radius: var(--rs);
+	background-color: var(--cbgll);
+}
+.previewContainer {
+	margin-top: 12px;
+	text-align: center;
+}
+.previewImage {
+	max-width: 100%;
+	max-height: 300px;
+	border-radius: var(--rs);
+	border: 1px solid var(--cb);
+	padding: 4px;
+	background-color: var(--cw);
+	box-shadow: var(--shl);
+}
+@media (max-width: 768px) {
+	.panelContainer {
+		padding: 16px;
+	}
+	.header {
+		flex-direction: column;
+		gap: 12px;
+		align-items: flex-start;
+	}
+	.btnCreate {
+		width: 100%;
+		text-align: center;
+	}
+	.table {
+		font-size: 12px;
+	}
+	.table th,
+	.table td {
+		padding: 8px 12px;
+	}
+	.titleCell {
+		max-width: 120px;
+	}
+	.actionsCell {
+		flex-wrap: wrap;
+	}
+	.modalContent {
+		max-height: 95vh;
+	}
+	.formRow {
+		grid-template-columns: 1fr;
+	}
+}
+@media (max-width: 480px) {
+	.panelContainer {
+		padding: 12px;
+	}
+	.modal {
+		padding: 12px;
+	}
+	.modalContent {
+		padding: 16px;
+	}
+	.table th:nth-child(3),
+	.table td:nth-child(3),
+	.table th:nth-child(4),
+	.table td:nth-child(4) {
+		display: none;
+	}
+	.titleCell {
+		max-width: 100px;
+		font-size: 12px;
+	}
+	.modalActions,
+	.confirmActions {
+		flex-direction: column;
+	}
+	.btnCancel,
+	.btnSave {
+		width: 100%;
+		text-align: center;
+	}
+	.confirmActions button {
+		width: 100%;
+	}
+}

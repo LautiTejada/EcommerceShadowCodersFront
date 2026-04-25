@@ -2,9 +2,8 @@ import { create } from "zustand";
 import type { Categoria } from "../types/Categoria";
 import type { Producto } from "../types/Producto";
 import {
-	activateProducto,
+	cambiarEstadoProducto,
 	addProductoConCategoria,
-	desactivateProducto,
 	getProductoById,
 	getProductos,
 	getProductosActivos,
@@ -41,7 +40,8 @@ interface ProductoState {
 	fetchProductosPaged: (args: {
 		page?: number;
 		size?: number;
-		sort?: string;
+		sortBy?: string;
+		sortDir?: string;
 		filtros?: any;
 	}) => Promise<void>;
 }
@@ -57,41 +57,49 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 	fetchProductosPaged: async ({
 		page = 0,
 		size = 12,
-		sort = "",
+		sortBy = "id",
+		sortDir = "asc",
 		filtros = {},
 	}) => {
-		try {
-			const paged: PagedResponse<Producto> = await getProductosPaged({
-				page,
-				size,
-				sort,
-				filtros,
-			});
-			set({
-				pagedProductos: paged.content,
-				totalPages: paged.totalPages,
-				totalElements: paged.totalElements,
-				page: paged.number,
-				size: paged.size,
-			});
-		} catch (error) {
-			console.error("Error cargando productos paginados:", error);
-		}
+		const paged: PagedResponse<Producto> = await getProductosPaged({
+			page,
+			size,
+			sortBy,
+			sortDir,
+			filtros,
+		});
+		const rawContent = Array.isArray(paged?.content)
+			? paged.content
+			: Array.isArray(paged as any)
+				? (paged as any)
+				: [];
+		// Filtrar items que son solo IDs (number) y normalizar descuentosProducto → descuentos
+		const content = rawContent
+			.filter((p: any) => p && typeof p === "object" && p.id !== undefined)
+			.map((p: any) => ({
+				...p,
+				descuentos: p.descuentos ?? p.descuentosProducto ?? [],
+			}));
+		set({
+			pagedProductos: content,
+			totalPages: paged?.totalPages ?? 0,
+			totalElements: paged?.totalElements ?? content.length,
+			page: paged?.number ?? 0,
+			size: paged?.size ?? size,
+		});
 	},
 	fetchProductos: async () => {
 		try {
 			const productosFromApi = await getProductos();
 			set({ productos: productosFromApi });
-		} catch (error) {
-			console.error("Error cargando productos:", error);
-		}
+		} catch (error) {}
 	},
 	fetchProductosActivos: async () => {
 		try {
 			const productos = await getProductosActivos();
 			set({ productosActivos: productos });
-		} catch (error) {
-			console.error("Error cargando productos activos:", error);
+		} catch {
+			// /activos puede fallar (ej: bug Hibernate en backend); se ignora silenciosamente
 		}
 	},
 	agregarProductoConCategoria: async (producto, categoriaId) => {
@@ -103,7 +111,6 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			get().fetchProductos();
 			return nuevoProducto;
 		} catch (error) {
-			console.error("Error agregando producto con categoría:", error);
 			throw error;
 		}
 	},
@@ -113,56 +120,38 @@ export const useProductoStore = create<ProductoState>((set, get) => ({
 			set({ productoActual: producto });
 			return producto;
 		} catch (error) {
-			console.error(`Error fetching producto by ID ${id}:`, error);
 			set({ productoActual: null });
 			return null;
 		}
 	},
 	editarProducto: async (id, producto) => {
-		try {
-			await updateProducto(id, producto);
-			await get().fetchProductos();
-			await get().fetchProductosActivos();
-		} catch (error) {
-			console.error(`Error editing producto with ID ${id}:`, error);
-		}
+		await updateProducto(id, producto);
+		await get().fetchProductos();
+		await get().fetchProductosActivos();
 	},
 	activarProducto: async (id) => {
 		try {
-			await activateProducto(id);
-			await get().fetchProductos();
-			await get().fetchProductosActivos();
-		} catch (error) {
-			console.error(`Error activating producto with ID ${id}:`, error);
-		}
+			await cambiarEstadoProducto(id, true);
+			await get().fetchProductosPaged({ page: 0, size: 100 });
+		} catch (error) {}
 	},
 	desactivarProducto: async (id) => {
 		try {
-			await desactivateProducto(id);
-			await get().fetchProductos();
-			await get().fetchProductosActivos();
-		} catch (error) {
-			console.error(`Error deactivating producto with ID ${id}:`, error);
-		}
+			await cambiarEstadoProducto(id, false);
+			await get().fetchProductosPaged({ page: 0, size: 100 });
+		} catch (error) {}
 	},
 	fetchProductosPorCategoria: async (categoria) => {
 		try {
 			const productos = await getProductosPorCategoria(categoria);
 			set({ productos });
-		} catch (error) {
-			console.error(
-				`Error fetching productos for category ${categoria.id}:`,
-				error,
-			);
-		}
+		} catch (error) {}
 	},
 	fetchProductosFiltrados: async (filtros) => {
 		try {
 			const productos = await getProductosFiltrados(filtros);
 			set({ productosActivos: productos });
-		} catch (error) {
-			console.error("Error al filtrar productos:", error);
-		}
+		} catch (error) {}
 	},
 	setProductoActual: (producto) => set({ productoActual: producto }),
 }));

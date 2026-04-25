@@ -7,9 +7,10 @@ export async function apiFetch<T = any>(
 	options: ApiFetchOptions = {},
 ): Promise<T> {
 	const { auth, headers, ...rest } = options;
+	const hasBody = rest.body !== undefined && rest.body !== null;
 	const finalHeaders: Record<string, string> = {
 		...((headers as Record<string, string>) || {}),
-		"Content-Type": "application/json",
+		...(hasBody ? { "Content-Type": "application/json" } : {}),
 	};
 
 	if (auth) {
@@ -34,15 +35,57 @@ export async function apiFetch<T = any>(
 		if (!response.ok) {
 			let errorMsg = `HTTP error! status: ${response.status}`;
 			try {
-				const data = await response.json();
-				errorMsg = data.message || errorMsg;
-			} catch {}
+				// Leer el body una sola vez
+				const text = await response.text();
+				console.error(
+					"[apiFetch] Error",
+					response.status,
+					response.url,
+					"body:",
+					text,
+				);
+
+				// Manejo especial para 403
+				if (response.status === 403) {
+					throw new Error(
+						"Sesión expirada o acceso denegado. Por favor, vuelve a iniciar sesión.",
+					);
+				}
+
+				// Intentar parsear como JSON
+				try {
+					const data = JSON.parse(text);
+					// If message is an object (validation errors), format it nicely
+					if (typeof data.message === "object" && data.message !== null) {
+						const validationErrors = Object.entries(data.message)
+							.map(([field, error]) => `${field}: ${error}`)
+							.join(", ");
+						errorMsg = validationErrors || errorMsg;
+					} else {
+						errorMsg =
+							data.message || data.error || JSON.stringify(data) || errorMsg;
+					}
+				} catch {
+					// Si no es JSON válido, usar el texto directo
+					errorMsg = text || errorMsg;
+				}
+			} catch (readError) {
+				errorMsg = `HTTP error! status: ${response.status}`;
+			}
 			throw new Error(errorMsg);
 		}
 
 		if (response.status === 204) return null as T;
 
-		return response.json();
+		// Handle empty responses (e.g., DELETE without body)
+		const text = await response.text();
+		if (!text) return null as T;
+
+		try {
+			return JSON.parse(text);
+		} catch {
+			return null as T;
+		}
 	} catch (error) {
 		clearTimeout(timeoutId);
 		throw error;

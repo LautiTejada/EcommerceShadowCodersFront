@@ -4,8 +4,9 @@ import LockIcon from "@mui/icons-material/Lock";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddLocationIcon from "@mui/icons-material/AddLocation";
-import { useAuth } from "../../hooks/useAuth";
-import LogoutIcon from "@mui/icons-material/Logout";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+
 import type { Usuario } from "../../types/Usuario";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { provincias, type Provincia } from "../../types/enums/Provincias";
@@ -13,6 +14,12 @@ import { desactivarDireccionDeUsuario } from "../../http/usuario";
 import Loader from "../../components/ui/Loader/Loader";
 import { sileo } from "sileo";
 import { useUsuarioStore } from "../../store/userStore";
+import { useOrdenCompraStore } from "../../store/ordenCompraStore";
+import type { EstadoOrden } from "../../types/enums/EstadoOrden";
+import AdminPanel from "./AdminPanel/AdminPanel";
+import { useFavoritoStore } from "../../store/favoritoStore";
+import ProductCard from "../../components/ui/ProductCard/ProductCard";
+import { BannerAdminPanel } from "../../components/admin/BannerAdminPanel/BannerAdminPanel";
 
 const Profile = () => {
 	const {
@@ -24,13 +31,20 @@ const Profile = () => {
 		crearDireccionUsuario,
 		actualizarDireccionUsuario,
 	} = useUsuarioStore();
+	const { ordenesCompra, fetchOrdenesPorUsuario } = useOrdenCompraStore();
+	const { favoritos, fetchMisFavoritos } = useFavoritoStore();
 	const [activeSection, setActiveSection] = useState("accountInfo");
-	const { logout } = useAuth();
+	const [adminActiveView, setAdminActiveView] = useState("home");
+	const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
 	const [isEditing, setIsEditing] = useState(false);
 	const [editedUser, setEditedUser] = useState<Partial<Usuario>>({
 		password: "",
 	});
 	const [loading, setLoading] = useState(false);
+
+	// Recalcular isAdmin cada vez que usuarioActual cambia
+	const isAdmin =
+		usuarioActual?.rol === "ADMIN" || localStorage.getItem("rol") === "ADMIN";
 
 	const userId = Number(localStorage.getItem("usuario"));
 	const [isAddingDireccion, setIsAddingDireccion] = useState(false);
@@ -64,7 +78,16 @@ const Profile = () => {
 		if (activeSection === "addresses" && userId) {
 			obtenerDireccionesUsuario(userId);
 		}
-	}, [activeSection, userId, obtenerDireccionesUsuario]);
+		if (activeSection === "orderHistory" && userId) {
+			fetchOrdenesPorUsuario(userId);
+		}
+		if (activeSection === "favorites") {
+			fetchMisFavoritos();
+		}
+	}, [
+		activeSection,
+		userId,
+	]);
 
 	const handleSave = async () => {
 		if (userId && editedUser && usuarioActual) {
@@ -85,7 +108,6 @@ const Profile = () => {
 				await obtenerUsuarioPorId(userId);
 				setEditedUser((prev) => ({ ...prev, password: "" }));
 			} catch (error) {
-				console.error("Error al actualizar usuario:", error);
 			}
 		}
 	};
@@ -174,12 +196,7 @@ const Profile = () => {
 										</span>
 									</button>
 								</>
-							) : (
-								<button className={styles.logoutButton} onClick={logout}>
-									<LogoutIcon />
-									<span>CERRAR SESIÓN</span>
-								</button>
-							)}
+							) : null}
 						</div>
 					</div>
 				);
@@ -220,7 +237,7 @@ const Profile = () => {
 													: "Dirección incompleta"
 											}
 											readOnly
-											className={styles.inputGroup}
+											className={styles.inputField}
 										/>
 										<span
 											className={styles.addressesEditIcon}
@@ -228,46 +245,49 @@ const Profile = () => {
 												setDireccionEdit(direccion);
 												setIsEditingDireccion(true);
 												setIsAddingDireccion(false);
-											}}>
+											}}
+											title="Editar dirección">
 											<EditIcon />
 										</span>
-									</div>
-									<span
-										className={styles.addressesDeleteIcon}
-										onClick={async () => {
-											if (direccion.id && userId) {
-												if (
-													window.confirm(
-														"¿Seguro que deseas eliminar esta dirección?",
-													)
-												) {
-													setLoading(true);
-													try {
-														await desactivarDireccionDeUsuario(
-															userId,
-															direccion.id,
-														);
-														await obtenerDireccionesUsuario(userId);
-														sileo.success({
-															title: "Dirección eliminada",
-															description:
-																"La dirección ha sido eliminada correctamente.",
-															type: "success",
-														});
-													} catch {
-														sileo.error({
-															title: "Error",
-															description: "No se pudo eliminar la dirección.",
-															type: "error",
-														});
-													} finally {
-														setLoading(false);
+										<span
+											className={styles.addressesDeleteIcon}
+											onClick={async () => {
+												if (direccion.id && userId) {
+													if (
+														window.confirm(
+															"¿Seguro que deseas eliminar esta dirección?",
+														)
+													) {
+														setLoading(true);
+														try {
+															await desactivarDireccionDeUsuario(
+																userId,
+																direccion.id,
+															);
+															await obtenerDireccionesUsuario(userId);
+															sileo.success({
+																title: "Dirección eliminada",
+																description:
+																	"La dirección ha sido eliminada correctamente.",
+																type: "success",
+															});
+														} catch {
+															sileo.error({
+																title: "Error",
+																description:
+																	"No se pudo eliminar la dirección.",
+																type: "error",
+															});
+														} finally {
+															setLoading(false);
+														}
 													}
 												}
-											}
-										}}>
-										<DeleteIcon />
-									</span>
+											}}
+											title="Eliminar dirección">
+											<DeleteIcon />
+										</span>
+									</div>
 								</div>
 							))}
 						{(isAddingDireccion || isEditingDireccion) && direccionEdit && (
@@ -314,7 +334,9 @@ const Profile = () => {
 									<label htmlFor="calle">Calle</label>
 									<input
 										className={styles.inputField}
+										id="calle"
 										name="calle"
+										placeholder="Ej: Avenida Libertador"
 										value={direccionEdit.calle || ""}
 										onChange={(e) =>
 											setDireccionEdit((prev: any) => ({
@@ -329,7 +351,10 @@ const Profile = () => {
 									<label htmlFor="numero">Número</label>
 									<input
 										className={styles.inputField}
+										id="numero"
 										name="numero"
+										placeholder="Ej: 1234"
+										type="number"
 										value={direccionEdit.numero || ""}
 										onChange={(e) =>
 											setDireccionEdit((prev: any) => ({
@@ -344,7 +369,9 @@ const Profile = () => {
 									<label htmlFor="codigoPostal">Código Postal</label>
 									<input
 										className={styles.inputField}
+										id="codigoPostal"
 										name="codigoPostal"
+										placeholder="Ej: 1425"
 										maxLength={4}
 										pattern="\d{4}"
 										value={direccionEdit.codigoPostal || ""}
@@ -361,7 +388,9 @@ const Profile = () => {
 									<label htmlFor="localidad">Localidad</label>
 									<input
 										className={styles.inputField}
+										id="localidad"
 										name="localidad"
+										placeholder="Ej: Buenos Aires"
 										value={direccionEdit.localidad || ""}
 										onChange={(e) =>
 											setDireccionEdit((prev: any) => ({
@@ -376,6 +405,7 @@ const Profile = () => {
 									<label htmlFor="provincia">Provincia</label>
 									<select
 										className={styles.inputField}
+										id="provincia"
 										name="provincia"
 										value={direccionEdit.provincia || ""}
 										onChange={(e) =>
@@ -394,8 +424,12 @@ const Profile = () => {
 									</select>
 								</div>
 								<div className={styles.addressFormButtons}>
-									<button className={styles.saveButton} type="submit">
-										Guardar
+									<button
+										className={styles.saveButton}
+										type="submit"
+										style={{ flex: 1 }}>
+										<span style={{ fontSize: "1.1rem" }}>✓</span>
+										GUARDAR DIRECCIÓN
 									</button>
 									<button
 										type="button"
@@ -404,8 +438,10 @@ const Profile = () => {
 											setDireccionEdit(null);
 											setIsAddingDireccion(false);
 											setIsEditingDireccion(false);
-										}}>
-										Cancelar
+										}}
+										style={{ flex: 1 }}>
+										<span style={{ fontSize: "1.1rem" }}>✕</span>
+										CANCELAR
 									</button>
 								</div>
 							</form>
@@ -430,8 +466,257 @@ const Profile = () => {
 						)}
 					</div>
 				);
-			case "orderHistory":
-				return <div className={styles.orderHistorySection}></div>;
+			case "orderHistory": {
+				const ESTADO_LABEL: Record<EstadoOrden, string> = {
+					PEDIDO: "Pedido",
+					EN_PROCESO: "En proceso",
+					EN_CAMINO: "En camino",
+					ENTREGADO: "Entregado",
+				};
+				const ESTADO_COLOR: Record<
+					EstadoOrden,
+					{ background: string; color: string }
+				> = {
+					PEDIDO: { background: "rgba(129,0,0,0.08)", color: "#810000" },
+					EN_PROCESO: { background: "rgba(230,126,34,0.1)", color: "#c0710a" },
+					EN_CAMINO: { background: "rgba(41,128,185,0.1)", color: "#1a6da3" },
+					ENTREGADO: { background: "rgba(30,126,52,0.1)", color: "#1e7e34" },
+				};
+				if (ordenesCompra.length === 0) {
+					return (
+						<div className={styles.orderHistorySection}>
+							<p style={{ color: "#888", fontSize: "0.9rem" }}>
+								No tenés pedidos registrados.
+							</p>
+						</div>
+					);
+				}
+				return (
+					<div className={styles.orderHistorySection}>
+						{ordenesCompra.map((orden) => {
+							const isExpanded = expandedOrderId === orden.id;
+							const estadoStyle = ESTADO_COLOR[
+								orden.estadoOrden as EstadoOrden
+							] ?? { background: "#eee", color: "#555" };
+							return (
+								<div
+									key={orden.id}
+									className={styles.orderHistoryEntry}
+									style={{
+										flexDirection: "column",
+										alignItems: "stretch",
+										cursor: "default",
+									}}>
+									<div
+										style={{
+											display: "flex",
+											justifyContent: "space-between",
+											alignItems: "center",
+										}}>
+										<div
+											style={{
+												display: "flex",
+												flexDirection: "column",
+												gap: 4,
+											}}>
+											<span
+												style={{
+													fontWeight: 700,
+													color: "#810000",
+													fontSize: "0.95rem",
+												}}>
+												Pedido #{orden.id}
+											</span>
+											<span style={{ fontSize: "0.82rem", color: "#888" }}>
+												{orden.fecha
+													? new Date(orden.fecha).toLocaleDateString("es-AR", {
+															day: "2-digit",
+															month: "2-digit",
+															year: "numeric",
+														})
+													: "—"}
+											</span>
+										</div>
+										<div
+											style={{
+												display: "flex",
+												alignItems: "center",
+												gap: 12,
+											}}>
+											<span
+												style={{
+													...estadoStyle,
+													padding: "3px 10px",
+													borderRadius: 4,
+													fontSize: "0.75rem",
+													fontWeight: 700,
+												}}>
+												{ESTADO_LABEL[orden.estadoOrden as EstadoOrden] ??
+													orden.estadoOrden}
+											</span>
+											<span
+												style={{
+													fontWeight: 700,
+													fontSize: "1rem",
+													color: "#1a1a1a",
+												}}>
+												${orden.precioTotal?.toLocaleString("es-AR")}
+											</span>
+											<button
+												onClick={() =>
+													setExpandedOrderId(isExpanded ? null : orden.id!)
+												}
+												style={{
+													background: "none",
+													border: "none",
+													cursor: "pointer",
+													color: "#810000",
+													display: "flex",
+													alignItems: "center",
+												}}
+												title={isExpanded ? "Contraer" : "Ver detalles"}>
+												{isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+											</button>
+										</div>
+									</div>
+									{isExpanded && (
+										<div
+											style={{
+												marginTop: 16,
+												display: "grid",
+												gridTemplateColumns: "1fr 1fr",
+												gap: 16,
+											}}>
+											<div
+												style={{
+													background: "#f7f6f9",
+													borderRadius: 6,
+													padding: 14,
+												}}>
+												<p
+													style={{
+														fontSize: "0.72rem",
+														fontWeight: 700,
+														color: "#810000",
+														textTransform: "uppercase",
+														marginBottom: 8,
+													}}>
+													Dirección de entrega
+												</p>
+												{orden.direccion ? (
+													<>
+														<p style={{ fontSize: "0.83rem", margin: "2px 0" }}>
+															{orden.direccion.calle} {orden.direccion.numero}
+														</p>
+														<p
+															style={{
+																fontSize: "0.83rem",
+																color: "#555",
+																margin: "2px 0",
+															}}>
+															{orden.direccion.localidad},{" "}
+															{orden.direccion.provincia?.replace(/_/g, " ")}
+														</p>
+														{orden.direccion.codigoPostal && (
+															<p
+																style={{
+																	fontSize: "0.83rem",
+																	color: "#555",
+																	margin: "2px 0",
+																}}>
+																CP: {orden.direccion.codigoPostal}
+															</p>
+														)}
+													</>
+												) : (
+													<p style={{ fontSize: "0.83rem", color: "#888" }}>
+														Sin dirección
+													</p>
+												)}
+											</div>
+											<div
+												style={{
+													background: "#f7f6f9",
+													borderRadius: 6,
+													padding: 14,
+												}}>
+												<p
+													style={{
+														fontSize: "0.72rem",
+														fontWeight: 700,
+														color: "#810000",
+														textTransform: "uppercase",
+														marginBottom: 8,
+													}}>
+													Productos
+												</p>
+												{orden.detalles && orden.detalles.length > 0 ? (
+													<ul
+														style={{
+															listStyle: "none",
+															padding: 0,
+															margin: 0,
+														}}>
+														{orden.detalles.map((det) => (
+															<li
+																key={det.id}
+																style={{
+																	display: "flex",
+																	justifyContent: "space-between",
+																	fontSize: "0.82rem",
+																	padding: "4px 0",
+																	borderBottom: "1px solid #e8e6f0",
+																}}>
+																<span>
+																	Talle{" "}
+																	{det.productoTalle?.talle?.tipoTalle ?? "?"} ×{" "}
+																	{det.cantidad}
+																</span>
+																<span style={{ fontWeight: 600 }}>
+																	${det.precioUnitario?.toLocaleString("es-AR")}
+																</span>
+															</li>
+														))}
+													</ul>
+												) : (
+													<p style={{ fontSize: "0.82rem", color: "#888" }}>
+														Sin detalles
+													</p>
+												)}
+											</div>
+										</div>
+									)}
+								</div>
+							);
+						})}
+					</div>
+				);
+			}
+			case "adminPanel":
+				return (
+					<AdminPanel
+						activeView={adminActiveView}
+						onViewChange={setAdminActiveView}
+					/>
+				);
+			case "banners":
+				return <BannerAdminPanel />;
+			case "favorites":
+				return (
+					<div className={styles.favoritesSection}>
+						{favoritos.length === 0 ? (
+							<p style={{ color: "#888", fontSize: "0.9rem" }}>
+								No tenés productos en favoritos.
+							</p>
+						) : (
+							<div className={styles.favoritesGrid}>
+								{favoritos.map((fav) => (
+									<ProductCard key={fav.producto.id} product={fav.producto} />
+								))}
+							</div>
+						)}
+					</div>
+				);
 			default:
 				return null;
 		}
@@ -443,6 +728,7 @@ const Profile = () => {
 	return (
 		<div className={styles.profileContainer}>
 			<aside className={styles.sidebar}>
+				{isAdmin && <div className={styles.sidebarRole}>ADMINISTRADOR</div>}
 				<div
 					className={`${styles.sidebarItem} ${
 						activeSection === "accountInfo" ? styles.active : ""
@@ -450,26 +736,57 @@ const Profile = () => {
 					onClick={() => setActiveSection("accountInfo")}>
 					INFORMACIÓN DE LA CUENTA
 				</div>
-				<div
-					className={`${styles.sidebarItem} ${
-						activeSection === "addresses" ? styles.active : ""
-					}`}
-					onClick={() => setActiveSection("addresses")}>
-					DIRECCIONES
-				</div>
-				<div
-					className={`${styles.sidebarItem} ${
-						activeSection === "orderHistory" ? styles.active : ""
-					}`}
-					onClick={() => setActiveSection("orderHistory")}>
-					HISTORIAL DE PEDIDOS
-				</div>
+				{isAdmin ? (
+					<>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "adminPanel" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("adminPanel")}>
+							PANEL DE ADMINISTRACIÓN
+						</div>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "banners" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("banners")}>
+							GESTIONAR BANNERS
+						</div>
+					</>
+				) : (
+					<>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "addresses" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("addresses")}>
+							DIRECCIONES
+						</div>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "orderHistory" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("orderHistory")}>
+							HISTORIAL DE PEDIDOS
+						</div>
+						<div
+							className={`${styles.sidebarItem} ${
+								activeSection === "favorites" ? styles.active : ""
+							}`}
+							onClick={() => setActiveSection("favorites")}>
+							MIS FAVORITOS
+						</div>
+					</>
+				)}
 			</aside>
 			<main className={styles.mainContent}>
 				<h2 className={styles.mainTitle}>
-					{activeSection === "accountInfo" && "DATOS"}
+					{activeSection === "accountInfo" && (isAdmin ? "MI CUENTA" : "DATOS")}
 					{activeSection === "addresses" && "DIRECCIONES"}
 					{activeSection === "orderHistory" && "HISTORIAL DE PEDIDOS"}
+					{activeSection === "favorites" && "MIS FAVORITOS"}
+					{activeSection === "adminPanel" && "PANEL DE ADMINISTRACIÓN"}
+					{activeSection === "banners" && "GESTIONAR BANNERS"}
 				</h2>
 				{renderContent()}
 			</main>

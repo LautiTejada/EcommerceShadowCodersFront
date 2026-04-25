@@ -1,8 +1,8 @@
 import { create } from "zustand";
 import type { ImagenProducto } from "../types/ImagenProducto";
 import {
-	activarImagenProducto,
-	desactivarImagenProducto,
+	cambiarEstadoImagenProducto,
+	eliminarImagenProducto,
 	getImagenesProducto,
 } from "../http/imagenProducto";
 
@@ -29,7 +29,6 @@ export const useImagenProductoStore = create<imagenProductoState>(
 				const imagenesFromApi = await getImagenesProducto();
 				set({ imagenes: imagenesFromApi });
 			} catch (error) {
-				console.error("Error fetching imagenes:", error);
 			}
 		},
 
@@ -38,7 +37,6 @@ export const useImagenProductoStore = create<imagenProductoState>(
 				const imagenesActivasFromApi = await getImagenesProducto();
 				set({ imagenesActivas: imagenesActivasFromApi });
 			} catch (error) {
-				console.error("Error fetching active imagenes:", error);
 			}
 		},
 
@@ -46,7 +44,6 @@ export const useImagenProductoStore = create<imagenProductoState>(
 			try {
 				return await getImagenesProducto();
 			} catch (error) {
-				console.error(`Error fetching imagen con id ${id}:`, error);
 				return null;
 			}
 		},
@@ -55,41 +52,38 @@ export const useImagenProductoStore = create<imagenProductoState>(
 			try {
 				await get().fetchImagenes();
 			} catch (error) {
-				console.error(`Error updating imagen con id ${id}:`, error);
 			}
 		},
 
 		deleteImagen: async (id) => {
 			try {
+				await eliminarImagenProducto(id);
 				await get().fetchImagenes();
 			} catch (error) {
-				console.error(`Error deleting imagen con id ${id}:`, error);
 			}
 		},
 
 		toggleStateImagen: async (id) => {
 			try {
+				await cambiarEstadoImagenProducto(id);
 				await get().fetchImagenes();
 			} catch (error) {
-				console.error(`Error toggling state of imagen con id ${id}:`, error);
 			}
 		},
 
 		activateImagen: async (id) => {
 			try {
-				await activarImagenProducto(id);
+				await cambiarEstadoImagenProducto(id);
 				await get().fetchImagenesActivas();
 			} catch (error) {
-				console.error(`Error activating imagen con id ${id}:`, error);
 			}
 		},
 
 		desactivateImagen: async (id) => {
 			try {
-				await desactivarImagenProducto(id);
+				await cambiarEstadoImagenProducto(id);
 				await get().fetchImagenesActivas();
 			} catch (error) {
-				console.error(`Error desactivating imagen con id ${id}:`, error);
 			}
 		},
 	}),

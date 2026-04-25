@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { sileo } from "sileo";
 import styles from "./ProductDetails.module.css";
-import { CategoryBar } from "../CategoryBar/CategoryBar";
 import { useParams } from "react-router-dom";
 import { useProductoStore } from "../../../store/productoStore";
 
@@ -206,6 +205,15 @@ export const ProductDetails = () => {
 								))}
 							</div>
 						</div>
+						{/* Descripción minimalista debajo de talles */}
+						{productoActual.descripcion && (
+							<div style={{ width: "100%", margin: "10px 0 14px 0" }}>
+								<span className={styles.descLabel}>Descripción</span>
+								<span className={styles.descText}>
+									{productoActual.descripcion}
+								</span>
+							</div>
+						)}
 						<div className={styles.color}>
 							Color:{" "}
 							<span>
@@ -236,11 +244,6 @@ export const ProductDetails = () => {
 							AÑADIR AL CARRO
 						</button>
 					</div>
-				</div>
-
-				<div className={styles.descriptionBox}>
-					<span className={styles.descLabel}>Descripcion: </span>
-					<span className={styles.descText}>{productoActual.descripcion}</span>
 				</div>
 			</div>
 		</>

@@ -12,7 +12,7 @@ export const getUsuariosActivos = async () => {
 };
 
 export const getUsuarioPorId = async (id: number) => {
-	return apiFetch(`${baseUrl}/usuarios/${id}`);
+	return apiFetch(`${baseUrl}/usuarios/${id}`, { auth: true });
 };
 
 export const crearUsuario = async (usuario: Usuario) => {
@@ -37,19 +37,8 @@ export const updateUsuario = async (id: number, usuario: Usuario) => {
 
 export const cambiarStateUsuario = async (id: number) => {
 	return apiFetch(`${baseUrl}/usuarios/${id}/status`, {
-		method: "PUT",
-	});
-};
-
-export const activateUsuario = async (id: number) => {
-	return apiFetch(`${baseUrl}/usuarios/${id}/activate`, {
-		method: "PUT",
-	});
-};
-
-export const desactivateUsuario = async (id: number) => {
-	return apiFetch(`${baseUrl}/usuarios/${id}/deactivate`, {
-		method: "PUT",
+		method: "PATCH",
+		auth: true,
 	});
 };
 
@@ -59,6 +48,7 @@ export const createDireccionDeUsuario = async (
 ) => {
 	return apiFetch(`${baseUrl}/usuarios/${usuarioId}/direcciones`, {
 		method: "POST",
+		auth: true,
 		body: JSON.stringify(direccion),
 	});
 };
@@ -72,13 +62,16 @@ export const updateDireccionDeUsuario = async (
 		`${baseUrl}/usuarios/${usuarioId}/direcciones/${direccionId}`,
 		{
 			method: "PUT",
+			auth: true,
 			body: JSON.stringify(direccion),
 		},
 	);
 };
 
 export const getDireccionesDeUsuario = async (usuarioId: number) => {
-	return apiFetch(`${baseUrl}/usuarios/${usuarioId}/direcciones`);
+	return apiFetch(`${baseUrl}/usuarios/${usuarioId}/direcciones`, {
+		auth: true,
+	});
 };
 
 export const desactivarDireccionDeUsuario = async (
@@ -89,6 +82,7 @@ export const desactivarDireccionDeUsuario = async (
 		`${baseUrl}/usuarios/${usuarioId}/direcciones/${direccionId}/desactivar`,
 		{
 			method: "PUT",
+			auth: true,
 		},
 	);
 };

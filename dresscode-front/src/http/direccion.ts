@@ -3,7 +3,6 @@ import { apiFetch } from "./apiFetch";
 const baseUrl = import.meta.env.VITE_API_URL;
 
 function handleApiError(error: unknown, context: string) {
-	console.error(`Error en ${context}:`, error);
 	throw new Error(`No se pudo completar la operación: ${context}`);
 }
 
@@ -36,32 +35,11 @@ export async function changeDireccionStatus(id: number) {
 	if (!id || typeof id !== "number") throw new Error("ID inválido");
 	try {
 		return await apiFetch(`${baseUrl}/direcciones/${id}/status`, {
-			method: "PUT",
+			method: "PATCH",
+			auth: true,
 		});
 	} catch (error) {
 		handleApiError(error, `cambiar estado de dirección ${id}`);
-	}
-}
-
-export async function activateDireccion(id: number) {
-	if (!id || typeof id !== "number") throw new Error("ID inválido");
-	try {
-		return await apiFetch(`${baseUrl}/direcciones/${id}/activate`, {
-			method: "PUT",
-		});
-	} catch (error) {
-		handleApiError(error, `activar dirección ${id}`);
-	}
-}
-
-export async function deactivateDireccion(id: number) {
-	if (!id || typeof id !== "number") throw new Error("ID inválido");
-	try {
-		return await apiFetch(`${baseUrl}/direcciones/${id}/deactivate`, {
-			method: "PUT",
-		});
-	} catch (error) {
-		handleApiError(error, `desactivar dirección ${id}`);
 	}
 }
 

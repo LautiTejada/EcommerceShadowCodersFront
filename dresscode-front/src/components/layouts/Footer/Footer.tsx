@@ -1,75 +1,97 @@
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
+import { Link } from "react-router-dom";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
+import styles from "./Footer.module.css";
 
 const Footer = () => {
 	return (
-		<footer role="contentinfo">
-			<Box
-				sx={{
-					background: "#1a1a1a",
-					color: "#fff",
-					py: 4,
-					px: 2,
-					borderTop: "1px",
-					borderColor: "black",
-				}}>
-				<Grid container alignItems="center" justifyContent="space-between">
-					<Grid item xs={12} md={4} sx={{ mb: { xs: 2, md: 0 } }}>
-						<Box
-							sx={{ textAlign: { xs: "center", md: "left" }, pl: { md: 4 } }}>
-							<Typography variant="body2" sx={{ mb: 1 }}>
-								MENDOZA -<br />
-								ARGENTINA.
-							</Typography>
-							<Typography variant="body2" sx={{ mb: 1 }}>
-								SHADOWCODERS ©
-							</Typography>
-							<Typography variant="body2">2025</Typography>
-						</Box>
-					</Grid>
+		<footer className={styles.footer} role="contentinfo">
+			<div className={styles.inner}>
+				{/* Columnas de links */}
+				<div className={styles.columns}>
+					<div className={styles.col}>
+						<p className={styles.colTitle}>Tienda</p>
+						<ul className={styles.colList}>
+							<li>
+								<Link to="/catalog">Todos los productos</Link>
+							</li>
+							<li>
+								<Link to="/catalog/calzados">Calzados</Link>
+							</li>
+							<li>
+								<Link to="/catalog/ropa">Ropa</Link>
+							</li>
+							<li>
+								<Link to="/catalog/ofertas">Ofertas</Link>
+							</li>
+						</ul>
+					</div>
 
-					<Grid
-						item
-						xs={12}
-						md={4}
-						sx={{ textAlign: "center", mb: { xs: 2, md: 0 } }}>
+					<div className={styles.col}>
+						<p className={styles.colTitle}>Mi cuenta</p>
+						<ul className={styles.colList}>
+							<li>
+								<Link to="/profile">Mi perfil</Link>
+							</li>
+							<li>
+								<Link to="/cart">Carrito</Link>
+							</li>
+							<li>
+								<Link to="/login">Iniciar sesión</Link>
+							</li>
+							<li>
+								<Link to="/register">Registrarse</Link>
+							</li>
+						</ul>
+					</div>
+
+					<div className={styles.col}>
+						<p className={styles.colTitle}>Ayuda</p>
+						<ul className={styles.colList}>
+							<li>
+								<a href="#">Preguntas frecuentes</a>
+							</li>
+							<li>
+								<a href="#">Envíos y devoluciones</a>
+							</li>
+							<li>
+								<a href="#">Contacto</a>
+							</li>
+						</ul>
+					</div>
+
+					{/* Logo + redes */}
+					<div className={`${styles.col} ${styles.colBrand}`}>
 						<img
-							src="/public/assets/logo-dresscode.png"
-							alt="DRESSCODE Logo"
+							src="/assets/logo-dresscode.png"
+							alt="DRESSCODE"
+							className={styles.logo}
 							loading="lazy"
-							style={{ height: 48, objectFit: "contain" }}
 						/>
-					</Grid>
-
-					<Grid item xs={12} md={4}>
-						<Box
-							sx={{
-								display: "flex",
-								justifyContent: { xs: "center", md: "flex-end" },
-								gap: 2,
-								pr: { md: 4 },
-							}}>
+						<div className={styles.socials}>
 							<a
 								href="https://instagram.com"
 								target="_blank"
 								rel="noopener noreferrer"
-								style={{ color: "#fff" }}>
-								<InstagramIcon sx={{ fontSize: 32 }} />
+								aria-label="Instagram">
+								<InstagramIcon />
 							</a>
 							<a
 								href="https://facebook.com"
 								target="_blank"
 								rel="noopener noreferrer"
-								style={{ color: "#fff" }}>
-								<FacebookIcon sx={{ fontSize: 32 }} />
+								aria-label="Facebook">
+								<FacebookIcon />
 							</a>
-						</Box>
-					</Grid>
-				</Grid>
-			</Box>
+						</div>
+					</div>
+				</div>
+
+				{/* Barra inferior */}
+				<div className={styles.bottom}>
+					<span>© 2025 DRESSCODE · SHADOWCODERS · MENDOZA, ARGENTINA</span>
+				</div>
+			</div>
 		</footer>
 	);
 };

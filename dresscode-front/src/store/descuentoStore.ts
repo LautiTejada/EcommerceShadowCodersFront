@@ -1,7 +1,5 @@
 import { create } from "zustand";
 import {
-	activarDescuento,
-	desactivarDescuento,
 	eliminarProductoDeDescuento,
 	getDescuentoById,
 	getDescuentos,
@@ -54,7 +52,6 @@ export const useDescuentoStore = create<DescuentoState>((set, get) => ({
 			const descuentosFromApi = await getDescuentos();
 			set({ descuentos: descuentosFromApi });
 		} catch (error) {
-			console.error("Error cargando descuentos: ", error);
 		}
 	},
 	fetchDescuentosActivos: async () => {
@@ -62,7 +59,6 @@ export const useDescuentoStore = create<DescuentoState>((set, get) => ({
 			const descuentosFromApi = await getDescuentosActivos();
 			set({ descuentos: descuentosFromApi });
 		} catch (error) {
-			console.error("Error cargando descuentos: ", error);
 		}
 	},
 
@@ -70,7 +66,6 @@ export const useDescuentoStore = create<DescuentoState>((set, get) => ({
 		try {
 			return await getDescuentoById(id);
 		} catch (error) {
-			console.error(`Error cargando descuento por id ${id}: `, error);
 			return null;
 		}
 	},
@@ -80,7 +75,6 @@ export const useDescuentoStore = create<DescuentoState>((set, get) => ({
 			await createDescuento(descuento);
 			await get().fetchDescuentos();
 		} catch (error) {
-			console.error("Error creando descuento: ", error);
 		}
 	},
 
@@ -89,7 +83,6 @@ export const useDescuentoStore = create<DescuentoState>((set, get) => ({
 			await updateDescuento(id, descuento);
 			await get().fetchDescuentos();
 		} catch (error) {
-			console.error(`Error al actualizar el descuento con id ${id}: `, error);
 		}
 	},
 
@@ -98,7 +91,6 @@ export const useDescuentoStore = create<DescuentoState>((set, get) => ({
 			await changeDescuentoStatus(id);
 			await get().fetchDescuentos();
 		} catch (error) {
-			console.error(`Error al cambiar estado descuento con id ${id}:`, error);
 		}
 	},
 
@@ -107,7 +99,6 @@ export const useDescuentoStore = create<DescuentoState>((set, get) => ({
 			const productosDescuento = await traerProductosPorDescuento(descuentoId);
 			set({ productos: productosDescuento });
 		} catch (error) {
-			console.error(`Error cargando descuento por id ${descuentoId}: `, error);
 		}
 	},
 	agregarProductoADescuento: async (descuentoId, productoId) => {
@@ -136,29 +127,23 @@ export const useDescuentoStore = create<DescuentoState>((set, get) => ({
 			await fetchProductos();
 			await fetchProductosActivos();
 		} catch (error) {
-			console.error(
-				`Error eliminando producto ${productoId} del descuento ${descuentoId}:`,
-				error,
-			);
 			throw error;
 		}
 	},
 
 	activateDescuento: async (id: number) => {
 		try {
-			await activarDescuento(id);
+			await changeDescuentoStatus(id);
 			await get().fetchDescuentos();
 		} catch (error) {
-			console.error(`Error al activar descuento con id ${id}:`, error);
 		}
 	},
 
 	desactivateDescuento: async (id: number) => {
 		try {
-			await desactivarDescuento(id);
+			await changeDescuentoStatus(id);
 			await get().fetchDescuentos();
 		} catch (error) {
-			console.error(`Error al desactivar descuento con id ${id}:`, error);
 		}
 	},
 }));

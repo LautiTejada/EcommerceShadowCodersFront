@@ -1,0 +1,122 @@
+.footer {
+	background: #111;
+	color: #ccc;
+	border-top: 1px solid #2a2a2a;
+	margin-top: auto;
+}
+
+.inner {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 48px 24px 24px;
+}
+
+/* ── Columnas ── */
+.columns {
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	gap: 40px;
+	padding-bottom: 40px;
+	border-bottom: 1px solid #2a2a2a;
+}
+
+.colTitle {
+	color: #fff;
+	font-size: 11px;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 1.5px;
+	margin-bottom: 16px;
+}
+
+.colList {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.colList a {
+	color: #aaa;
+	text-decoration: none;
+	font-size: 13px;
+	transition: color 0.2s;
+}
+
+.colList a:hover {
+	color: #fff;
+}
+
+/* ── Columna marca ── */
+.colBrand {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 20px;
+}
+
+.logo {
+	height: 32px;
+	object-fit: contain;
+	filter: brightness(0) invert(1);
+}
+
+.socials {
+	display: flex;
+	gap: 16px;
+}
+
+.socials a {
+	color: #aaa;
+	display: flex;
+	align-items: center;
+	transition: color 0.2s;
+}
+
+.socials a:hover {
+	color: #fff;
+}
+
+.socials svg {
+	font-size: 20px;
+}
+
+/* ── Barra inferior ── */
+.bottom {
+	display: flex;
+	justify-content: center;
+	padding-top: 20px;
+}
+
+.bottom span {
+	font-size: 11px;
+	color: #555;
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+	.columns {
+		grid-template-columns: 1fr 1fr;
+	}
+
+	.colBrand {
+		align-items: flex-start;
+	}
+}
+
+@media (max-width: 480px) {
+	.columns {
+		grid-template-columns: 1fr;
+		gap: 28px;
+	}
+
+	.colBrand {
+		align-items: flex-start;
+	}
+
+	.inner {
+		padding: 32px 16px 20px;
+	}
+}

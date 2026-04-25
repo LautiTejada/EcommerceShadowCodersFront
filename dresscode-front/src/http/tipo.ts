@@ -22,6 +22,7 @@ export async function getTipoById(id: number) {
 export function createTipo(tipo: Tipo) {
 	return apiFetch(`${baseUrl}/tipos`, {
 		method: "POST",
+		auth: true,
 		body: JSON.stringify(tipo),
 	});
 }
@@ -29,25 +30,15 @@ export function createTipo(tipo: Tipo) {
 export function updateTipo(id: number, tipo: Tipo) {
 	return apiFetch(`${baseUrl}/tipos/${id}`, {
 		method: "PUT",
+		auth: true,
 		body: JSON.stringify(tipo),
 	});
 }
 
 export function updateTipoStatus(id: number) {
 	return apiFetch(`${baseUrl}/tipos/${id}/status`, {
-		method: "PUT",
-	});
-}
-
-export function activateTipo(id: number) {
-	return apiFetch(`${baseUrl}/tipos/${id}/activate`, {
-		method: "PUT",
-	});
-}
-
-export function deactivateTipo(id: number) {
-	return apiFetch(`${baseUrl}/tipos/${id}/deactivate`, {
-		method: "PUT",
+		method: "PATCH",
+		auth: true,
 	});
 }
 
