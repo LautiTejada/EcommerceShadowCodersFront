@@ -32,11 +32,15 @@ interface UsuarioState {
 		direccionId: number,
 	) => Promise<void>;
 	inicializarUsuario: () => Promise<void>;
+	refreshCurrentUser: () => Promise<void>;
 	setUsuarioActual: (categoria: Usuario | null) => void;
 	setDireccionesUsuario: (direcciones: Direccion[]) => void;
 
 	limpiarError: () => void;
 }
+
+// Incremented each time a new login sets a user, so stale background fetches can detect they are outdated.
+let _loginSeq = 0;
 
 // Hydrate synchronously at module load so PrivateRoute never sees null on first render
 const _syncUsuario = (() => {
@@ -46,8 +50,9 @@ const _syncUsuario = (() => {
 	const username = localStorage.getItem("username") ?? "";
 	const rolRaw = localStorage.getItem("rol") ?? "USER";
 	// Normalizar el rol a mayúsculas
-	const rol = rolRaw.toUpperCase();
-	return { id: Number(userId), username, rol } as any;
+	const rol = rolRaw.toUpperCase().replace(/^ROLE_/, "");
+	const email = localStorage.getItem("email") ?? "";
+	return { id: Number(userId), username, rol, email } as any;
 })();
 
 export const useUsuarioStore = create<UsuarioState>((set, get) => ({
@@ -92,6 +97,9 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 					.replace(/^ROLE_/, "");
 				localStorage.setItem("rol", rolNormalizado);
 				usuario.rol = rolNormalizado as any;
+			} else {
+				// API didn't return rol – preserve the value from localStorage
+				usuario.rol = (localStorage.getItem("rol") ?? "USER") as any;
 			}
 			set({ usuarioActual: usuario, cargando: false });
 		} catch (error) {
@@ -251,20 +259,31 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 
 		// Hydrate instantly from localStorage so routes render without waiting for the API
 		const username = localStorage.getItem("username") ?? "";
-		const rol = localStorage.getItem("rol") ?? "USER";
+		const rol = (localStorage.getItem("rol") ?? "USER")
+			.toUpperCase()
+			.replace(/^ROLE_/, "");
+		const email = localStorage.getItem("email") ?? "";
 		set({
-			usuarioActual: { id: Number(userId), username, rol } as any,
+			usuarioActual: { id: Number(userId), username, rol, email } as any,
 			cargando: false,
 		});
 
-		// Silently refresh the full user object from the API in the background
+		// Silently refresh full user data from the API in the background.
+		// Capture the login sequence BEFORE the await — if login() runs while we wait,
+		// _loginSeq will have incremented and we discard the stale result.
+		const seqAtStart = _loginSeq;
 		try {
 			const usuario = await usuarioAPI.getUsuarioPorId(Number(userId));
-			// Normalizar el rol quitando prefijo ROLE_ de Spring Security
+			// Race condition guard: a new login happened while we were fetching — abort.
+			if (_loginSeq !== seqAtStart) return;
+			// Normalize role from API
 			if (usuario.rol) {
 				usuario.rol = (usuario.rol as string)
 					.toUpperCase()
 					.replace(/^ROLE_/, "") as any;
+				localStorage.setItem("rol", usuario.rol as string);
+			} else {
+				usuario.rol = (localStorage.getItem("rol") ?? "USER") as any;
 			}
 			set({ usuarioActual: usuario });
 		} catch {
@@ -272,9 +291,36 @@ export const useUsuarioStore = create<UsuarioState>((set, get) => ({
 		}
 	},
 
+	// Called right after login to guarantee the role is correct from the API.
+	// The login response sometimes doesn't include the role field from the backend.
+	refreshCurrentUser: async () => {
+		const current = get().usuarioActual;
+		if (!current?.id) return;
+		const idToFetch = current.id;
+		try {
+			const usuario = await usuarioAPI.getUsuarioPorId(idToFetch);
+			// Abort if the user changed (logout / re-login) while we were fetching
+			if (get().usuarioActual?.id !== idToFetch) return;
+			if (usuario.rol) {
+				usuario.rol = (usuario.rol as string)
+					.toUpperCase()
+					.replace(/^ROLE_/, "") as any;
+				localStorage.setItem("rol", usuario.rol as string);
+			} else {
+				usuario.rol = (get().usuarioActual?.rol ?? "USER") as any;
+			}
+			set({ usuarioActual: usuario });
+		} catch {
+			// Silently keep current data if endpoint unavailable
+		}
+	},
+
 	limpiarError: () => set({ error: null }),
 
-	setUsuarioActual: (usuario) => set({ usuarioActual: usuario }),
+	setUsuarioActual: (usuario) => {
+		if (usuario !== null) _loginSeq++;
+		set({ usuarioActual: usuario });
+	},
 
 	setDireccionesUsuario: (direcciones) =>
 		set({ direccionesUsuario: direcciones }),
