@@ -155,6 +155,8 @@ export const useAuth = () => {
 				if (username) localStorage.setItem("username", username);
 				if (userId) localStorage.setItem("usuario", String(userId));
 				localStorage.setItem("rol", rol);
+				if (responseData.email)
+					localStorage.setItem("email", responseData.email);
 
 				// Setear el usuario en el store directamente desde la respuesta del login
 				// (evita llamar a /usuarios/{id} que requiere ADMIN)
@@ -199,6 +201,7 @@ export const useAuth = () => {
 		localStorage.removeItem("username");
 		localStorage.removeItem("usuario");
 		localStorage.removeItem("rol");
+		localStorage.removeItem("email");
 
 		// Finalmente navegar a login
 		navigate("/login");
