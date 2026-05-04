@@ -3,6 +3,7 @@ import type { Banner, CreateBannerRequest } from "../../../types/Banner";
 import type { MarcaItem } from "../../../types/MarcaItem";
 import { getBannerImageUrl } from "../../../utils/bannerUtils";
 import styles from "./BannerAdminPanel.module.css";
+import { useScrollLock } from "../../../hooks/useScrollLock";
 
 interface BannerFormModalProps {
 	isOpen: boolean;
@@ -43,6 +44,7 @@ export const BannerFormModal = ({
 	onSave,
 	initialData,
 }: BannerFormModalProps) => {
+	useScrollLock(isOpen);
 	const [formData, setFormData] = useState<FormState>(INITIAL_FORM_STATE);
 	const [formError, setFormError] = useState("");
 	const [imagenPreview, setImagenPreview] = useState<string>("");

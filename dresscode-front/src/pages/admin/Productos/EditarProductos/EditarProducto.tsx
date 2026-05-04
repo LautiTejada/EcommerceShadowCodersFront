@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "../AdminProductos.module.css";
+import { AdminModal } from "../../../../components/admin/AdminModal/AdminModal";
 import { useCategoriaStore } from "../../../../store/categoriaStore";
 import { useProductoStore } from "../../../../store/productoStore";
 import { useMarcaStore } from "../../../../store/marcaStore";
@@ -380,190 +381,142 @@ export const EditarProducto: React.FC = () => {
 
 			{/* ——— Modal de edición ——— */}
 			{selectedProduct && (
-				<div className={styles.modalOverlay} onClick={handleClose}>
-					<div
-						className={styles.editModal}
-						onClick={(e) => e.stopPropagation()}>
-						<>
-							<div className={styles.toolbar}>
-								<div
-									className={`${styles.searchWrapper} ${styles.toolbarSearch}`}>
-									<span className={styles.searchIcon}>
-										<svg
-											viewBox="0 0 20 20"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth="1.8"
-											width="14"
-											height="14">
-											<circle cx="8.5" cy="8.5" r="5.5" />
-											<path strokeLinecap="round" d="M13 13l3 3" />
-										</svg>
-									</span>
+				<AdminModal
+					title="Editar producto"
+					subtitle={selectedProduct.nombre}
+					onClose={handleClose}>
+					<form className={styles.form} onSubmit={handleSubmit} noValidate>
+						{error && (
+							<div className={styles.alertError}>
+								<span>⚠</span> {error}
+							</div>
+						)}
+						{success && (
+							<div className={styles.alertSuccess}>
+								<span>✓</span> ¡Producto actualizado correctamente!
+							</div>
+						)}
+						<div className={styles.formGrid}>
+							<div className={styles.formSection}>
+								<span className={styles.formSectionTitle}>
+									Información básica
+								</span>
+								<div className={styles.formSectionLine} />
+							</div>
+							<div className={styles.fieldGroup}>
+								<label className={styles.label}>
+									Nombre <span className={styles.required}>*</span>
+								</label>
+								<input
+									name="nombre"
+									type="text"
+									className={styles.input}
+									value={form.nombre}
+									onChange={handleChange}
+									maxLength={100}
+								/>
+							</div>
+							<div className={styles.fieldGroup}>
+								<label className={styles.label}>
+									Precio <span className={styles.required}>*</span>
+								</label>
+								<div className={styles.inputPrefix}>
+									<span className={styles.prefix}>$</span>
 									<input
-										className={styles.searchInput}
-										value={busqueda}
-										onChange={(e) => setBusqueda(e.target.value)}
-										placeholder="Buscar por nombre..."
+										name="precio"
+										type="number"
+										className={`${styles.input} ${styles.inputBorderless}`}
+										value={form.precio}
+										onChange={handleChange}
+										min="0"
+										step="0.01"
 									/>
 								</div>
+							</div>
+							<div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
+								<label className={styles.label}>
+									Descripción <span className={styles.required}>*</span>
+								</label>
+								<textarea
+									name="descripcion"
+									className={styles.textarea}
+									value={form.descripcion}
+									onChange={handleChange}
+									rows={3}
+								/>
+							</div>
+							<div className={styles.formSection}>
+								<span className={styles.formSectionTitle}>Clasificación</span>
+								<div className={styles.formSectionLine} />
+							</div>
+							<div className={styles.fieldGroup}>
+								<label className={styles.label}>
+									Categoría <span className={styles.required}>*</span>
+								</label>
 								<select
-									className={styles.filterSelect}
-									value={categoriaFiltro}
-									onChange={(e) => setCategoriaFiltro(e.target.value)}>
-									<option value="">Todas las categorías</option>
+									name="categoriaId"
+									className={styles.select}
+									value={form.categoriaId}
+									onChange={handleChange}>
+									<option value="">Seleccionar...</option>
 									{categoriasActivas.map((cat) => (
-										<option key={cat.id} value={String(cat.id)}>
+										<option key={cat.id} value={cat.id}>
 											{cat.nombreCategoria}
 										</option>
 									))}
 								</select>
-								<span className={styles.countBadge}>
-									{productosFiltrados.length} de {listaProductos.length}{" "}
-									productos
-								</span>
 							</div>
-							<div className={styles.editModalBody}>
-								<form
-									className={styles.form}
-									onSubmit={handleSubmit}
-									noValidate>
-									{error && (
-										<div className={styles.alertError}>
-											<span>⚠</span> {error}
-										</div>
-									)}
-									{success && (
-										<div className={styles.alertSuccess}>
-											<span>✓</span> ¡Producto actualizado correctamente!
-										</div>
-									)}
-									<div className={styles.formGrid}>
-										<div className={styles.formSection}>
-											<span className={styles.formSectionTitle}>
-												Información básica
-											</span>
-											<div className={styles.formSectionLine} />
-										</div>
-										<div className={styles.fieldGroup}>
-											<label className={styles.label}>
-												Nombre <span className={styles.required}>*</span>
-											</label>
-											<input
-												name="nombre"
-												type="text"
-												className={styles.input}
-												value={form.nombre}
-												onChange={handleChange}
-												maxLength={100}
-											/>
-										</div>
-										<div className={styles.fieldGroup}>
-											<label className={styles.label}>
-												Precio <span className={styles.required}>*</span>
-											</label>
-											<div className={styles.inputPrefix}>
-												<span className={styles.prefix}>$</span>
-												<input
-													name="precio"
-													type="number"
-													className={`${styles.input} ${styles.inputBorderless}`}
-													value={form.precio}
-													onChange={handleChange}
-													min="0"
-													step="0.01"
-												/>
-											</div>
-										</div>
-										<div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
-											<label className={styles.label}>
-												Descripción <span className={styles.required}>*</span>
-											</label>
-											<textarea
-												name="descripcion"
-												className={styles.textarea}
-												value={form.descripcion}
-												onChange={handleChange}
-												rows={3}
-											/>
-										</div>
-										<div className={styles.formSection}>
-											<span className={styles.formSectionTitle}>
-												Clasificación
-											</span>
-											<div className={styles.formSectionLine} />
-										</div>
-										<div className={styles.fieldGroup}>
-											<label className={styles.label}>
-												Categoría <span className={styles.required}>*</span>
-											</label>
-											<select
-												name="categoriaId"
-												className={styles.select}
-												value={form.categoriaId}
-												onChange={handleChange}>
-												<option value="">Seleccionar...</option>
-												{categoriasActivas.map((cat) => (
-													<option key={cat.id} value={cat.id}>
-														{cat.nombreCategoria}
-													</option>
-												))}
-											</select>
-										</div>
-										<div className={styles.fieldGroup}>
-											<label className={styles.label}>
-												Marca <span className={styles.required}>*</span>
-											</label>
-											<select
-												name="marcaNombre"
-												className={styles.select}
-												value={form.marcaNombre}
-												onChange={handleChange}>
-												<option value="">Seleccionar...</option>
-												{marcasActivas.map((m) => (
-													<option key={m.id} value={m.nombreMarca}>
-														{m.nombreMarca}
-													</option>
-												))}
-											</select>
-										</div>
-										<div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
-											<label className={styles.label}>
-												Color <span className={styles.required}>*</span>
-											</label>
-											<select
-												name="colorNombre"
-												className={styles.select}
-												value={form.colorNombre}
-												onChange={handleChange}>
-												<option value="">Seleccionar...</option>
-												{coloresActivos.map((c) => (
-													<option key={c.id} value={c.nombreColor}>
-														{c.nombreColor}
-													</option>
-												))}
-											</select>
-										</div>
-									</div>
-									<div className={styles.actions}>
-										<button
-											type="button"
-											className={styles.btnCancel}
-											onClick={handleClose}>
-											Cancelar
-										</button>
-										<button
-											type="submit"
-											className={styles.btnPrimary}
-											disabled={loading}>
-											{loading ? "Guardando..." : "Guardar cambios"}
-										</button>
-									</div>
-								</form>
+							<div className={styles.fieldGroup}>
+								<label className={styles.label}>
+									Marca <span className={styles.required}>*</span>
+								</label>
+								<select
+									name="marcaNombre"
+									className={styles.select}
+									value={form.marcaNombre}
+									onChange={handleChange}>
+									<option value="">Seleccionar...</option>
+									{marcasActivas.map((m) => (
+										<option key={m.id} value={m.nombreMarca}>
+											{m.nombreMarca}
+										</option>
+									))}
+								</select>
 							</div>
-						</>
-					</div>
-				</div>
+							<div className={`${styles.fieldGroup} ${styles.fullWidth}`}>
+								<label className={styles.label}>
+									Color <span className={styles.required}>*</span>
+								</label>
+								<select
+									name="colorNombre"
+									className={styles.select}
+									value={form.colorNombre}
+									onChange={handleChange}>
+									<option value="">Seleccionar...</option>
+									{coloresActivos.map((c) => (
+										<option key={c.id} value={c.nombreColor}>
+											{c.nombreColor}
+										</option>
+									))}
+								</select>
+							</div>
+						</div>
+						<div className={styles.actions}>
+							<button
+								type="button"
+								className={styles.btnCancel}
+								onClick={handleClose}>
+								Cancelar
+							</button>
+							<button
+								type="submit"
+								className={styles.btnPrimary}
+								disabled={loading}>
+								{loading ? "Guardando..." : "Guardar cambios"}
+							</button>
+						</div>
+					</form>
+				</AdminModal>
 			)}
 		</div>
 	);

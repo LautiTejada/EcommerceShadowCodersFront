@@ -6,6 +6,7 @@ import type { Producto } from "../../../types/Producto";
 import { useProductoTalleStore } from "../../../store/talleProductoStore";
 import { talleStore } from "../../../store/talleStore";
 import type { Talle } from "../../../types/Talle";
+import { useScrollLock } from "../../../hooks/useScrollLock";
 
 interface ModalAgregarTalleProductProps {
 	producto: Producto;
@@ -16,6 +17,7 @@ export const ModalAgregarTalleProduct = ({
 	producto,
 	onClose,
 }: ModalAgregarTalleProductProps) => {
+	useScrollLock();
 	const { createProductoTalle } = useProductoTalleStore();
 	const { talles, obtenerTalles } = talleStore();
 
