@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { validateForm, isRequired } from "../../../utils/validate";
 import { sileo } from "sileo";
 import { tipoStore } from "../../../store/tipoStore";
+import { useScrollLock } from "../../../hooks/useScrollLock";
 
 interface ModalEditarTipoProps {
 	tipo: Tipo;
@@ -12,6 +13,7 @@ interface ModalEditarTipoProps {
 }
 
 export const ModalEditarTipo = ({ tipo, onClose }: ModalEditarTipoProps) => {
+	useScrollLock();
 	const { actualizarTipo } = tipoStore();
 
 	const [nuevoTipo, setNuevoTipo] = useState<Tipo>({ ...tipo });

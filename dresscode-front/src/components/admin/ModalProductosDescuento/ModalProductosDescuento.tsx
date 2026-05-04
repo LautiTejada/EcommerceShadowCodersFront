@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import type { Producto } from "../../../types/Producto";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { motion } from "framer-motion";
+import { useScrollLock } from "../../../hooks/useScrollLock";
 
 interface ModalProductosDescuentoProps {
 	descuentoId: number;
@@ -15,6 +16,7 @@ export const ModalProductosDescuento = ({
 	descuentoId,
 	onClose,
 }: ModalProductosDescuentoProps) => {
+	useScrollLock();
 	const {
 		productos,
 		fetchProductosPorDescuento,

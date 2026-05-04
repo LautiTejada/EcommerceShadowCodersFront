@@ -6,6 +6,7 @@ import styles from "./ModalEditarCategoria.module.css";
 import Swal from "sweetalert2";
 import { validateForm, isRequired } from "../../../utils/validate";
 import { sileo } from "sileo";
+import { useScrollLock } from "../../../hooks/useScrollLock";
 
 interface ModalEditarCategoriaProps {
 	categoria: Categoria;
@@ -16,6 +17,7 @@ export const ModalEditarCategoria = ({
 	categoria,
 	onClose,
 }: ModalEditarCategoriaProps) => {
+	useScrollLock();
 	const [showCategory, setShowCategory] = useState(false);
 	const [nuevaCategoria, setNuevaCategoria] = useState<Categoria>({
 		...categoria,

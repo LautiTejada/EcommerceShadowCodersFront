@@ -5,6 +5,7 @@ import { validateForm, isRequired } from "../../../utils/validate";
 import { sileo } from "sileo";
 import { useDescuentoStore } from "../../../store/descuentoStore";
 import type { Descuento } from "../../../types/Descuento";
+import { useScrollLock } from "../../../hooks/useScrollLock";
 
 interface ModalEditarDescuentoProps {
 	descuento: Descuento;
@@ -15,6 +16,7 @@ export const ModalEditarDescuento = ({
 	descuento,
 	onClose,
 }: ModalEditarDescuentoProps) => {
+	useScrollLock();
 	const { updateDescuento } = useDescuentoStore();
 
 	const [porcentaje, setPorcentaje] = useState(descuento.porcentajeDescuento);

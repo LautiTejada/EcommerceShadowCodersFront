@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useDescuentoStore } from "../../../store/descuentoStore";
 import { useProductoStore } from "../../../store/productoStore";
 import Swal from "sweetalert2";
+import { useScrollLock } from "../../../hooks/useScrollLock";
 
 interface ModalAgregarProductDescuentoProps {
   descuentoId: number;
@@ -13,6 +14,7 @@ export const ModalAgregarProductDescuento = ({
   descuentoId,
   onClose,
 }: ModalAgregarProductDescuentoProps) => {
+  useScrollLock();
   const { agregarProductoADescuento, fetchDescuentos, descuentos } =
     useDescuentoStore();
   const { productos, fetchProductos } = useProductoStore();
