@@ -8,6 +8,7 @@ export interface CartItem {
   imagen: string;
   cantidad: number;
   talleId?: number;
+  talleName?: string;
   descuentos?: DescuentoProducto[]
 }
 const CART_KEY = "cart";
