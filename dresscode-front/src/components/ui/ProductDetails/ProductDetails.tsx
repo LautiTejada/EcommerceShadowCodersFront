@@ -4,22 +4,27 @@ import { sileo } from "sileo";
 import styles from "./ProductDetails.module.css";
 import { useParams } from "react-router-dom";
 import { useProductoStore } from "../../../store/productoStore";
-
 import { useCartStore } from "../../../store/cartStore";
+import ProductCard from "../ProductCard/ProductCard";
 
 export const ProductDetails = () => {
 	const { id } = useParams();
-	const { fetchProductoById, productoActual } = useProductoStore();
+	const { fetchProductoById, productoActual, pagedProductos, fetchProductosPaged } = useProductoStore();
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
 	const { addToCart } = useCartStore();
-
 	const [selectedTalleId, setSelectedTalleId] = useState<number | null>(null);
 
 	useEffect(() => {
 		fetchProductoById(Number(id));
 		setSelectedTalleId(null);
 	}, [id, fetchProductoById]);
+
+	// Cargar productos del catálogo si no hay ninguno (acceso directo por URL)
+	useEffect(() => {
+		if (pagedProductos.length === 0) {
+			fetchProductosPaged({ page: 0, size: 50 });
+		}
+	}, []);
 
 	useEffect(() => {
 		if (
@@ -301,6 +306,29 @@ export const ProductDetails = () => {
 					</div>
 				</div>
 			</div>
+
+			{/* Productos relacionados */}
+			{(() => {
+				const relacionados = pagedProductos
+					.filter(
+						(p: any) =>
+							p.id !== productoActual.id &&
+							p.activo !== false &&
+							p.categoria?.id === productoActual.categoria?.id,
+					)
+					.slice(0, 4);
+				if (relacionados.length === 0) return null;
+				return (
+					<div className={styles.relacionadosSection}>
+						<h2 className={styles.relacionadosTitle}>También te puede interesar</h2>
+						<div className={styles.relacionadosGrid}>
+							{relacionados.map((p: any) => (
+								<ProductCard key={p.id} product={p} />
+							))}
+						</div>
+					</div>
+				);
+			})()}
 		</>
 	);
 };

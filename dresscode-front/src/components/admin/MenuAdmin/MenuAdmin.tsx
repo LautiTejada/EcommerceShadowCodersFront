@@ -8,6 +8,7 @@ import StorageIcon from "@mui/icons-material/Storage";
 import DiscountIcon from "@mui/icons-material/Discount";
 import CategoryIcon from "@mui/icons-material/Category";
 import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
+import PaletteIcon from "@mui/icons-material/Palette";
 
 interface MenuItem {
 	label: string;
@@ -87,6 +88,16 @@ const MenuAdmin: React.FC<MenuAdminProps> = ({
 					label: "Gestionar pedidos",
 					id: "list-orders",
 					icon: ReceiptLongIcon,
+				},
+			],
+		},
+		{
+			section: "CATÁLOGO",
+			items: [
+				{
+					label: "Marcas y Colores",
+					id: "marcas-colores",
+					icon: PaletteIcon,
 				},
 			],
 		},
