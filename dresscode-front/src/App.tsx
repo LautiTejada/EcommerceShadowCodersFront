@@ -23,6 +23,8 @@ const Login = React.lazy(() => import("./pages/Auth/Login"));
 const Register = React.lazy(() => import("./pages/Auth/Register"));
 const Cart = React.lazy(() => import("./pages/Cart/Cart"));
 const Profile = React.lazy(() => import("./pages/Profile/Profile"));
+const CheckoutSuccess = React.lazy(() => import("./pages/Checkout/CheckoutSuccess"));
+const CheckoutFailure = React.lazy(() => import("./pages/Checkout/CheckoutFailure"));
 
 import Header from "./components/layouts/Header/Header";
 import Footer from "./components/layouts/Footer/Footer";
@@ -83,6 +85,9 @@ function App() {
 								/>
 								<Route path="/login" element={<Login />} />
 								<Route path="/register" element={<Register />} />
+								<Route path="/checkout/success" element={<CheckoutSuccess />} />
+								<Route path="/checkout/failure" element={<CheckoutFailure />} />
+								<Route path="/checkout/pending" element={<CheckoutSuccess />} />
 
 								<Route
 									path="/cart"
