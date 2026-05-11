@@ -59,13 +59,17 @@ export const ProductDetails = () => {
 			});
 			return;
 		}
+		const talleSeleccionado = productoActual.talles?.find(
+			(t) => t.talle.id === selectedTalleId,
+		);
 		addToCart({
 			productoId: productoActual.id!,
 			nombre: productoActual.nombre,
 			precio: productoActual.precio,
 			imagen: productoActual.imagenes?.[0]?.urlImagen || "",
 			cantidad: quantity,
-			talleId: selectedTalleId,
+			talleId: selectedTalleId ?? undefined,
+			talleName: talleSeleccionado?.talle.tipoTalle,
 			descuentos: productoActual.descuentos,
 		});
 		sileo.success({
@@ -176,9 +180,49 @@ export const ProductDetails = () => {
 							{(productoActual.marca as any)?.nombreMarca ??
 								String(productoActual.marca ?? "")}
 						</div>
-						<div className={styles.price}>
-							${productoActual.precio.toLocaleString()}
-						</div>
+						{(() => {
+							const descuentoActivo = productoActual.descuentos?.find(
+								(d: any) => d && d.activo && d.descuento && d.descuento.activo,
+							);
+							const precioFinal = descuentoActivo
+								? Math.round(
+										productoActual.precio *
+											(1 -
+												descuentoActivo.descuento.porcentajeDescuento / 100),
+									)
+								: null;
+							return descuentoActivo && precioFinal !== null ? (
+								<div className={styles.price}>
+									<span style={{ color: "#810000", marginRight: 10 }}>
+										${precioFinal.toLocaleString()}
+									</span>
+									<span
+										style={{
+											textDecoration: "line-through",
+											color: "#888",
+											fontSize: "0.9em",
+										}}>
+										${productoActual.precio.toLocaleString()}
+									</span>
+									<span
+										style={{
+											marginLeft: 8,
+											background: "#810000",
+											color: "#fff",
+											borderRadius: 4,
+											padding: "2px 7px",
+											fontSize: "0.8em",
+											fontWeight: 700,
+										}}>
+										-{descuentoActivo.descuento.porcentajeDescuento}%
+									</span>
+								</div>
+							) : (
+								<div className={styles.price}>
+									${productoActual.precio.toLocaleString()}
+								</div>
+							);
+						})()}
 						<div className={styles.sizeSection}>
 							<div className={styles.sizeLabel}>Talle</div>
 							<div className={styles.sizes}>
