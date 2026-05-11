@@ -113,9 +113,11 @@ const Cart = () => {
 			const data = await response.json();
 
 			if (data.preferenceId) {
-				const mercadoPagoUrl = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${data.preferenceId}`;
 				clearCart();
-				window.location.href = mercadoPagoUrl;
+				window.location.href = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${data.preferenceId}`;
+			} else if (data.initPoint) {
+				clearCart();
+				window.location.href = data.initPoint;
 			} else {
 				sileo.error({
 					title: "Error de pago",

@@ -226,27 +226,38 @@ export const ProductDetails = () => {
 						<div className={styles.sizeSection}>
 							<div className={styles.sizeLabel}>Talle</div>
 							<div className={styles.sizes}>
-								{productoActual.talles?.map((size) => (
-									<button
-										key={size.talle.id ?? Math.random()}
-										className={`${styles.sizeBtn} ${
-											selectedTalleId === size.talle.id
-												? styles.sizeBtnSelected
-												: ""
-										}`}
-										onClick={() => {
-											if (typeof size.talle.id === "number") {
-												setSelectedTalleId(
-													selectedTalleId === size.talle.id
-														? null
-														: size.talle.id,
-												);
-											}
-										}}
-										type="button">
-										{size.talle.tipoTalle}
-									</button>
-								))}
+								{productoActual.talles?.map((size) => {
+									const sinStock = size.cantidad === 0;
+									return (
+										<button
+											key={size.talle.id ?? Math.random()}
+											className={`${styles.sizeBtn} ${
+												selectedTalleId === size.talle.id
+													? styles.sizeBtnSelected
+													: ""
+											} ${sinStock ? styles.sizeBtnDisabled : ""}`}
+											onClick={() => {
+												if (sinStock) return;
+												if (typeof size.talle.id === "number") {
+													setSelectedTalleId(
+														selectedTalleId === size.talle.id
+															? null
+															: size.talle.id,
+													);
+												}
+											}}
+											type="button"
+											disabled={sinStock}
+											title={sinStock ? "Sin stock" : `Stock: ${size.cantidad}`}>
+											{size.talle.tipoTalle}
+											{sinStock && (
+												<span style={{ display: "block", fontSize: "0.6em", opacity: 0.7 }}>
+													agotado
+												</span>
+											)}
+										</button>
+									);
+								})}
 							</div>
 						</div>
 						{/* Descripción minimalista debajo de talles */}
