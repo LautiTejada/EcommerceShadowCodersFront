@@ -45,6 +45,9 @@ const ListaOrdenes = lazy(() =>
 		default: m.ListaOrdenes,
 	})),
 );
+const GestionMarcasColores = lazy(
+	() => import("../../../pages/admin/MarcasColores/GestionMarcasColores"),
+);
 
 interface AdminPanelProps {
 	activeView: string;
@@ -109,6 +112,12 @@ const AdminPanel: React.FC<AdminPanelProps> = ({
 				return (
 					<Suspense fallback={<Loader />}>
 						<ListaOrdenes />
+					</Suspense>
+				);
+			case "marcas-colores":
+				return (
+					<Suspense fallback={<Loader />}>
+						<GestionMarcasColores />
 					</Suspense>
 				);
 			default:

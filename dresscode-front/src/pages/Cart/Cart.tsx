@@ -7,6 +7,8 @@ import { useOrdenCompraStore } from "../../store/ordenCompraStore";
 import { useUsuarioStore } from "../../store/userStore";
 import type { MetodoPago } from "../../types/enums/MetodoPago";
 
+const API_URL = import.meta.env.VITE_API_URL as string;
+
 const Cart = () => {
 	const { cart, updateQuantity, removeFromCart, clearCart } = useCartStore();
 	const { createOrdenDeCompra } = useOrdenCompraStore();
@@ -91,7 +93,7 @@ const Cart = () => {
 			await createOrdenDeCompra(orden);
 
 			const response = await fetch(
-				"http://localhost:8080/api/mercado-pago/mp",
+				`${API_URL}/mercado-pago/mp`,
 				{
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
@@ -111,9 +113,11 @@ const Cart = () => {
 			const data = await response.json();
 
 			if (data.preferenceId) {
-				const mercadoPagoUrl = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${data.preferenceId}`;
 				clearCart();
-				window.location.href = mercadoPagoUrl;
+				window.location.href = `https://www.mercadopago.com.ar/checkout/v1/redirect?pref_id=${data.preferenceId}`;
+			} else if (data.initPoint) {
+				clearCart();
+				window.location.href = data.initPoint;
 			} else {
 				sileo.error({
 					title: "Error de pago",
@@ -155,20 +159,24 @@ const Cart = () => {
 									}>
 									<td className={styles.productInfoCell}>
 										<img
-											src={`http://localhost:8080${encodeURI(
-												item.imagen[0].startsWith("/")
+											src={
+												item.imagen.startsWith("http")
 													? item.imagen
-													: `/${item.imagen}`,
-											)}`}
+													: `${API_URL}${encodeURI(
+															item.imagen.startsWith("/")
+																? item.imagen
+																: `/${item.imagen}`,
+														)}`
+											}
 											alt={item.nombre}
 											className={styles.productImg}
 											loading="lazy"
 										/>
 										<div className={styles.productInfo}>
 											<div className={styles.productName}>{item.nombre}</div>
-											{item.talleId && (
+											{(item.talleName || item.talleId) && (
 												<div className={styles.productBrand}>
-													Talle: {item.talleId}
+													Talle: {item.talleName ?? item.talleId}
 												</div>
 											)}
 										</div>

@@ -6,10 +6,20 @@ import { useProductoStore } from "../../../store/productoStore";
 
 const marcas: Marca[] = ["NIKE", "ADIDAS", "PUMA", "VANS", "JORDAN"];
 
-export const FiltersCatalog = () => {
+interface FiltersCatalogProps {
+	onFiltrosAplicados?: (filtros: {
+		tipos: number[];
+		categorias: number[];
+		marcas: string[];
+		precioMin: number;
+		precioMax: number;
+	}) => void;
+}
+
+export const FiltersCatalog = ({ onFiltrosAplicados }: FiltersCatalogProps) => {
 	const { tipos, obtenerTiposActivos } = tipoStore();
 	const { categoriasActivas, fetchCategoriasActivas } = useCategoriaStore();
-	const { fetchProductosFiltrados } = useProductoStore();
+	const { fetchProductosPaged } = useProductoStore();
 
 	const [open, setOpen] = useState<{ [key: string]: boolean }>({});
 	const [checked, setChecked] = useState<{ [key: string]: string[] }>({});
@@ -81,19 +91,23 @@ export const FiltersCatalog = () => {
 	const handleSubmit = (e: React.FormEvent) => {
 		e.preventDefault();
 
-		const tipos = (checked["Tipo de producto"] || []).map(Number);
+		const tiposSeleccionados = (checked["Tipo de producto"] || []).map(Number);
 		const categorias = (checked["Categoria"] || []).map(Number);
-		const marcas = checked["Marca"] || [];
+		const marcasSeleccionadas = checked["Marca"] || [];
 
 		const filtros = {
-			tipos,
+			tipos: tiposSeleccionados,
 			categorias,
-			marcas,
+			marcas: marcasSeleccionadas,
 			precioMin: price[0],
 			precioMax: price[1],
 		};
 
-		fetchProductosFiltrados(filtros);
+		if (onFiltrosAplicados) {
+			onFiltrosAplicados(filtros);
+		} else {
+			fetchProductosPaged({ page: 0, size: 12, filtros });
+		}
 	};
 
 	return (

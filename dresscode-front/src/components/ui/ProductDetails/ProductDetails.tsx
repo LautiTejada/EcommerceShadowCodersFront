@@ -4,22 +4,27 @@ import { sileo } from "sileo";
 import styles from "./ProductDetails.module.css";
 import { useParams } from "react-router-dom";
 import { useProductoStore } from "../../../store/productoStore";
-
 import { useCartStore } from "../../../store/cartStore";
+import ProductCard from "../ProductCard/ProductCard";
 
 export const ProductDetails = () => {
 	const { id } = useParams();
-	const { fetchProductoById, productoActual } = useProductoStore();
+	const { fetchProductoById, productoActual, pagedProductos, fetchProductosPaged } = useProductoStore();
 	const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
 	const { addToCart } = useCartStore();
-
 	const [selectedTalleId, setSelectedTalleId] = useState<number | null>(null);
 
 	useEffect(() => {
 		fetchProductoById(Number(id));
 		setSelectedTalleId(null);
 	}, [id, fetchProductoById]);
+
+	// Cargar productos del catálogo si no hay ninguno (acceso directo por URL)
+	useEffect(() => {
+		if (pagedProductos.length === 0) {
+			fetchProductosPaged({ page: 0, size: 50 });
+		}
+	}, []);
 
 	useEffect(() => {
 		if (
@@ -59,13 +64,17 @@ export const ProductDetails = () => {
 			});
 			return;
 		}
+		const talleSeleccionado = productoActual.talles?.find(
+			(t) => t.talle.id === selectedTalleId,
+		);
 		addToCart({
 			productoId: productoActual.id!,
 			nombre: productoActual.nombre,
 			precio: productoActual.precio,
 			imagen: productoActual.imagenes?.[0]?.urlImagen || "",
 			cantidad: quantity,
-			talleId: selectedTalleId,
+			talleId: selectedTalleId ?? undefined,
+			talleName: talleSeleccionado?.talle.tipoTalle,
 			descuentos: productoActual.descuentos,
 		});
 		sileo.success({
@@ -176,33 +185,84 @@ export const ProductDetails = () => {
 							{(productoActual.marca as any)?.nombreMarca ??
 								String(productoActual.marca ?? "")}
 						</div>
-						<div className={styles.price}>
-							${productoActual.precio.toLocaleString()}
-						</div>
+						{(() => {
+							const descuentoActivo = productoActual.descuentos?.find(
+								(d: any) => d && d.activo && d.descuento && d.descuento.activo,
+							);
+							const precioFinal = descuentoActivo
+								? Math.round(
+										productoActual.precio *
+											(1 -
+												descuentoActivo.descuento.porcentajeDescuento / 100),
+									)
+								: null;
+							return descuentoActivo && precioFinal !== null ? (
+								<div className={styles.price}>
+									<span style={{ color: "#810000", marginRight: 10 }}>
+										${precioFinal.toLocaleString()}
+									</span>
+									<span
+										style={{
+											textDecoration: "line-through",
+											color: "#888",
+											fontSize: "0.9em",
+										}}>
+										${productoActual.precio.toLocaleString()}
+									</span>
+									<span
+										style={{
+											marginLeft: 8,
+											background: "#810000",
+											color: "#fff",
+											borderRadius: 4,
+											padding: "2px 7px",
+											fontSize: "0.8em",
+											fontWeight: 700,
+										}}>
+										-{descuentoActivo.descuento.porcentajeDescuento}%
+									</span>
+								</div>
+							) : (
+								<div className={styles.price}>
+									${productoActual.precio.toLocaleString()}
+								</div>
+							);
+						})()}
 						<div className={styles.sizeSection}>
 							<div className={styles.sizeLabel}>Talle</div>
 							<div className={styles.sizes}>
-								{productoActual.talles?.map((size) => (
-									<button
-										key={size.talle.id ?? Math.random()}
-										className={`${styles.sizeBtn} ${
-											selectedTalleId === size.talle.id
-												? styles.sizeBtnSelected
-												: ""
-										}`}
-										onClick={() => {
-											if (typeof size.talle.id === "number") {
-												setSelectedTalleId(
-													selectedTalleId === size.talle.id
-														? null
-														: size.talle.id,
-												);
-											}
-										}}
-										type="button">
-										{size.talle.tipoTalle}
-									</button>
-								))}
+								{productoActual.talles?.map((size) => {
+									const sinStock = size.cantidad === 0;
+									return (
+										<button
+											key={size.talle.id ?? Math.random()}
+											className={`${styles.sizeBtn} ${
+												selectedTalleId === size.talle.id
+													? styles.sizeBtnSelected
+													: ""
+											} ${sinStock ? styles.sizeBtnDisabled : ""}`}
+											onClick={() => {
+												if (sinStock) return;
+												if (typeof size.talle.id === "number") {
+													setSelectedTalleId(
+														selectedTalleId === size.talle.id
+															? null
+															: size.talle.id,
+													);
+												}
+											}}
+											type="button"
+											disabled={sinStock}
+											title={sinStock ? "Sin stock" : `Stock: ${size.cantidad}`}>
+											{size.talle.tipoTalle}
+											{sinStock && (
+												<span style={{ display: "block", fontSize: "0.6em", opacity: 0.7 }}>
+													agotado
+												</span>
+											)}
+										</button>
+									);
+								})}
 							</div>
 						</div>
 						{/* Descripción minimalista debajo de talles */}
@@ -246,6 +306,29 @@ export const ProductDetails = () => {
 					</div>
 				</div>
 			</div>
+
+			{/* Productos relacionados */}
+			{(() => {
+				const relacionados = pagedProductos
+					.filter(
+						(p: any) =>
+							p.id !== productoActual.id &&
+							p.activo !== false &&
+							p.categoria?.id === productoActual.categoria?.id,
+					)
+					.slice(0, 4);
+				if (relacionados.length === 0) return null;
+				return (
+					<div className={styles.relacionadosSection}>
+						<h2 className={styles.relacionadosTitle}>También te puede interesar</h2>
+						<div className={styles.relacionadosGrid}>
+							{relacionados.map((p: any) => (
+								<ProductCard key={p.id} product={p} />
+							))}
+						</div>
+					</div>
+				);
+			})()}
 		</>
 	);
 };

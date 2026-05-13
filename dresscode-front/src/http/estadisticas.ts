@@ -44,6 +44,32 @@ export const descargarEstadisticasCSV = async (): Promise<Blob> => {
 	return response.blob();
 };
 
+export interface VentaMes {
+	mes: string;
+	total: number;
+}
+
+export interface TopProducto {
+	id: number;
+	nombre: string;
+	unidades: number;
+	ingresos: number;
+}
+
+export const obtenerVentasPorMes = async (meses = 6): Promise<VentaMes[]> => {
+	return await apiFetch(`${baseUrl}/estadisticas/ventas-por-mes?meses=${meses}`, {
+		method: "GET",
+		auth: true,
+	});
+};
+
+export const obtenerTopProductos = async (limit = 5): Promise<TopProducto[]> => {
+	return await apiFetch(`${baseUrl}/estadisticas/top-productos?limit=${limit}`, {
+		method: "GET",
+		auth: true,
+	});
+};
+
 /**
  * Obtener historial de auditoría
  * @requires token en localStorage

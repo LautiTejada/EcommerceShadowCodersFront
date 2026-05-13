@@ -114,6 +114,14 @@
 	background: #f5f5f7;
 	color: #181818;
 }
+.sizeBtnDisabled {
+	opacity: 0.38;
+	cursor: not-allowed;
+	text-decoration: line-through;
+	border-color: #ddd;
+	background: #f5f5f5;
+	color: #aaa;
+}
 .color {
 	margin-bottom: 16px;
 	color: #888;
@@ -267,4 +275,28 @@
 	.sizes {
 		grid-template-columns: repeat(3, 1fr);
 	}
+}
+
+/* Productos relacionados */
+.relacionadosSection {
+	background: #111;
+	padding: 48px 24px;
+}
+.relacionadosTitle {
+	color: #fff;
+	font-size: 1.3rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	margin-bottom: 28px;
+	max-width: 1100px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.relacionadosGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 24px;
+	max-width: 1100px;
+	margin: 0 auto;
 }
