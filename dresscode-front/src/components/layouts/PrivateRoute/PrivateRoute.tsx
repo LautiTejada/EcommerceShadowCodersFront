@@ -30,7 +30,7 @@ const PrivateRoute = ({ children }: PrivateRouteProps) => {
 			usuarioId
 		) {
 			setLoadAttempted(true);
-			obtenerUsuarioPorId(Number(usuarioId)).catch((err: any) => {
+			obtenerUsuarioPorId(Number(usuarioId)).catch((_err: any) => {
 			});
 		}
 	}, [
