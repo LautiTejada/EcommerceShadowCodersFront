@@ -28,7 +28,7 @@ export const useImagenProductoStore = create<imagenProductoState>(
 			try {
 				const imagenesFromApi = await getImagenesProducto();
 				set({ imagenes: imagenesFromApi });
-			} catch (error) {
+			} catch (_error) {
 			}
 		},
 
@@ -36,22 +36,22 @@ export const useImagenProductoStore = create<imagenProductoState>(
 			try {
 				const imagenesActivasFromApi = await getImagenesProducto();
 				set({ imagenesActivas: imagenesActivasFromApi });
-			} catch (error) {
+			} catch (_error) {
 			}
 		},
 
-		fetchImagenById: async (id) => {
+		fetchImagenById: async (_id) => {
 			try {
 				return await getImagenesProducto();
-			} catch (error) {
+			} catch (_error) {
 				return null;
 			}
 		},
 
-		updateImagen: async (id) => {
+		updateImagen: async (_id) => {
 			try {
 				await get().fetchImagenes();
-			} catch (error) {
+			} catch (_error) {
 			}
 		},
 
@@ -59,7 +59,7 @@ export const useImagenProductoStore = create<imagenProductoState>(
 			try {
 				await eliminarImagenProducto(id);
 				await get().fetchImagenes();
-			} catch (error) {
+			} catch (_error) {
 			}
 		},
 
@@ -67,7 +67,7 @@ export const useImagenProductoStore = create<imagenProductoState>(
 			try {
 				await cambiarEstadoImagenProducto(id);
 				await get().fetchImagenes();
-			} catch (error) {
+			} catch (_error) {
 			}
 		},
 
@@ -75,7 +75,7 @@ export const useImagenProductoStore = create<imagenProductoState>(
 			try {
 				await cambiarEstadoImagenProducto(id);
 				await get().fetchImagenesActivas();
-			} catch (error) {
+			} catch (_error) {
 			}
 		},
 
@@ -83,7 +83,7 @@ export const useImagenProductoStore = create<imagenProductoState>(
 			try {
 				await cambiarEstadoImagenProducto(id);
 				await get().fetchImagenesActivas();
-			} catch (error) {
+			} catch (_error) {
 			}
 		},
 	}),

@@ -2,15 +2,15 @@ import type { ProductoTalle } from "../types/ProductoTalle";
 import { apiFetch } from "./apiFetch";
 const baseUrl = import.meta.env.VITE_API_URL;
 
-function handleApiError(error: unknown, context: string) {
+function handleApiError(_error: unknown, context: string) {
 	throw new Error(`No se pudo completar la operación: ${context}`);
 }
 
 export async function getProductoTalles() {
 	try {
 		return await apiFetch(`${baseUrl}/producto-talles`);
-	} catch (error) {
-		handleApiError(error, "obtener producto talles");
+	} catch (_error) {
+		handleApiError(_error, "obtener producto talles");
 	}
 }
 
