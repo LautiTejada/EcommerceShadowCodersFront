@@ -5,7 +5,6 @@ import type { ProductoTalle } from "../../../types/ProductoTalle";
 import type { Talle } from "../../../types/Talle";
 import { talleStore } from "../../../store/talleStore";
 import { useProductoTalleStore } from "../../../store/talleProductoStore";
-import { getProductoById } from "../../../http/producto";
 import { useScrollLock } from "../../../hooks/useScrollLock";
 
 interface StockModalProps {
