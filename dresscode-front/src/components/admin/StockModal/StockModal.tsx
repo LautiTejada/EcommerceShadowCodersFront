@@ -79,6 +79,8 @@ export const StockModal: React.FC<StockModalProps> = ({
 			);
 			if (!talleCreado || !talleCreado.id)
 				throw new Error("No se pudo crear el talle");
+			if (!producto.id)
+				throw new Error("Producto ID no disponible");
 			// 2. Crear producto-talle con cantidad (esto crea la relación y asigna cantidad)
 			await createProductoTalle(producto.id, talleCreado.id, cant);
 			// 3. Refrescar productos y producto seleccionado antes de cerrar el modal
