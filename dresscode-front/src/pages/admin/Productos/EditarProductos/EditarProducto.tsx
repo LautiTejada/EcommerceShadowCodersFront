@@ -102,7 +102,8 @@ export const EditarProducto: React.FC = () => {
 			HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
 		>,
 	) => {
-		const { name, value, type, checked } = e.target;
+		const { name, value, type } = e.target as any;
+		const checked = (e.target as HTMLInputElement).checked;
 		setForm((prev) => ({
 			...prev,
 			[name]: type === "checkbox" ? checked : value,
@@ -210,7 +211,7 @@ export const EditarProducto: React.FC = () => {
 			let categoriaObj = p.categoria;
 			if (typeof categoriaObj === "number") {
 				categoriaObj =
-					categoriasActivas.find((cat) => cat.id === categoriaObj) || null;
+					categoriasActivas.find((cat) => cat.id === categoriaObj) || undefined;
 			}
 			return { ...p, categoria: categoriaObj };
 		})
