@@ -6,7 +6,6 @@ import { useProductoStore } from "../../../../store/productoStore";
 import { useMarcaStore } from "../../../../store/marcaStore";
 import { useColorStore } from "../../../../store/colorStore";
 import type { Producto } from "../../../../types/Producto";
-import type { Marca } from "../../../../types/enums/Marca";
 
 interface FormState {
 	nombre: string;
@@ -31,7 +30,6 @@ const emptyForm: FormState = {
 export const EditarProducto: React.FC = () => {
 	const { categoriasActivas, fetchCategoriasActivas } = useCategoriaStore();
 	const {
-		productosActivos,
 		pagedProductos,
 		fetchProductosActivos,
 		fetchProductosPaged,

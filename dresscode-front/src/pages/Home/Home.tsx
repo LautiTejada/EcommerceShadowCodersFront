@@ -19,7 +19,6 @@ const Home = () => {
 	const { fetchCategoriasActivas, categoriasActivas } = useCategoriaStore();
 	const { fetchProductosActivos, fetchProductosPaged } = useProductoStore();
 	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState<string | null>(null);
 	const [zapatillas, setZapatillas] = useState<any[]>([]);
 	const [remeras, setRemeras] = useState<any[]>([]);
 	const [allItems, setAllItems] = useState<any[]>([]);
@@ -92,9 +91,6 @@ const Home = () => {
 
 	if (loading) {
 		return <Loader />;
-	}
-	if (error) {
-		return <div style={{ color: "red", padding: 32 }}>{error}</div>;
 	}
 
 	return (
